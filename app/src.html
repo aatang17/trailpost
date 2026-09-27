@@ -1,0 +1,710 @@
+<title>Trailpost HK</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+HK:wght@400;500;700&display=swap">
+<style>
+/*LEAFLET_CSS*/
+:root{
+  --ink:#15241d;--ink2:#3a4c43;--muted:#66766e;--paper:#eef1ec;--card:#ffffff;--line:#d6ddd7;--line2:#e6ebe7;
+  --accent:#b8660f;--accent-ink:#ffffff;--focus:#1f6fa8;
+  --sea:#c9dfe8;--land:#f3f3ec;--park:#d3e6cc;--parkline:#9cc193;--res:#a9cde0;
+  --go:#2d7a4b;--go-bg:#e3f1e8;--warn:#a86a07;--warn-bg:#fbf0db;--bad:#b0342a;--bad-bg:#f9e3e0;
+  --gmb:#1f7a45;--rmb:#b8322a;
+  --shadow:0 1px 2px rgba(20,36,29,.06),0 4px 14px rgba(20,36,29,.06);
+  --f-disp:"Barlow Condensed","Arial Narrow","Noto Sans HK",sans-serif;
+  --f-body:"Noto Sans HK","Helvetica Neue",Arial,"PingFang HK","Microsoft JhengHei",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --ink:#e4ebe6;--ink2:#bccac1;--muted:#8d9d94;--paper:#0f1612;--card:#17211b;--line:#2b3a31;--line2:#223029;
+  --accent:#e0913a;--accent-ink:#1a1206;--focus:#6fb2e3;
+  --sea:#0f2330;--land:#1c2621;--park:#1f3526;--parkline:#335a3e;--res:#1b4258;
+  --go:#6cc793;--go-bg:#15311f;--warn:#e7b34e;--warn-bg:#35280d;--bad:#f07f73;--bad-bg:#3a1714;
+  --gmb:#5fc28a;--rmb:#f07f73;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --ink:#e4ebe6;--ink2:#bccac1;--muted:#8d9d94;--paper:#0f1612;--card:#17211b;--line:#2b3a31;--line2:#223029;
+  --accent:#e0913a;--accent-ink:#1a1206;--focus:#6fb2e3;
+  --sea:#0f2330;--land:#1c2621;--park:#1f3526;--parkline:#335a3e;--res:#1b4258;
+  --go:#6cc793;--go-bg:#15311f;--warn:#e7b34e;--warn-bg:#35280d;--bad:#f07f73;--bad-bg:#3a1714;
+  --gmb:#5fc28a;--rmb:#f07f73;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+a{color:var(--focus)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.top{padding:10px 16px 0;background:var(--paper);border-bottom:1px solid var(--line);position:relative;z-index:500}
+.brandrow{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand b{font-family:var(--f-disp);font-weight:700;font-size:26px;letter-spacing:.01em;line-height:1}
+.brand b .post{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:4px;padding:0 5px 1px;margin-left:2px;font-size:20px;vertical-align:3px}
+.brand span{color:var(--muted);font-size:13px;white-space:nowrap}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);flex:none}
+.lang button{border:0;background:transparent;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.days{display:flex;gap:6px;margin:10px 0 0;overflow-x:auto;scrollbar-width:none;padding-bottom:10px}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:5px 10px;cursor:pointer;text-align:left;min-width:88px}
+.day small{display:block;color:var(--muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.day strong{font-family:var(--f-disp);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.day[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.main{min-height:0;display:grid;grid-template-columns:1fr}
+.pane{min-height:0;overflow-y:auto;padding:14px 16px 24px}
+.mapwrap{min-height:0;position:relative;background:var(--sea)}
+#map{position:absolute;inset:0;background:var(--sea)}
+.tabs{display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{flex:1;border:0;background:transparent;padding:9px 4px 10px;font-size:13px;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button svg{width:22px;height:22px}
+.tabs button[aria-pressed="true"]{color:var(--ink);font-weight:700}
+.tabs button.sos[aria-pressed="true"]{color:var(--bad)}
+.mode-list .mapwrap{display:none}.mode-map .pane{display:none}
+.deskTabs{display:none}
+@media (min-width:960px){
+  .main{grid-template-columns:minmax(420px,470px) 1fr}
+  .mode-list .mapwrap,.mode-map .mapwrap{display:block}.mode-map .pane{display:block}
+  .tabs{display:none}
+  .app{grid-template-rows:auto 1fr}
+  .pane{border-right:1px solid var(--line)}
+  .deskTabs{display:flex;gap:6px;margin-bottom:12px}
+}
+.deskTabs button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;cursor:pointer;font-size:14px}
+.deskTabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.deskTabs button.sos[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+
+/* conditions */
+.cond{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:grid;gap:8px}
+.cond h2{margin:0;font-family:var(--f-disp);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.condrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wchip{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:3px 9px;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--paper)}
+.wchip i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.wchip.y i{background:#e0b000}.wchip.r i{background:#d23c2f}.wchip.b i{background:#111}.wchip.a i{background:#e08a00}.wchip.g i{background:var(--muted)}
+.wx{font-size:14px;color:var(--ink2)}
+.wx strong{font-family:var(--f-disp);font-size:22px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:4px}
+.stale{font-size:12.5px;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:5px 9px}
+.meta{font-size:12px;color:var(--muted)}
+.whatif{font-size:13px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.whatif select{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:3px 6px;color:var(--ink);max-width:100%}
+.linkbtn{border:0;background:none;padding:0;color:var(--focus);cursor:pointer;text-decoration:underline;font-size:13px}
+
+/* filters */
+.main>*,.app>*{min-width:0}
+.filters{display:flex;gap:6px;overflow-x:auto;margin:14px -16px 4px;padding:0 16px 4px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fchip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px;font-size:13.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.fchip i{width:10px;height:3px;border-radius:2px;display:inline-block}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.summary{font-size:13px;color:var(--muted);margin:8px 0 2px;display:flex;gap:12px;flex-wrap:wrap}
+.summary b{font-variant-numeric:tabular-nums}
+
+/* trail groups */
+.group{margin-top:18px}
+.ghead{display:grid;gap:6px;margin-bottom:6px}
+.gtitle{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.gtitle h3{margin:0;font-family:var(--f-disp);font-size:24px;font-weight:700;line-height:1.05;text-wrap:balance}
+.gtitle h3 small{font-family:var(--f-body);font-size:13px;font-weight:500;color:var(--muted);margin-left:6px}
+.gtitle span{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.strip{display:flex;gap:2px;height:22px}
+.strip button{border:0;padding:0;cursor:pointer;border-radius:3px;position:relative;min-width:14px;font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:#fff}
+.strip button.l0{background:var(--go)}.strip button.l1{background:var(--warn)}.strip button.l2{background:var(--bad)}
+:root[data-theme="dark"] .strip button{color:#0f1612}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .strip button{color:#0f1612}}
+.rows{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:0;border-top:1px solid var(--line2);background:transparent;text-align:left;cursor:pointer;width:100%}
+.row:first-child{border-top:0}
+.row:hover{background:var(--paper)}
+.num{font-family:var(--f-disp);font-weight:700;font-size:20px;width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:#fff;font-variant-numeric:tabular-nums}
+.rtitle{font-weight:500;font-size:14.5px;line-height:1.3}
+.rsub{font-size:12.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:1px;font-variant-numeric:tabular-nums}
+.rwhy{font-size:12.5px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.p0{color:var(--go);background:var(--go-bg)}.p1{color:var(--warn);background:var(--warn-bg)}.p2{color:var(--bad);background:var(--bad-bg)}
+.stars{letter-spacing:1px;color:var(--accent);font-size:11px}
+
+/* detail */
+.back{border:0;background:none;padding:4px 0;cursor:pointer;color:var(--muted);font-size:14px;display:inline-flex;gap:4px;align-items:center}
+.dhead{margin:6px 0 10px}
+.eyebrow{font-family:var(--f-disp);font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+.eyebrow i{width:14px;height:4px;border-radius:2px}
+.dhead h2{margin:2px 0 0;font-family:var(--f-disp);font-size:32px;line-height:1.02;font-weight:700;text-wrap:balance}
+.verdict{border-radius:12px;padding:12px 14px;display:grid;gap:6px;border:1px solid transparent}
+.verdict.v0{background:var(--go-bg);border-color:color-mix(in srgb,var(--go) 30%,transparent)}
+.verdict.v1{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+.verdict.v2{background:var(--bad-bg);border-color:color-mix(in srgb,var(--bad) 30%,transparent)}
+.verdict .vt{font-family:var(--f-disp);font-size:22px;font-weight:700;line-height:1.1}
+.v0 .vt{color:var(--go)}.v1 .vt{color:var(--warn)}.v2 .vt{color:var(--bad)}
+.verdict ul{margin:0;padding-left:18px;font-size:14px}
+.verdict li{margin:2px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:12px 0}
+.stat{background:var(--card);padding:8px 10px}
+.stat small{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat b{font-family:var(--f-disp);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat b em{font-style:normal;font-size:14px;color:var(--muted);margin-left:2px;font-family:var(--f-body);font-weight:400}
+.sec{margin-top:18px}
+.sec h3{margin:0 0 8px;font-family:var(--f-disp);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.prof{width:100%;height:auto;display:block}
+.prof text{font-family:var(--f-mono);font-size:13px;fill:var(--muted)}
+.prof .pt{fill:var(--accent);font-weight:600}
+.tr{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line2)}
+.tr:first-child{border-top:0;padding-top:0}.tr:last-child{padding-bottom:0}
+.mode{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;border-radius:8px;padding:3px 6px;border:1.5px solid var(--ink2);line-height:1.05}
+.mode small{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.mode b{font-family:var(--f-disp);font-size:19px;font-weight:700;text-align:center;max-width:92px;overflow-wrap:anywhere}
+.mode.gmb{border-color:var(--gmb)}.mode.gmb b{color:var(--gmb)}
+.mode.rmb{border-color:var(--rmb)}.mode.rmb b{color:var(--rmb)}
+.tr .from{font-weight:500;font-size:14px}
+.tr .note{font-size:13px;color:var(--ink2)}
+.kv{display:grid;gap:10px}
+.kv div{font-size:14px}
+.kv b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+.kv ul{margin:2px 0 0;padding-left:18px}
+.postrange{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+.pc{font-family:var(--f-mono);font-weight:600;font-size:13px;background:var(--ink);color:var(--paper);padding:1px 7px;border-radius:5px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;cursor:pointer;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.sources{font-size:12.5px;color:var(--muted);display:grid;gap:2px;overflow-wrap:anywhere}
+.hl{display:flex;flex-wrap:wrap;gap:6px}
+.hl span{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:2px 8px}
+
+/* SOS */
+.sosTop{background:var(--bad);color:#fff;border-radius:14px;padding:14px 16px;display:grid;gap:4px}
+.sosTop .n{font-family:var(--f-disp);font-size:54px;font-weight:700;line-height:.95;letter-spacing:.02em}
+.sosTop p{margin:0;font-size:14px}
+.lookup{display:flex;gap:8px;margin-top:14px}
+.lookup input{flex:1;min-width:0;font-family:var(--f-mono);font-size:26px;font-weight:600;text-transform:uppercase;padding:8px 12px;border:2px solid var(--ink);border-radius:12px;background:var(--card);color:var(--ink);letter-spacing:.08em}
+.post3d{display:flex;gap:12px;align-items:center}
+.postIcon{width:52px;flex:none}
+.script{font-size:15px;background:var(--paper);border-radius:10px;padding:10px 12px;border:1px dashed var(--line)}
+.script p{margin:0 0 6px}.script p:last-child{margin:0}
+.hint{font-size:13px;color:var(--muted)}
+.tips{margin:0;padding-left:18px;font-size:14px;display:grid;gap:4px}
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.examples button{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);background:var(--card);border-radius:7px;padding:2px 8px;cursor:pointer}
+
+/* map bits */
+.leaflet-container{font-family:var(--f-body);background:var(--sea)}
+.leaflet-tooltip.postlbl{background:var(--ink);color:var(--paper);border:0;box-shadow:none;font-family:var(--f-mono);font-size:10.5px;font-weight:600;padding:0 4px;border-radius:3px}
+.leaflet-tooltip.postlbl:before{display:none}
+.leaflet-tooltip.rlbl{background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:12px;box-shadow:var(--shadow)}
+.leaflet-tooltip.plbl{background:transparent;border:0;box-shadow:none;color:var(--muted);font-family:var(--f-disp);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:0}
+.leaflet-tooltip.plbl:before{display:none}
+.leaflet-control-attribution{font-size:10px;background:color-mix(in srgb,var(--card) 80%,transparent)!important;color:var(--muted)}
+.leaflet-control-attribution a{color:var(--muted)}
+.leaflet-bar a{background:var(--card);color:var(--ink);border-color:var(--line)}
+.maplegend{position:absolute;left:10px;bottom:22px;z-index:450;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:12px;display:grid;gap:3px;box-shadow:var(--shadow)}
+.maplegend div{display:flex;gap:6px;align-items:center}
+.maplegend i{width:16px;height:4px;border-radius:2px;display:inline-block}
+.maplegend i.park{height:10px;background:var(--park);border:1px solid var(--parkline)}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:7px 14px;border-radius:999px;font-size:13px;z-index:900}
+
+.v3d{position:fixed;inset:0;z-index:1000;background:var(--paper);display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr)}
+.v3dBar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+.v3dBar h2{margin:0;font-family:var(--f-disp);font-size:24px;font-weight:700}
+.v3dBar button{border:1px solid var(--line);background:var(--card);border-radius:999px;width:36px;height:36px;cursor:pointer;font-size:18px;line-height:1}
+.v3dCanvas{position:relative;min-height:0;background:#bcd9ec;overflow:hidden}
+.v3dCanvas canvas{display:block;width:100%;height:100%;touch-action:none}
+.v3dMsg{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;color:#15241d;padding:16px;text-align:center}
+.v3dFlyInfo{position:absolute;left:12px;top:12px;background:rgba(21,36,29,.82);color:#fff;border-radius:8px;padding:3px 9px;font-family:var(--f-mono);font-size:12.5px}
+.v3dFlyInfo:empty{display:none}
+.v3dFlyInfo{max-width:calc(100% - 24px);line-height:1.45}
+.v3dWalkUI{position:absolute;left:12px;right:12px;bottom:44px;max-width:620px;background:rgba(21,36,29,.84);color:#fff;border-radius:12px;padding:8px 10px;display:grid;gap:6px}
+.v3dWalkUI[hidden]{display:none}
+.v3dWalkRow2{justify-content:flex-start}.v3dWalkRow2 .btn[hidden]{display:none}
+.v3dWalkCard{position:absolute;left:50%;transform:translateX(-50%);top:62px;width:min(440px,calc(100% - 24px));background:rgba(255,255,255,.94);color:#15241d;border-radius:12px;padding:8px 12px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:grid;gap:2px;font-size:13.5px;line-height:1.35}
+.v3dWalkCard[hidden]{display:none}.v3dWalkCard b{font-weight:700}.v3dWalkCard em{font-style:normal;color:#b8660f;margin-right:4px}.v3dWalkCard span{color:#3a4c43}
+.v3dProf{position:relative}.v3dProf svg{display:block;width:100%;height:38px}
+.v3dProf span{position:absolute;right:4px;font-size:10.5px;font-family:var(--f-mono);opacity:.75}#v3dWalkHi{top:0}#v3dWalkLo{bottom:0}
+.v3dWalkRow{display:flex;gap:8px;align-items:center}.v3dWalkRow input{flex:1;min-width:60px;accent-color:#ffb36b}
+.v3d.walking #v3dCloudInfo,.v3d.walking #v3dSrc,.v3d.walking .v3dRow.sun{display:none}
+@media (min-width:960px){.v3dWalkUI{left:auto;right:16px;bottom:48px;width:min(560px,calc(100% - 480px))}}
+.v3dWalkRow .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3);padding:5px 10px;font-size:13px;white-space:nowrap}
+.v3dMsg[hidden],.v3d[hidden],.lb[hidden]{display:none}
+.cloudrow{display:grid;gap:6px;border-top:1px solid var(--line2);padding-top:8px}
+.peaks{display:flex;flex-wrap:wrap;gap:5px}
+.pk{display:inline-flex;align-items:center;gap:5px;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:2px 8px;background:var(--paper)}
+.pk i{width:8px;height:8px;border-radius:50%}.pk.ok i{background:var(--go)}.pk.pt i{background:var(--warn)}.pk.in i{background:var(--muted)}
+.lb{position:fixed;inset:0;z-index:1200;background:rgba(10,16,13,.72);display:grid;place-items:center;padding:16px}
+.lbIn{background:var(--card);border-radius:14px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:14px;position:relative}
+.lbIn figure{margin:0 0 12px}.lbIn img{width:100%;border-radius:8px;display:block}.lbIn figcaption{font-size:13px;color:var(--ink2);margin-top:4px}
+.lbX{position:sticky;top:0;float:right;border:1px solid var(--line);background:var(--card);border-radius:999px;width:34px;height:34px;cursor:pointer;z-index:2}
+.v3dCanvas canvas{filter:contrast(1.04) saturate(1.07)}
+.v3dGrade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 55%,rgba(10,14,20,.28) 100%)}
+.v3dGrade::after{content:"";position:absolute;inset:0;background:url(data:image/png;base64,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);opacity:.05;mix-blend-mode:overlay}
+.v3dStatus{position:absolute;right:12px;top:12px;background:rgba(21,36,29,.78);color:#fff;border-radius:8px;padding:3px 9px;font-size:12.5px}
+.v3dStatus:empty{display:none}
+.v3dAttr{position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.88);border-radius:8px;padding:4px 8px;font-size:10.5px;color:#15241d;max-width:calc(100% - 16px)}
+.v3dAttr img{height:16px;width:auto;flex:none}
+@media (min-width:960px){.v3dAttr{bottom:12px;right:12px}}
+@media (max-width:959px){.v3dAttr span{display:none}}
+.v3dCtl{padding:10px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));display:grid;gap:8px;border-top:1px solid var(--line);background:var(--card)}
+.v3dStages{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.v3dRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.v3dRow.sun input{flex:1;min-width:140px;accent-color:var(--accent)}
+.v3dRow.sun label{font-family:var(--f-mono);font-size:13px;min-width:78px}
+@media (min-width:960px){.v3d{grid-template-rows:auto 1fr}.v3dCtl{position:absolute;left:16px;bottom:16px;width:420px;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}}
+.btn3d{display:inline-flex;gap:6px;align-items:center}
+.btn3d svg{width:18px;height:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app mode-list" id="app">
+  <header class="top">
+    <div class="brandrow">
+      <div class="brand"><b>Trailpost<span class="post">HK</span></b><span id="tagline"></span></div>
+      <div class="lang" role="group" aria-label="Language">
+        <button id="lang-en" type="button" aria-pressed="true">EN</button>
+        <button id="lang-zh" type="button" aria-pressed="false">繁</button>
+      </div>
+    </div>
+    <div class="days" id="days" role="group"></div>
+  </header>
+  <div class="main">
+    <section class="pane" id="pane"></section>
+    <section class="mapwrap" id="mapwrap"><div id="map"></div><div class="maplegend" id="legend"></div></section>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</div>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Camera photos"><div class="lbIn"><button type="button" class="lbX" id="lbX" aria-label="Close">✕</button><div id="lbBody"></div></div></div>
+<div class="v3d" id="v3d" hidden role="dialog" aria-modal="true" aria-labelledby="v3dTitle">
+  <div class="v3dBar"><h2 id="v3dTitle">Lantau Peak in 3D</h2><button id="v3dClose" type="button">✕</button></div>
+  <div class="v3dCanvas" id="v3dCanvas"><div class="v3dMsg" id="v3dMsg" hidden></div><div class="v3dFlyInfo" id="v3dFlyInfo"></div><div class="v3dGrade" aria-hidden="true"></div><div class="v3dStatus" id="v3dStatus" aria-live="polite"></div>
+    <div class="v3dWalkUI" id="v3dWalkUI" hidden><div class="v3dProf"><span id="v3dWalkHi"></span><svg id="v3dWalkProf" viewBox="0 0 300 38" preserveAspectRatio="none" aria-hidden="true"></svg><span id="v3dWalkLo"></span></div><div class="v3dWalkRow"><button class="btn" id="v3dWalkPlay" type="button"></button><input type="range" id="v3dWalkPos" min="0" max="1000" value="0" aria-label="Position along the stage"><button class="btn" id="v3dWalkSpd" type="button"></button></div><div class="v3dWalkRow v3dWalkRow2"><button class="btn" id="v3dWalkSnd" type="button"></button><button class="btn" id="v3dWalkGyro" type="button" hidden></button></div></div>
+    <div class="v3dWalkCard" id="v3dWalkCard" hidden aria-live="polite"></div>
+    <div class="v3dAttr"><img src="l3/landsd_logo.svg" alt="Lands Department"><span>Aerial Photograph from Lands Department · Terrain from Lands Department · © OpenStreetMap contributors</span></div></div>
+  <div class="v3dCtl"><div class="v3dStages" id="v3dStages"></div>
+    <div class="v3dRow"><button class="btn primary" id="v3dWalk" type="button"></button><button class="btn primary" id="v3dFly" type="button"></button><button class="btn" id="v3dLook" type="button"></button><button class="btn" id="v3dEx" type="button"></button><button class="btn" id="v3dRoute" type="button"></button><button class="btn" id="v3dTrees" type="button"></button><button class="btn" id="v3dClouds" type="button"></button><button class="btn primary" id="v3dBridge" type="button"></button><button class="btn" id="v3dCam" type="button"></button></div><div class="hint" id="v3dCloudInfo"></div>
+    <div class="v3dRow sun"><label for="v3dSun" id="v3dSunLbl"></label><input type="range" id="v3dSun" min="360" max="1170" step="5"><span class="hint" id="v3dSunInfo"></span></div>
+    <div class="hint" id="v3dHint"></div><div class="meta" id="v3dSrc"></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+/*DATA*/
+</script>
+<script>
+(function(){
+const D=window.HK_ROUTES, BASE=window.HK_BASE;
+let COND=window.HK_COND;
+const ROUTES=D.routes, TRAILS=D.trails;
+const byId=Object.fromEntries(ROUTES.map(r=>[r.id,r]));
+const trailById=Object.fromEntries(TRAILS.map(t=>[t.id,t]));
+const DAYCOLOR='#8a6d1f';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem('tp_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('tp_'+k,JSON.stringify(v))}catch(e){}}};
+
+const S={lang:store.get('lang','en'),day:null,filter:store.get('filter','all'),view:'list',sel:null,tab:'list',whatif:[],post:'',lastPost:null};
+const ZH=()=>S.lang==='zh';
+const T=(en,zh)=>ZH()?zh:en;
+const F=(o,k)=>o?(ZH()?(o[k+'_zh']??o[k+'_en']):(o[k+'_en']??o[k+'_zh'])):'';
+
+/* ---------- time helpers (Hong Kong, UTC+8, no DST) ---------- */
+function hkNow(){const d=new Date();return new Date(d.getTime()+ (8*60+d.getTimezoneOffset())*60000);}
+function sunTimes(y,m,d){ // returns {rise,set} minutes after local midnight, HK
+  const lat=22.3,lon=114.17,zenith=90.833,rad=Math.PI/180;
+  const N=Math.floor(275*m/9)-Math.floor((m+9)/12)*(1+Math.floor((y-4*Math.floor(y/4)+2)/3))+d-30;
+  function calc(rising){
+    const lngHour=lon/15, t=N+((rising?6:18)-lngHour)/24;
+    const M=0.9856*t-3.289;
+    let Lx=M+1.916*Math.sin(M*rad)+0.020*Math.sin(2*M*rad)+282.634;Lx=(Lx+360)%360;
+    let RA=Math.atan(0.91764*Math.tan(Lx*rad))/rad;RA=(RA+360)%360;
+    RA=RA+(Math.floor(Lx/90)*90-Math.floor(RA/90)*90);RA/=15;
+    const sinDec=0.39782*Math.sin(Lx*rad),cosDec=Math.cos(Math.asin(sinDec));
+    const cosH=(Math.cos(zenith*rad)-sinDec*Math.sin(lat*rad))/(cosDec*Math.cos(lat*rad));
+    let H=rising?360-Math.acos(cosH)/rad:Math.acos(cosH)/rad;H/=15;
+    const Tt=H+RA-0.06571*t-6.622;let UT=(Tt-lngHour+24)%24;
+    return Math.round(((UT+8)%24)*60);
+  }
+  return {rise:calc(true),set:calc(false)};
+}
+const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+
+/* ---------- HKO warnings ---------- */
+const WNAME={
+ WFIREY:['Yellow fire danger','黃色火災危險警告','y'],WFIRER:['Red fire danger','紅色火災危險警告','r'],
+ WFROST:['Frost warning','霜凍警告','g'],WHOT:['Very hot weather','酷熱天氣警告','r'],WCOLD:['Cold weather','寒冷天氣警告','g'],
+ WMSGNL:['Strong monsoon signal','強烈季候風信號','g'],WRAINA:['Amber rainstorm','黃色暴雨警告','a'],WRAINR:['Red rainstorm','紅色暴雨警告','r'],
+ WRAINB:['Black rainstorm','黑色暴雨警告','b'],WL:['Landslip warning','山泥傾瀉警告','a'],WTS:['Thunderstorm warning','雷暴警告','y'],
+ WTMW:['Tsunami warning','海嘯警告','r'],TC1:['Typhoon signal No. 1','一號戒備信號','g'],TC3:['Strong wind signal No. 3','三號強風信號','b'],
+ TC8NE:['Gale signal No. 8 NE','八號東北烈風或暴風信號','b'],TC8SE:['Gale signal No. 8 SE','八號東南烈風或暴風信號','b'],
+ TC8NW:['Gale signal No. 8 NW','八號西北烈風或暴風信號','b'],TC8SW:['Gale signal No. 8 SW','八號西南烈風或暴風信號','b'],
+ TC9:['Storm signal No. 9','九號烈風或暴風風力增強信號','b'],TC10:['Hurricane signal No. 10','十號颶風信號','b']
+};
+const wLabel=c=>WNAME[c]?T(WNAME[c][0],WNAME[c][1]):c;
+
+/* ---------- planning context ---------- */
+function dayList(){
+  const now=hkNow();const out=[{i:0,now:true,date:now}];
+  (COND.forecast||[]).forEach((f,k)=>{const y=+f.date.slice(0,4),m=+f.date.slice(4,6),d=+f.date.slice(6,8);out.push({i:k+1,now:false,date:new Date(y,m-1,d),f})});
+  // keep forecast days that are today or later
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return out.filter(x=>x.now||x.date>=today).slice(0,4);
+}
+function ctx(){
+  const days=dayList();const day=days.find(x=>x.i===S.day)||days[0];
+  const d=day.date;const st=sunTimes(d.getFullYear(),d.getMonth()+1,d.getDate());
+  const now=hkNow();
+  const warnings=day.now?[...(COND.warnings||[]),...S.whatif]:[...S.whatif];
+  const hktemp=(COND.temps||{})['Hong Kong Observatory'];
+  const maxT=day.now?Math.max(hktemp||0,...Object.values(COND.temps||{}).map(Number).filter(Number.isFinite)):day.f.max;
+  return {day,cloud:cloudFor(day),warnings:[...new Set(warnings)],maxT,psr:day.now?null:day.f.psr,sunset:st.set,sunrise:st.rise,nowMin:day.now?now.getHours()*60+now.getMinutes():null};
+}
+
+/* ---------- safety engine ---------- */
+function evaluate(r,c){
+  const R=[];const add=(lvl,en,zh)=>R.push({lvl,en,zh});
+  const W=new Set(c.warnings);const has=(...k)=>k.some(x=>W.has(x));
+  const hours=r.hours||2,stars=r.stars||2;
+  if(has('TC3','TC8NE','TC8SE','TC8NW','TC8SW','TC9','TC10')) add(2,'Typhoon signal No. 3 or higher: stay off the hills. Country park facilities close and transport stops.','三號或以上熱帶氣旋警告信號：切勿上山。郊野公園設施關閉，交通或會停駛。');
+  else if(has('TC1')){ if(r.ferry) add(2,'Typhoon signal No. 1: ferries and kaitos may stop without much notice.','一號戒備信號：渡輪及街渡或會隨時停航。'); else if(r.exposed&&hours>=3) add(2,'Typhoon signal No. 1 and a long exposed route: winds can rise fast and signals can go up.','一號戒備信號，路線長而開揚：風勢可急速增強，信號或會提升。'); else add(1,'Typhoon signal No. 1 in force: keep it short and check for higher signals.','一號戒備信號生效：宜選短線，留意信號會否提升。');}
+  if(has('WRAINB','WRAINR')) add(2,'Red or black rainstorm: flash floods and landslides. Do not start.','紅色或黑色暴雨警告：山洪及山泥傾瀉風險，切勿出發。');
+  else if(has('WRAINA')) add(stars>=4?2:1,'Amber rainstorm: streams rise fast and steps get slippery.','黃色暴雨警告：溪水急漲，石級濕滑。');
+  if(has('WL')) add(2,'Landslip warning: slopes may fail. Avoid hill trails.','山泥傾瀉警告：斜坡隨時塌下，避免上山。');
+  if(has('WTS')) add(r.exposed?2:1,r.exposed?'Thunderstorm warning and an exposed ridge or peak: lightning risk.':'Thunderstorm warning: have a way down and stay off open ground.',r.exposed?'雷暴警告，路線有開揚山脊或山頂：有雷擊危險。':'雷暴警告：預留撤退路線，避開空曠地方。');
+  if(has('WTMW')&&r.coastal) add(2,'Tsunami warning: stay away from the shore.','海嘯警告：遠離海岸。');
+  if(has('WMSGNL')&&(r.ferry||r.exposed)) add(1,r.ferry?'Strong monsoon: rough seas, ferries and kaitos may be cancelled.':'Strong monsoon: strong gusts on open ridges.',r.ferry?'強烈季候風：海面大浪，渡輪及街渡或取消。':'強烈季候風：開揚山脊陣風強勁。');
+  if(has('WFIRER')) add(1,'Red fire danger: extreme hill-fire risk. No fires, no smoking; watch for smoke.','紅色火災危險警告：山火風險極高。切勿生火或吸煙，留意煙霧。');
+  if(has('WFROST','WCOLD')&&(r.max_ele||0)>=500) add(1,'Cold or frost: high ground can be icy and near freezing.','寒冷或霜凍：高地可能結冰，氣溫接近冰點。');
+  // heat
+  const hot=has('WHOT')||(c.maxT!=null&&c.maxT>=33);
+  if(hot){
+    const t=c.maxT;const very=t>=35;
+    if(r.exposed&&r.nowater&&hours>=4) add(2,`Very hot (${t}°C), little shade and no water for ${hours} h. Heat stroke risk is high.`,`酷熱（${t}°C），少遮蔭而${hours}小時無補給，中暑風險高。`);
+    else if(very&&r.exposed&&hours>=3) add(2,`${t}°C forecast on an exposed ${hours} h route. Heat stroke risk is high.`,`預測${t}°C，路線開揚需時${hours}小時，中暑風險高。`);
+    else if(r.exposed||hours>=3) add(1,`Very hot (${t}°C)${r.exposed?' with little shade':''}. Start early and carry extra water.`,`酷熱（${t}°C）${r.exposed?'，少遮蔭':''}。宜早出發，多帶食水。`);
+  }
+  if(c.psr&&/high/i.test(c.psr)&&stars>=(/medium/i.test(c.psr)?4:3)) add(1,`Rain likely (${c.psr} chance): slippery rock and stream crossings.`,`有雨機會${psrZh(c.psr)}：岩石濕滑，溪澗難過。`);
+  const cc=cloudCheck(r,c.cloud);
+  if(cc&&cc.kind==='in') add((r.exposed||stars>=3)?1:-1,`Cloud down to about ${cc.base} m${c.cloud.src==='taf'?' is forecast':''}: the top of this route (${r.max_ele} m) will likely be in cloud. Little view, wet rock, harder to see the path.`,`${c.cloud.src==='taf'?'預測':''}雲底低至約${cc.base}米：路線最高點（${r.max_ele}米）很可能在雲中，視野差、岩石濕滑、較難看清山徑。`);
+  else if(cc&&cc.kind==='patches') R.push({lvl:-1,en:`Some cloud around ${cc.base} m: passing cloud may cover the higher parts.`,zh:`約${cc.base}米有零散雲，較高路段或會有雲飄過。`});
+  if(r.notice) add(1,'Part of the route or a nearby path is closed. Follow the diversion signs.','路段或附近路徑部分封閉，請按指示繞道。');
+  // daylight
+  const need=Math.round(hours*60*1.15);
+  if(c.nowMin!=null){
+    if(c.nowMin>c.sunset||c.nowMin<c.sunrise-30) add(stars>=4?2:1,`It is dark (sunset was ${hm(c.sunset)}). Only with a headtorch and on paths you know.`,`天色已黑（日落${hm(c.sunset)}）。只宜帶頭燈並走熟悉路線。`);
+    else if(c.nowMin+need>c.sunset) add(1,`Starting now you would finish after sunset (${hm(c.sunset)}).`,`現在出發會在日落（${hm(c.sunset)}）後才完成。`);
+  }
+  if(has('WFIREY')&&!has('WFIRER')) R.push({lvl:-1,en:'Yellow fire danger: no fires outside BBQ sites.',zh:'黃色火災危險警告：燒烤場以外切勿生火。'});
+  const lvl=Math.max(0,...R.map(x=>x.lvl));
+  const water=Math.max(1,Math.ceil(hours*(hot?0.8:0.5)*2)/2);
+  const latest=c.sunset-need-30;
+  R.sort((a,b)=>b.lvl-a.lvl);
+  return {lvl,reasons:R,water,latest,need};
+}
+function psrZh(p){return ({'High':'高','Medium High':'中高','Medium':'中','Medium Low':'中低','Low':'低'})[p]||p}
+const LVL=[['Good to go','適合出發'],['Go with care','小心出發'],['Avoid today','今日不宜']];
+const LVs=[['Go','適合'],['Care','小心'],['Avoid','不宜']];
+
+/* ---------- names ---------- */
+function trailName(r){if(r.kind==='day')return T('Day hike','一日遊');const t=trailById[r.trail];return F(t,'name');}
+function rTitle(r){if(r.kind==='day')return F(r,'name');return `${F(r,'start')} → ${F(r,'end')}`}
+function rLabel(r){return r.kind==='day'?F(r,'name'):`${trailName(r)} ${T('Stage ','第')}${r.n}${T('','段')}`}
+function rColor(r){return r.kind==='day'?DAYCOLOR:trailById[r.trail].color}
+const starStr=n=>'★'.repeat(n)+'☆'.repeat(Math.max(0,5-n));
+const diffName=n=>T(['','Easy','Moderate','Demanding','Difficult','Very difficult'][n],['','容易','普通','費力','難行','非常難行'][n]);
+
+/* ---------- posts index ---------- */
+const POSTS={};
+ROUTES.forEach(r=>(r.post_list||[]).forEach(p=>{(POSTS[p[0]]=POSTS[p[0]]||[]).push({code:p[0],lat:p[1],lon:p[2],km:p[3],interp:!!p[4],r})}));
+
+/* ---------- conditions from db (newer than the embedded snapshot) ---------- */
+const DBP=(async()=>{try{if(!window.claude||!window.claude.use)return null;return await window.claude.use('db')}catch(e){return null}})();
+(async()=>{try{const db=await DBP;if(!db)return;
+  const snap=await db.doc('conditions/current').get();if(snap&&snap.exists){const d=snap.data();if(d&&d.fetchedAt&&(!COND.fetchedAt||d.fetchedAt>COND.fetchedAt)){COND=d;render();if(typeof V!=='undefined'&&V.loaded){buildClouds();relabel();render3DChrome()}}}}catch(e){}})();
+let CAMS=null;
+async function loadCams(){if(CAMS)return CAMS;try{const db=await DBP;if(!db)return null;const s=await db.doc('conditions/cams').get();if(s&&s.exists){CAMS=s.data();return CAMS}}catch(e){}return null}
+const COVN={FEW:['a few clouds','少量雲'],SCT:['scattered cloud','疏雲'],BKN:['mostly cloudy','多雲'],OVC:['overcast','密雲'],VV:['fog or very low cloud','霧或極低雲']};
+function cloudFor(day){ // cloud layers for the planning day: airport observation now, airport forecast (TAF) for tomorrow
+  const cl=COND.cloud;if(!cl)return null;
+  if(day.now)return {layers:cl.layers||[],src:'obs',time:cl.obsTime};
+  const d=day.date;const t0=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),0)/1000,t1=t0+10*3600;// 08:00-18:00 HKT = 00-10 UTC
+  const gs=(cl.taf||[]).filter(g=>g.from<t1&&g.to>t0);if(!gs.length)return null;
+  const layers=[];gs.forEach(g=>(g.clouds||[]).forEach(c=>layers.push(c)));return {layers,src:'taf'};
+}
+function cloudCheck(r,cf){ // lowest heavy cloud base vs the route's highest point
+  if(!cf||!r.max_ele)return null;const ls=cf.layers.slice().sort((a,b)=>a.base_m-b.base_m);
+  const heavy=ls.find(l=>l.frac>=0.75&&l.base_m<r.max_ele),light=ls.find(l=>l.base_m<r.max_ele);
+  return heavy?{kind:'in',base:heavy.base_m}:light?{kind:'patches',base:light.base_m}:null;
+}
+function openCams(focus){
+  const lb=$('#lb');lb.hidden=false;const box=$('#lbBody');box.innerHTML=`<p class="hint">${T('Loading camera photos…','正在載入相片…')}</p>`;
+  loadCams().then(c=>{if(!c||!c.cams||!c.cams.length){box.innerHTML=`<p>${T('Camera photos are not available right now.','暫時未能提供相片。')}</p>`;return}
+    const list=focus?c.cams.slice().sort((a,b)=>(b.id===focus)-(a.id===focus)):c.cams;
+    box.innerHTML=list.map(k=>`<figure><img src="${k.img}" alt="${esc(T(k.en,k.zh))}"><figcaption>${esc(T(k.en,k.zh))}</figcaption></figure>`).join('')+`<p class="meta">${T('Photos: Hong Kong Observatory. Updated','相片：香港天文台。更新時間')} ${new Date(c.fetchedAt).toLocaleString(ZH()?'zh-HK':'en-GB',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short',timeZone:'Asia/Hong_Kong'})}</p>`});
+}
+
+/* ---------- rendering ---------- */
+function setLang(l){S.lang=l;store.set('lang',l);document.documentElement.lang=l==='zh'?'zh-HK':'en';render();drawMap(true);if(typeof V!=='undefined'&&V.loaded){relabel();applyStage(false);render3DChrome()}}
+$('#lang-en').onclick=()=>setLang('en');$('#lang-zh').onclick=()=>setLang('zh');
+
+function renderTop(){
+  $('#lang-en').setAttribute('aria-pressed',!ZH());$('#lang-zh').setAttribute('aria-pressed',ZH());
+  $('#tagline').textContent=T('Hong Kong trails, checked against today','香港山徑．按天氣出發');
+  const days=dayList();if(S.day==null){const h=hkNow().getHours();S.day=(h>=15&&days[1])?days[1].i:0;}
+  $('#days').setAttribute('aria-label',T('Planning day','計劃日子'));
+  $('#days').innerHTML=days.map(d=>{
+    const wd=d.date.toLocaleDateString(ZH()?'zh-HK':'en-GB',{weekday:'short'});
+    const dm=d.date.toLocaleDateString(ZH()?'zh-HK':'en-GB',{day:'numeric',month:'short'});
+    return `<button class="day" type="button" data-day="${d.i}" aria-pressed="${S.day===d.i}"><small>${d.now?T('Right now','現在'):esc(wd)}</small><strong>${d.now?esc(dm):esc(dm)}</strong></button>`}).join('');
+  $('#days').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.day=+b.dataset.day;render();drawMap()});
+}
+function condCard(c){
+  const d=c.day;let h='';
+  const ageH=(Date.now()-new Date(COND.fetchedAt).getTime())/3.6e6;
+  if(d.now){
+    const ws=c.warnings;
+    h+=`<div class="condrow">${ws.length?ws.map(w=>`<span class="wchip ${WNAME[w]?WNAME[w][2]:'g'}"><i></i>${esc(wLabel(w))}${S.whatif.includes(w)?T(' (preview)','（模擬）'):''}</span>`).join(''):`<span class="wchip g"><i></i>${T('No warnings in force','現時沒有警告')}</span>`}</div>`;
+    const t=(COND.temps||{})['Hong Kong Observatory'];
+    h+=`<div class="wx"><strong>${t??'–'}°C</strong>${T('at the Observatory','天文台')} · ${T('humidity','濕度')} ${COND.humidity??'–'}% · ${T('sunset','日落')} ${hm(c.sunset)}</div>`;
+    h+=`<div class="wx">${esc(ZH()?COND.today_zh:COND.today_en)}</div>`;
+    h+=cloudBlock(c);
+  }else{
+    const f=d.f;
+    h+=`<div class="wx"><strong>${f.min}–${f.max}°C</strong>${T('rain chance','降雨機會')} ${esc(ZH()?psrZh(f.psr):f.psr)} · ${T('sunset','日落')} ${hm(c.sunset)}</div>`;
+    h+=`<div class="wx">${esc(ZH()?f.wx_zh:f.wx_en)} ${esc(ZH()?f.wind_zh:f.wind_en)}</div>`;
+    h+=cloudBlock(c);
+    if(S.whatif.length) h+=`<div class="condrow">${S.whatif.map(w=>`<span class="wchip ${WNAME[w][2]}"><i></i>${esc(wLabel(w))}${T(' (preview)','（模擬）')}</span>`).join('')}</div>`;
+    h+=`<div class="meta">${T('Warnings are issued at short notice. Check again on the morning.','警告可隨時發出，出發當日早上請再查看。')}</div>`;
+  }
+  if(ageH>3) h+=`<div class="stale">${T(`Weather data is ${Math.round(ageH)} h old. Check the Observatory before you go.`,`天氣資料已是${Math.round(ageH)}小時前，出發前請查閱天文台。`)}</div>`;
+  const opts=Object.keys(WNAME).filter(k=>!c.warnings.includes(k)).map(k=>`<option value="${k}">${esc(wLabel(k))}</option>`).join('');
+  h+=`<div class="whatif"><label for="wi">${T('Preview a warning:','模擬警告：')}</label><select id="wi"><option value="">${T('choose…','選擇…')}</option>${opts}</select>${S.whatif.length?`<button class="linkbtn" id="wiclear" type="button">${T('Clear preview','清除模擬')}</button>`:''}</div>`;
+  const when=new Date(COND.fetchedAt);
+  h+=`<div class="meta">${T('Hong Kong Observatory data','香港天文台資料')} · ${T('updated','更新')} ${when.toLocaleString(ZH()?'zh-HK':'en-GB',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short',timeZone:'Asia/Hong_Kong'})} · <a href="https://www.hko.gov.hk/${ZH()?'tc':'en'}/wxinfo/dailywx/wxwarntoday.htm" target="_blank" rel="noopener">${T('Warnings now','最新警告')}</a></div>`;
+  return `<section class="cond" aria-label="${T('Conditions','天氣情況')}"><h2>${d.now?T('Conditions now','現時天氣'):T('Forecast','天氣預測')}</h2>${h}</section>`;
+}
+function cloudBlock(c){
+  const cf=c.cloud;if(!cf)return '';const ls=cf.layers.slice().sort((a,b)=>a.base_m-b.base_m).filter(l=>l.base_m<2500);
+  const desc=ls.length?ls.map(l=>`${T(...(COVN[l.cover]||[l.cover,l.cover]))} ${T('at','於')} ${l.base_m} m`).join(T(', ','，')):T('no low cloud reported','沒有低雲');
+  const when=cf.time?new Date(cf.time).toLocaleTimeString(ZH()?'zh-HK':'en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Hong_Kong'}):'';
+  let h=`<div class="cloudrow"><div class="wx"><b>${T('Clouds','雲況')}:</b> ${esc(desc)} <span class="meta">(${cf.src==='obs'?T(`airport report ${when}`,`機場報告 ${when}`):T('airport forecast, daytime','機場預測，日間')})</span></div>`;
+  if(cf.src==='obs'&&COND.cloud.peaks){const ST={clear:['clear','無雲','ok'],patches:['passing cloud','零散雲','pt'],in:['in cloud','雲中','in']};
+    h+=`<div class="peaks">${COND.cloud.peaks.map(p=>{const s=ST[p.status]||ST.clear;return `<span class="pk ${s[2]}" title="${p.m} m"><i></i>${esc(T(p.en,p.zh))} · ${T(s[0],s[1])}</span>`}).join('')}</div>
+    <div><button class="linkbtn" type="button" id="camsBtn">${T('See the hills now: live camera photos','即時相片：看看山上情況')}</button></div>`}
+  return h+'</div>';
+}
+function bindCond(){const cb=$('#camsBtn');if(cb)cb.onclick=()=>openCams();const s=$('#wi');if(s)s.onchange=()=>{if(s.value){S.whatif=[s.value];render();drawMap()}};const b=$('#wiclear');if(b)b.onclick=()=>{S.whatif=[];render();drawMap()};}
+
+function routeRow(r,c){
+  const e=evaluate(r,c);const why=e.reasons.find(x=>x.lvl>=1);
+  const badge=r.kind==='day'?`<span class="num" style="background:${rColor(r)}">${esc((F(r,'name')||'?').trim()[0])}</span>`:`<span class="num" style="background:${rColor(r)}">${r.n}</span>`;
+  return `<button class="row" type="button" data-id="${r.id}">${badge}<span><span class="rtitle">${esc(rTitle(r))}</span>
+  <span class="rsub"><span>${r.km} km</span><span>${r.hours} h</span>${r.ascent!=null?`<span>↑${r.ascent} m</span>`:''}<span class="stars" aria-label="${diffName(r.stars)}">${starStr(r.stars)}</span></span>
+  ${why?`<span class="rwhy" style="color:var(${why.lvl===2?'--bad':'--warn'})">${esc(T(why.en,why.zh))}</span>`:''}</span>
+  <span class="pill p${e.lvl}"><i></i>${T(...LVs[e.lvl])}</span></button>`;
+}
+function renderList(){
+  const c=ctx();
+  const chips=[['all',T('All','全部'),null],...TRAILS.map(t=>[t.id,F(t,'name'),t.color]),['day',T('Day hikes','一日遊'),DAYCOLOR]];
+  let h=deskTabs()+condCard(c);
+  h+=`<div class="filters" role="group" aria-label="${T('Filter trails','篩選路線')}">${chips.map(([k,n,col])=>`<button class="fchip" type="button" data-f="${k}" aria-pressed="${S.filter===k}">${col?`<i style="background:${col}"></i>`:''}${esc(n)}</button>`).join('')}</div>`;
+  const shown=ROUTES.filter(r=>S.filter==='all'||(S.filter==='day'?r.kind==='day':r.trail===S.filter));
+  const ev=shown.map(r=>evaluate(r,c).lvl);
+  h+=`<div class="summary"><span><b style="color:var(--go)">${ev.filter(x=>x===0).length}</b> ${T('good to go','適合')}</span><span><b style="color:var(--warn)">${ev.filter(x=>x===1).length}</b> ${T('with care','小心')}</span><span><b style="color:var(--bad)">${ev.filter(x=>x===2).length}</b> ${T('avoid','不宜')}</span></div>`;
+  TRAILS.filter(t=>S.filter==='all'||S.filter===t.id).forEach(t=>{
+    const rs=t.stages.map(id=>byId[id]);
+    h+=`<div class="group"><div class="ghead"><div class="gtitle"><h3>${esc(F(t,'name'))}<small>${t.km} km · ${rs.length} ${T('stages','段')}</small></h3><span>${t.prefix}001–${t.prefix}${String(Math.max(...rs.flatMap(r=>(r.post_list||[]).map(p=>+p[0].slice(1))))).padStart(3,'0')}</span></div>
+    <div class="strip" aria-label="${T('Stages by condition','各段情況')}">${rs.map(r=>{const l=evaluate(r,c).lvl;return `<button type="button" class="l${l}" data-id="${r.id}" style="flex:${r.km}" title="${esc(rLabel(r)+' · '+T(...LVs[l]))}">${r.n}</button>`}).join('')}</div></div>
+    ${t.id==='lantau'?`<div><button class="btn btn3d" type="button" id="lantau3d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19l6-10 4 6 3-4 7 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9l1.5 2.5" stroke="currentColor" stroke-width="1.8"/></svg>${T('Lantau Peak in 3D','鳳凰山立體地形')}</button></div>`:''}
+    <div class="rows">${rs.map(r=>routeRow(r,c)).join('')}</div></div>`;
+  });
+  if(S.filter==='all'||S.filter==='day'){
+    const rs=ROUTES.filter(r=>r.kind==='day').sort((a,b)=>evaluate(a,c).lvl-evaluate(b,c).lvl||a.stars-b.stars);
+    h+=`<div class="group"><div class="ghead"><div class="gtitle"><h3>${T('Day hikes','一日遊')}<small>${rs.length} ${T('walks','條路線')}</small></h3></div></div><div class="rows">${rs.map(r=>routeRow(r,c)).join('')}</div></div>`;
+  }
+  h+=`<p class="meta" style="margin-top:18px">${T('Routes, times, difficulty and distance posts from AFCD (hiking.gov.hk). Map from OpenStreetMap. Transport checked Sept 2026; always check before travel.','路線、時間、難度及標距柱資料來自漁護署「郊野樂行」。地圖來自OpenStreetMap。交通資料於2026年9月核對，出發前請再查閱。')}</p>`;
+  $('#pane').innerHTML=h;bindCond();bindDesk();
+  $('#pane').querySelectorAll('.fchip').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;store.set('filter',S.filter);render();drawMap()});
+  $('#pane').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>openRoute(b.dataset.id));
+  const l3=$('#lantau3d');if(l3){l3.onclick=()=>open3D('lantau-3');['pointerenter','focus','touchstart'].forEach(ev=>l3.addEventListener(ev,warm3D,{once:true,passive:true}))}
+}
+function profileSVG(r){
+  if(!r.profile) return `<p class="hint">${T('No height profile for this walk.','此路線沒有高度圖。')}</p>`;
+  const W=600,H=190,pl=40,pr=10,pt=14,pb=30;const p=r.profile;const len=r.gpx_km||r.km;
+  const mx=Math.max(...p),mn=Math.min(0,...p);const top=Math.ceil((mx+20)/100)*100;
+  const x=i=>pl+(W-pl-pr)*i/(p.length-1),y=e=>pt+(H-pt-pb)*(1-(e-mn)/(top-mn));
+  const pts=p.map((e,i)=>`${x(i).toFixed(1)},${y(e).toFixed(1)}`).join(' ');
+  let g='';for(let e=0;e<=top;e+=top>600?200:100){g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(e)}" y2="${y(e)}" stroke="var(--line2)"/><text x="${pl-4}" y="${y(e)+3}" text-anchor="end">${e}</text>`}
+  const posts=r.post_list||[];const every=posts.length>24?6:posts.length>14?4:posts.length>7?2:1;
+  let pk='';posts.forEach((q,i)=>{const px=pl+(W-pl-pr)*Math.min(1,q[3]/len);pk+=`<line x1="${px}" x2="${px}" y1="${H-pb}" y2="${H-pb+4}" stroke="var(--accent)"/>`;if(i%every===0||i===posts.length-1)pk+=`<text class="pt" x="${px}" y="${H-pb+18}" text-anchor="middle">${q[0]}</text>`});
+  const imax=p.indexOf(Math.max(...p));
+  return `<svg class="prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T('Height profile','高度圖')}: ${Math.round(mx)} m ${T('highest','最高')}">
+  ${g}<polygon points="${pl},${y(mn)} ${pts} ${W-pr},${y(mn)}" fill="${rColor(r)}" fill-opacity=".16"/><polyline points="${pts}" fill="none" stroke="${rColor(r)}" stroke-width="2.2" stroke-linejoin="round"/>
+  <circle cx="${x(imax)}" cy="${y(p[imax])}" r="3.5" fill="${rColor(r)}"/><text x="${Math.min(W-40,x(imax)+6)}" y="${y(p[imax])-5}" style="fill:var(--ink);font-weight:600">${p[imax]} m</text>
+  <line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="var(--line)"/>${pk}
+  <text x="${pl}" y="${pt-3}">m</text></svg>`;
+}
+const MODES={bus:['Bus','巴士'],gmb:['Green minibus','綠色小巴'],rmb:['Red minibus','紅色小巴'],ferry:['Ferry','渡輪'],kaito:['Kaito','街渡'],taxi:['Taxi','的士'],mtr:['MTR','港鐵'],tram:['Tram','電車'],cablecar:['Cable car','纜車'],walk:['Walk','步行']};
+function transport(list){
+  if(!list||!list.length) return `<p class="hint">${T('No public transport listed.','沒有公共交通資料。')}</p>`;
+  return list.map(t=>{const m=MODES[t.mode]||[t.mode,t.mode];const short=String(t.route||'').length<=6;
+    return `<div class="tr"><span class="mode ${t.mode}"><small>${esc(T(m[0],m[1]))}</small>${short?`<b>${esc(t.route)}</b>`:''}</span><div>${!short&&t.route?`<div class="from">${esc(t.route)}</div>`:''}<div class="from">${esc(F(t,'from'))}</div><div class="note">${esc(F(t,'note'))}</div></div></div>`}).join('');
+}
+function renderDetail(){
+  const r=byId[S.sel];const c=ctx();const e=evaluate(r,c);
+  const hp=r.high_point&&(r.high_point.name_en||r.high_point.m)?`${F(r.high_point,'name')||''}${r.high_point.m?` ${r.high_point.m} m`:''}`:(r.max_ele?`${r.max_ele} m`:'–');
+  let h=deskTabs()+`<button class="back" type="button" id="back">← ${T('All trails','所有路線')}</button>
+  <div class="dhead"><div class="eyebrow" style="color:${rColor(r)}"><i style="background:${rColor(r)}"></i>${esc(rLabel(r))}</div><h2>${esc(rTitle(r))}</h2></div>
+  <div class="verdict v${e.lvl}"><div class="vt">${T(...LVL[e.lvl])} · ${esc(c.day.now?T('now','現在'):c.day.date.toLocaleDateString(ZH()?'zh-HK':'en-GB',{weekday:'long',day:'numeric',month:'short'}))}</div>
+  ${e.reasons.length?`<ul>${e.reasons.map(x=>`<li>${esc(T(x.en,x.zh))}</li>`).join('')}</ul>`:`<div>${T('No warnings or forecast issues for this route.','此路線沒有警告或天氣問題。')}</div>`}
+  <div>${T(`Carry about ${e.water} L of water. `,`建議帶約${e.water}公升水。`)}${c.nowMin==null||c.nowMin<c.sunset?T(`Start by ${hm(e.latest)} to finish before sunset (${hm(c.sunset)}).`,`${hm(e.latest)}前出發，可於日落（${hm(c.sunset)}）前完成。`):''}</div></div>
+  <div class="stats"><div class="stat"><small>${T('Distance','距離')}</small><b>${r.km}<em>km</em></b></div><div class="stat"><small>${T('Time','時間')}</small><b>${r.hours}<em>h</em></b></div><div class="stat"><small>${T('Climb','總爬升')}</small><b>${r.ascent??'–'}<em>${r.ascent!=null?'m':''}</em></b></div>
+  <div class="stat"><small>${T('Difficulty','難度')}</small><b style="font-size:17px">${diffName(r.stars)}</b><div class="stars">${starStr(r.stars)}</div></div><div class="stat" style="grid-column:span 2"><small>${T('Highest point','最高點')}</small><b style="font-size:18px">${esc(hp)}</b></div></div>
+  <div class="card">${profileSVG(r)}</div>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" type="button" id="showmap">${T('Show on map','在地圖顯示')}</button>${V3D_STAGES.includes(r.id)?`<button class="btn btn3d" type="button" id="show3d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19l6-10 4 6 3-4 7 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9l1.5 2.5" stroke="currentColor" stroke-width="1.8"/></svg>${T('View in 3D','立體地形')}</button>`:''}</div>`;
+  if((F(r,'highlights')||[]).length) h+=`<div class="sec"><h3>${T('Highlights','景點')}</h3><div class="hl">${F(r,'highlights').map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>`;
+  h+=`<div class="sec"><h3>${T('Getting to the start','前往起點')} · ${esc(F(r,'start')||'')}</h3><div class="card">${transport(r.to_start)}</div></div>`;
+  h+=`<div class="sec"><h3>${T('Getting home from the end','由終點回程')} · ${esc(F(r,'end')||'')}</h3><div class="card">${transport(r.from_end)}</div></div>`;
+  const exits=F(r,'exits')||[];
+  h+=`<div class="sec"><h3>${T('On the trail','沿途設施')}</h3><div class="card kv"><div><b>${T('Water and food','食水及補給')}</b>${esc(F(r,'water')||'–')}</div><div><b>${T('Toilets','廁所')}</b>${esc(F(r,'toilets')||'–')}</div>${exits.length?`<div><b>${T('Ways off the trail','中途離開路線')}</b><ul>${exits.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</div></div>`;
+  if(F(r,'safety')) h+=`<div class="sec"><h3>${T('Safety notes','安全提示')}</h3><div class="card">${esc(F(r,'safety'))}</div></div>`;
+  if(r.post_list&&r.post_list.length){const a=r.post_list[0][0],b=r.post_list[r.post_list.length-1][0];
+    h+=`<div class="sec"><h3>${T('Distance posts','標距柱')}</h3><div class="card postrange"><span class="pc">${a}</span>→<span class="pc">${b}</span><span class="hint">${T(`${r.post_list.length} posts, one every 500 m. Tell 999 the number on the nearest one.`,`共${r.post_list.length}支，每500米一支。致電999時請報最近的編號。`)}</span></div></div>`;}
+  if(r.sources&&r.sources.length) h+=`<div class="sec"><h3>${T('Sources','資料來源')}</h3><div class="sources">${r.sources.slice(0,6).map(u=>/^https?:/.test(u)?`<a href="${esc(u.split(' ')[0])}" target="_blank" rel="noopener">${esc(u.split(' ')[0].replace(/^https?:\/\/(www\.)?/,'').slice(0,70))}</a>`:`<span>${esc(u)}</span>`).join('')}</div></div>`;
+  $('#pane').innerHTML=h;bindDesk();
+  $('#back').onclick=()=>{S.view='list';S.sel=null;render();drawMap();$('#pane').scrollTop=0};
+  $('#showmap').onclick=()=>{setTab('map');focusRoute(r)};
+  const b3=$('#show3d');if(b3)b3.onclick=()=>open3D(r.id);
+  if(V3D_STAGES.includes(r.id))setTimeout(warm3D,400);
+}
+function postIcon(code){return `<svg class="postIcon" viewBox="0 0 52 70" aria-hidden="true"><path d="M8 18 L26 8 L44 18 L44 66 L8 66 Z" fill="var(--line)" stroke="var(--ink2)" stroke-width="1.5"/><rect x="11" y="24" width="30" height="16" rx="2" fill="var(--ink)"/><text x="26" y="36" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--paper)">${esc(code)}</text></svg>`}
+function renderSOS(){
+  let h=deskTabs()+`<div class="sosTop"><div style="font-size:13px;letter-spacing:.08em;text-transform:uppercase">${T('Emergency','緊急求救')}</div><div class="n">999</div><p>${T('Call 999 and ask for the police. From a mobile you can also dial 112.','致電999，要求接駁警方。手機亦可撥112。')}</p></div>
+  <div class="sec"><h3>${T('Where am I?','我在哪裏？')}</h3><p class="hint" style="margin:0">${T('Find the nearest distance post (標距柱) and type the number on its plate. Posts stand every 500 m on the four long trails.','找最近的標距柱，輸入柱上編號。四條長途遠足徑每500米設一支。')}</p>
+  <form class="lookup" id="pf" autocomplete="off"><input id="pin" aria-label="${T('Distance post number','標距柱編號')}" placeholder="M131" maxlength="5" value="${esc(S.post)}"><button class="btn primary" type="submit">${T('Find','搜尋')}</button></form>
+  <div class="examples">${['M131','W072','H090','L023'].map(x=>`<button type="button" data-p="${x}">${x}</button>`).join('')}</div></div><div id="pres"></div>
+  <div class="sec"><h3>${T('While you wait','等候救援時')}</h3><div class="card"><ol class="tips">
+  <li>${T('Stay where you are unless it is unsafe. Rescuers search from the post you gave.','除非危險，留在原地。救援人員會由你報的標距柱開始搜索。')}</li>
+  <li>${T('Keep your phone on and save battery. Turn off other apps.','保持手機開機並節省電量，關閉其他程式。')}</li>
+  <li>${T('In heat: get into shade, sip water, cool the neck and armpits.','中暑時：移到陰涼處，慢慢喝水，冷敷頸部及腋下。')}</li>
+  <li>${T('After dark: use a torch or phone light so the helicopter can see you.','天黑後：用電筒或手機燈光，讓直升機看到你。')}</li>
+  </ol></div></div>
+  <p class="meta">${T('Your location cannot be read in this app. The post number is the most reliable way to say where you are.','此應用程式無法讀取你的位置。報標距柱編號是最準確的方法。')}</p>`;
+  $('#pane').innerHTML=h;bindDesk();
+  $('#pf').onsubmit=ev=>{ev.preventDefault();lookupPost($('#pin').value)};
+  $('#pane').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{$('#pin').value=b.dataset.p;lookupPost(b.dataset.p)});
+  if(S.post) lookupPost(S.post,true);
+}
+function lookupPost(raw,quiet){
+  const m=String(raw).toUpperCase().replace(/\s+/g,'').match(/^([MWHL])0*(\d{1,3})$/);
+  const out=$('#pres');S.post=raw;
+  if(!m){out.innerHTML=`<div class="card" style="margin-top:10px">${T('Type a letter and a number, like M131 (MacLehose), W072 (Wilson), H090 (Hong Kong Trail) or L023 (Lantau Trail).','請輸入字母及數字，例如M131（麥理浩徑）、W072（衞奕信徑）、H090（港島徑）或L023（鳳凰徑）。')}</div>`;return}
+  const code=m[1]+String(+m[2]).padStart(3,'0');const hits=POSTS[code];
+  if(!hits){out.innerHTML=`<div class="card" style="margin-top:10px">${T(`${code} is not a post on the four long trails. Check the number, or read the post before or after it.`,`${code}不在四條長途遠足徑上。請核對編號，或讀取前後一支的編號。`)}</div>`;return}
+  const p=hits[0],r=p.r,t=trailById[r.trail];const len=r.gpx_km||r.km;const toEnd=Math.max(0,len-p.km);
+  const nearEnd=toEnd<p.km;
+  const en=`I'm hiking on the ${t.name_en}, Stage ${r.n}, between ${r.start_en} and ${r.end_en}. The nearest distance post is ${code}.`;
+  const zh=`我喺${t.name_zh}第${r.n}段，${r.start_zh}至${r.end_zh}之間，最近嘅標距柱係${code}。`;
+  const both=hits.length>1?`<div class="hint">${T(`This post also marks the start of Stage ${hits[1].r.n}.`,`此柱亦是第${hits[1].r.n}段起點。`)}</div>`:'';
+  const exits=F(r,'exits')||[];
+  out.innerHTML=`<div class="sec"><div class="card" style="display:grid;gap:10px">
+   <div class="post3d">${postIcon(code)}<div><div class="eyebrow" style="color:${t.color}"><i style="background:${t.color}"></i>${esc(F(t,'name'))} · ${T('Stage ','第')}${r.n}${T('','段')}</div>
+   <div style="font-weight:600;font-size:16px">${esc(rTitle(r))}</div>
+   <div class="hint">${T(`${p.km.toFixed(1)} km from the start, ${toEnd.toFixed(1)} km to the end`,`距起點${p.km.toFixed(1)}公里，距終點${toEnd.toFixed(1)}公里`)}${p.interp?T(' (position estimated)',' （位置為估算）'):''}</div>${both}</div></div>
+   <div><b style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">${T('Say this to 999','向999這樣說')}</b><div class="script" id="scr"><p>${esc(en)}</p><p lang="zh-HK">${esc(zh)}</p></div>
+   <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn" type="button" id="copy">${T('Copy','複製')}</button><button class="btn" type="button" id="pmap">${T('Show on map','在地圖顯示')}</button><button class="btn" type="button" id="popen">${T('Stage details','路段詳情')}</button></div></div>
+   <div class="kv"><div><b>${T('Nearest end','較近的一端')}</b>${esc(nearEnd?`${F(r,'end')} (${toEnd.toFixed(1)} km)`:`${F(r,'start')} (${p.km.toFixed(1)} km)`)}</div>${exits.length?`<div><b>${T('Ways off this stage','此段中途出口')}</b><ul>${exits.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</div>
+  </div></div>`;
+  $('#copy').onclick=()=>{const txt=en+'\n'+zh;const done=()=>toast(T('Copied','已複製'));try{navigator.clipboard.writeText(txt).then(done,()=>selectEl($('#scr')))}catch(e){selectEl($('#scr'))}};
+  $('#pmap').onclick=()=>{setTab('map');showPost(p)};
+  $('#popen').onclick=()=>openRoute(r.id);
+  S.lastPost=p;if(!quiet&&matchMedia('(min-width:960px)').matches)showPost(p);
+}
+function selectEl(el){const rg=document.createRange();rg.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(rg);toast(T('Selected. Copy it from here.','已選取，請手動複製。'))}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function deskTabs(){return `<div class="deskTabs" role="group"><button type="button" data-t="list" aria-pressed="${S.view!=='sos'}">${T('Trails','路線')}</button><button type="button" class="sos" data-t="sos" aria-pressed="${S.view==='sos'}">${T('Emergency · 999','緊急 · 999')}</button></div>`}
+function bindDesk(){$('#pane').querySelectorAll('.deskTabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.t))}
+function renderTabs(){
+  const ic={list:'<path d="M4 18l5-9 4 6 3-4 4 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',map:'<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',sos:'<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v6M12 16v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'};
+  const cur=S.tab==='map'?'map':S.view==='sos'?'sos':'list';
+  $('#tabs').innerHTML=[['list',T('Trails','路線')],['map',T('Map','地圖')],['sos','999']].map(([k,n])=>`<button type="button" class="${k}" data-t="${k}" aria-pressed="${cur===k}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[k]}</svg>${n}</button>`).join('');
+  $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+}
+function setTab(t){
+  if(t==='map'){S.tab='map'}else{S.tab='list';if(t==='sos'){S.view='sos'}else if(S.view==='sos'){S.view=S.sel?'detail':'list'}}
+  $('#app').className='app '+(S.tab==='map'?'mode-map':'mode-list');render();
+  if(map)map.invalidateSize();
+}
+function openRoute(id){S.sel=id;S.view='detail';S.tab='list';$('#app').className='app mode-list';render();$('#pane').scrollTop=0;drawMap();if(matchMedia('(min-width:960px)').matches)focusRoute(byId[id])}
+function render(){renderTop();renderTabs();if(S.view==='sos')renderSOS();else if(S.view==='detail'&&S.sel)renderDetail();else renderList();renderLegend()}
+
+/* ---------- map ---------- */
+let map=null,layers={},selLayer=null,postLayer=null,hiPost=null;
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function renderLegend(){
+  const items=[...TRAILS.map(t=>[t.color,F(t,'name')]),[DAYCOLOR,T('Day hikes','一日遊')]];
+  $('#legend').innerHTML=items.map(([c,n])=>`<div><i style="background:${c}"></i>${esc(n)}</div>`).join('')+`<div><i class="park"></i>${T('Country park','郊野公園')}</div>`;
+}
+function initMap(){
+  if(!window.L){$('#map').innerHTML=`<p style="padding:16px">${T('The map library did not load.','未能載入地圖。')}</p>`;return}
+  map=L.map('map',{preferCanvas:true,zoomSnap:0.5,minZoom:10,maxZoom:17,attributionControl:true,maxBounds:[[21.95,113.6],[22.75,114.65]]}).setView([22.37,114.15],11);
+  map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · AFCD trail data');
+  map.on('zoomend',updatePostLabels);
+  drawMap(true);
+}
+function drawMap(full){
+  if(!map)return;const c=ctx();
+  if(full||!layers.base){
+    Object.values(layers).forEach(l=>l&&map.removeLayer(l));layers={};
+    layers.base=L.geoJSON(BASE.land,{style:{stroke:false,fillColor:css('--land'),fillOpacity:1},interactive:false}).addTo(map);
+    layers.parks=L.geoJSON(BASE.parks,{style:{color:css('--parkline'),weight:.8,fillColor:css('--park'),fillOpacity:1},interactive:false}).addTo(map);
+    layers.res=L.geoJSON(BASE.res,{style:{stroke:false,fillColor:css('--res'),fillOpacity:1},interactive:false}).addTo(map);
+  }
+  if(layers.routes)map.removeLayer(layers.routes);
+  const g=L.layerGroup();
+  ROUTES.forEach(r=>{
+    const vis=S.filter==='all'||(S.filter==='day'?r.kind==='day':r.trail===S.filter);
+    const lvl=evaluate(r,c).lvl;
+    (r.segs||[]).forEach(seg=>{
+      if(!seg.length)return;
+      const pl=L.polyline(seg,{color:rColor(r),weight:vis?3.2:1.6,opacity:vis?(lvl===2?.45:.95):.35,dashArray:lvl===2?'4 6':null});
+      pl.bindTooltip(`<b>${esc(rLabel(r))}</b><br>${esc(rTitle(r))}<br>${T(...LVs[lvl])}`,{className:'rlbl',sticky:true});
+      pl.on('click',()=>openRoute(r.id));g.addLayer(pl);
+    });
+    if(r.pin){const m=L.circleMarker(r.pin,{radius:6,color:rColor(r),weight:2,fillColor:css('--card'),fillOpacity:1});m.bindTooltip(esc(F(r,'name')),{className:'rlbl'});m.on('click',()=>openRoute(r.id));g.addLayer(m)}
+  });
+  layers.routes=g.addTo(map);
+  drawSelected();
+}
+function drawSelected(force){
+  if(selLayer){map.removeLayer(selLayer);selLayer=null}if(postLayer){map.removeLayer(postLayer);postLayer=null}
+  const r=force||(S.view==='detail'&&S.sel?byId[S.sel]:null);if(!r)return;
+  selLayer=L.layerGroup();
+  (r.segs||[]).forEach(seg=>{if(!seg.length)return;selLayer.addLayer(L.polyline(seg,{color:css('--card'),weight:10,opacity:.95,interactive:false}));selLayer.addLayer(L.polyline(seg,{color:rColor(r),weight:5.5,opacity:1,interactive:false}))});
+  const s0=r.segs&&r.segs[0]&&r.segs[0][0],sl=r.segs&&r.segs.length&&r.segs[r.segs.length-1];const s1=sl&&sl[sl.length-1];
+  if(s0)selLayer.addLayer(L.circleMarker(s0,{radius:7,color:css('--ink'),weight:2.5,fillColor:'#2d7a4b',fillOpacity:1}).bindTooltip(T('Start','起點')+': '+esc(F(r,'start')||F(r,'name')),{className:'rlbl'}));
+  if(s1)selLayer.addLayer(L.circleMarker(s1,{radius:7,color:css('--ink'),weight:2.5,fillColor:'#b0342a',fillOpacity:1}).bindTooltip(T('End','終點')+': '+esc(F(r,'end')||F(r,'name')),{className:'rlbl'}));
+  selLayer.addTo(map);
+  postLayer=L.layerGroup();
+  (r.post_list||[]).forEach(p=>{const m=L.circleMarker([p[1],p[2]],{radius:3.5,color:css('--ink'),weight:1.5,fillColor:css('--card'),fillOpacity:1,interactive:false});m._code=p[0];postLayer.addLayer(m)});
+  postLayer.addTo(map);updatePostLabels();
+}
+function updatePostLabels(){
+  if(!postLayer||!map)return;const z=map.getZoom();
+  postLayer.eachLayer(m=>{const n=+m._code.slice(1);const show=z>=15||(z>=14&&n%2===0)||(z>=13&&n%4===0);
+    if(show&&!m.getTooltip())m.bindTooltip(m._code,{permanent:true,direction:'right',offset:[4,0],className:'postlbl'});
+    if(!show&&m.getTooltip())m.unbindTooltip();});
+}
+function focusRoute(r){if(!map)return;map.invalidateSize();drawSelected(r);const all=(r.segs||[]).flat();if(all.length)map.fitBounds(L.latLngBounds(all),{padding:[30,30],maxZoom:15});else if(r.pin)map.setView(r.pin,14)}
+function showPost(p){
+  if(!map)return;if(hiPost)map.removeLayer(hiPost);
+  drawSelected(p.r);
+  hiPost=L.layerGroup([L.circleMarker([p.lat,p.lon],{radius:16,color:css('--bad'),weight:3,fill:false,interactive:false}),L.circleMarker([p.lat,p.lon],{radius:6,color:css('--bad'),weight:2,fillColor:css('--bad'),fillOpacity:1}).bindTooltip(p.code,{permanent:true,direction:'top',offset:[0,-10],className:'postlbl'})]).addTo(map);
+  map.invalidateSize();map.setView([p.lat,p.lon],15);
+}
+// restyle map on theme change
+const reTheme=()=>{if(map)drawMap(true)};
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',reTheme)}catch(e){}
+new MutationObserver(reTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+$('#lbX').onclick=()=>{$('#lb').hidden=true};$('#lb').addEventListener('click',e=>{if(e.target.id==='lb')$('#lb').hidden=true});
+/*V3D*/
+document.documentElement.lang=ZH()?'zh-HK':'en';
+if(location.hash==='#sos'){S.view='sos'}
+if(location.hash==='#lantau3d'){setTimeout(()=>open3D('lantau-3'),0)}
+render();initMap();
+})();
+</script>

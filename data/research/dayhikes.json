@@ -1,0 +1,853 @@
+{
+ "hikes": [
+  {
+   "id": "lamma",
+   "name_en": "Lamma Island Family Walk",
+   "name_zh": "南丫島家樂徑",
+   "start_en": "Yung Shue Wan Ferry Pier",
+   "start_zh": "榕樹灣碼頭",
+   "end_en": "Sok Kwu Wan Ferry Pier",
+   "end_zh": "索罟灣碼頭",
+   "loop": false,
+   "km": 5,
+   "hours": 1.5,
+   "difficulty": "easy",
+   "highlights_en": [
+    "Hung Shing Yeh Beach",
+    "Hilltop pavilion views over the island and power station",
+    "Kamikaze Caves (WWII) near Sok Kwu Wan"
+   ],
+   "highlights_zh": [
+    "洪聖爺灣泳灘",
+    "山頂涼亭飽覽海島及發電廠景色",
+    "索罟灣附近的神風洞（二戰遺跡）"
+   ],
+   "high_point": null,
+   "water_en": "Shops and restaurants at Yung Shue Wan, Hung Shing Yeh Beach, Lo So Shing and Sok Kwu Wan.",
+   "water_zh": "榕樹灣、洪聖爺灣、蘆鬚城及索罟灣均有士多及食肆。",
+   "toilets_en": "Yung Shue Wan Main Street, Hung Shing Yeh Beach, Lo So Shing, Sok Kwu Wan pier.",
+   "toilets_zh": "榕樹灣大街、洪聖爺灣泳灘、蘆鬚城、索罟灣碼頭。",
+   "exits_en": [
+    "Turn back to Yung Shue Wan",
+    "Side path down to Lo So Shing Beach"
+   ],
+   "exits_zh": [
+    "折返榕樹灣",
+    "支路下往蘆鬚城泳灘"
+   ],
+   "to_start": [
+    {
+     "mode": "ferry",
+     "route": "Central – Yung Shue Wan",
+     "from_en": "Central Pier 4",
+     "from_zh": "中環4號碼頭",
+     "note_en": "HKKF, about 27 min. About every 30 min on Sun/PH; 20–60 min Mon–Sat.",
+     "note_zh": "港九小輪，約27分鐘。星期日及假日約30分鐘一班；平日約20至60分鐘一班。"
+    },
+    {
+     "mode": "kaito",
+     "route": "Aberdeen – Pak Kok Tsuen – Yung Shue Wan",
+     "from_en": "Aberdeen Promenade pontoon",
+     "from_zh": "香港仔海濱公園碼頭",
+     "note_en": "Tsui Wah Ferry, about 11 sailings a day.",
+     "note_zh": "翠華船務，每日約11班。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "ferry",
+     "route": "Sok Kwu Wan – Central",
+     "from_en": "Sok Kwu Wan Pier",
+     "from_zh": "索罟灣碼頭",
+     "note_en": "HKKF to Central Pier 4, 30–40 min. Only about every 1–2 hours; extra sailings Sun/PH if busy. Check times.",
+     "note_zh": "港九小輪往中環4號碼頭，約30至40分鐘。約1至2小時一班，星期日及假日視乎人流加班。出發前查船期。"
+    },
+    {
+     "mode": "kaito",
+     "route": "Sok Kwu Wan – Mo Tat – Aberdeen",
+     "from_en": "Sok Kwu Wan Public Pier",
+     "from_zh": "索罟灣公眾碼頭",
+     "note_en": "Chuen Kee Ferry, about 35 min.",
+     "note_zh": "全記渡，約35分鐘。"
+    }
+   ],
+   "safety_en": "Sok Kwu Wan has far fewer ferries than Yung Shue Wan. Check the return time, or walk the other way and finish at Yung Shue Wan.",
+   "safety_zh": "索罟灣船班比榕樹灣少得多，請先查回程船期，或反方向走，以榕樹灣作終點。",
+   "sources": [
+    "https://www.td.gov.hk/en/transport_in_hong_kong/public_transport/ferries/service_details/index.html",
+    "https://www.traway.com.hk/ferry/",
+    "https://www.oasistrek.com/lamma.php",
+    "https://www.hkallshan.com/lammaisland2/",
+    "https://www.localiiz.com/post/hiking-yung-shue-wan-to-sok-kwu-wan-lamma-island",
+    "https://en.wikipedia.org/wiki/Lamma_Island"
+   ]
+  },
+  {
+   "id": "taitam",
+   "name_en": "Tai Tam Reservoirs (Tai Tam Waterworks Heritage Trail)",
+   "name_zh": "大潭水塘（大潭水務文物徑）",
+   "start_en": "Tai Tam Reservoir Road, Wong Nai Chung Gap",
+   "start_zh": "黃泥涌峽大潭水塘道",
+   "end_en": "Tai Tam Road (Tai Tam Tuk Reservoir)",
+   "end_zh": "大潭道（大潭篤水塘）",
+   "loop": false,
+   "km": 5,
+   "hours": 2,
+   "difficulty": "easy",
+   "highlights_en": [
+    "Victorian dams, valve houses and granite arch bridges (declared monuments)",
+    "Four reservoirs: Upper, Byewash, Intermediate, Tai Tam Tuk",
+    "Optional Tai Tam Family Walk (1.6 km) to Tai Tam Viewing Point"
+   ],
+   "highlights_zh": [
+    "維多利亞時期水壩、水掣房及麻石拱橋（法定古蹟）",
+    "四個水塘：大潭上、副、中水塘及大潭篤水塘",
+    "可加走大潭家樂徑（1.6公里）往大潭觀景台"
+   ],
+   "high_point": null,
+   "water_en": "No shops on the route. Water filling station and drinking fountain at a road junction along the way. Bring water.",
+   "water_zh": "沿途沒有商店。途中路口設加水站及飲水機。請自備食水。",
+   "toilets_en": "Public toilets and pavilions along Tai Tam Reservoir Road.",
+   "toilets_zh": "大潭水塘道沿途設公廁及涼亭。",
+   "exits_en": [
+    "Walk back up Tai Tam Reservoir Road to Wong Nai Chung Gap"
+   ],
+   "exits_zh": [
+    "沿大潭水塘道折返黃泥涌峽"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "Citybus 6",
+     "from_en": "Central (Exchange Square)",
+     "from_zh": "中環（交易廣場）",
+     "note_en": "Alight Wong Nai Chung Reservoir Park stop. Walk up Tai Tam Reservoir Road.",
+     "note_zh": "於黃泥涌水塘公園站下車，沿大潭水塘道上行。"
+    },
+    {
+     "mode": "bus",
+     "route": "Citybus 41A, 76",
+     "from_en": "North Point (41A) / Causeway Bay (76)",
+     "from_zh": "北角（41A）／銅鑼灣（76）",
+     "note_en": "Same stops at Wong Nai Chung Gap.",
+     "note_zh": "同樣在黃泥涌峽一帶下車。"
+    },
+    {
+     "mode": "gmb",
+     "route": "5",
+     "from_en": "Causeway Bay (Jaffe Road)",
+     "from_zh": "銅鑼灣（謝斐道）",
+     "note_en": "Alight Tai Tam Reservoir Road / Wong Nai Chung Gap Road.",
+     "note_zh": "於大潭水塘道／黃泥涌峽道下車。"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "Anywhere",
+     "from_zh": "各區",
+     "note_en": "Can drop you at the Tai Tam Reservoir Road barrier near Parkview, saving about 20 min uphill.",
+     "note_zh": "可乘的士到陽明山莊附近的大潭水塘道車閘，省去約20分鐘上坡。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "Citybus 14",
+     "from_en": "Tai Tam Road",
+     "from_zh": "大潭道",
+     "note_en": "To Sai Wan Ho, or to Stanley.",
+     "note_zh": "往西灣河或赤柱。"
+    },
+    {
+     "mode": "bus",
+     "route": "Citybus 314",
+     "from_en": "Tai Tam Road",
+     "from_zh": "大潭道",
+     "note_en": "Sundays and public holidays only. To Siu Sai Wan or Stanley.",
+     "note_zh": "只在星期日及假日行駛，往小西灣或赤柱。"
+    },
+    {
+     "mode": "gmb",
+     "route": "16M",
+     "from_en": "Tai Tam Road",
+     "from_zh": "大潭道",
+     "note_en": "To Chai Wan MTR station.",
+     "note_zh": "往柴灣港鐵站。"
+    }
+   ],
+   "safety_en": "Mostly paved and downhill. Tai Tam Road is busy: cross with care, and take care on the narrow Tai Tam Tuk dam road.",
+   "safety_zh": "大部分為下坡車路。大潭道車多，過馬路要小心；在大潭篤水壩窄路拍照時注意車輛。",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tai_Tam_Waterworks_Heritage_Trail",
+    "https://www.oasistrek.com/tai_tam.php",
+    "https://www.hkallshan.com/taitam-water/",
+    "https://www.hiking.gov.hk/trail/info/id/VXUrUWZ6Y3hSVmdqdmVDNXA5QU5mUT09",
+    "https://www.hiking.gov.hk/trail/info/id/bGxMc2FyRXQvajBqQXFSNHlHOUlTZz09"
+   ]
+  },
+  {
+   "id": "plovercove",
+   "name_en": "Plover Cove Reservoir Country Trail",
+   "name_zh": "船灣淡水湖郊遊徑",
+   "start_en": "Wu Kau Tang",
+   "start_zh": "烏蛟騰",
+   "end_en": "Tai Mei Tuk",
+   "end_zh": "大美督",
+   "loop": false,
+   "km": 15.5,
+   "hours": 7,
+   "difficulty": "very hard",
+   "highlights_en": [
+    "Ridge walk over Ma Tau Fung, Kai Tsai Tung and Tai Tung",
+    "Views of Plover Cove Reservoir, Double Haven and Tolo Channel",
+    "Finish across the 2 km main dam"
+   ],
+   "highlights_zh": [
+    "走過馬頭峰、雞仔峒、大峒等山脊",
+    "俯瞰船灣淡水湖、印洲塘及赤門海峽",
+    "最後走過兩公里長的主壩"
+   ],
+   "high_point": {
+    "name_en": "Kai Tsai Tung",
+    "name_zh": "雞仔峒",
+    "m": 311
+   },
+   "water_en": "No supply points on the whole trail. Carry plenty of water and food.",
+   "water_zh": "全程沒有補給點，必須帶備足夠糧水。",
+   "toilets_en": "None on the trail. Toilets at Tai Mei Tuk.",
+   "toilets_zh": "沿途沒有廁所；大美督設有公廁。",
+   "exits_en": [
+    "From Wang Leng Au, path down to Wu Kau Tang",
+    "Before Tai Tung, path down via Ha Miu Tin to Wu Kau Tang",
+    "No official exits after Tai Tung: go on or turn back"
+   ],
+   "exits_zh": [
+    "橫嶺坳可下走烏蛟騰",
+    "大峒前可經下苗田下走烏蛟騰",
+    "過大峒後沒有正式支路，只能前行或折返"
+   ],
+   "to_start": [
+    {
+     "mode": "gmb",
+     "route": "20R",
+     "from_en": "Tai Po Market MTR station",
+     "from_zh": "大埔墟港鐵站",
+     "note_en": "To Wu Kau Tang terminus.",
+     "note_zh": "往烏蛟騰總站。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 275R",
+     "from_en": "Tai Po Market MTR station",
+     "from_zh": "大埔墟港鐵站",
+     "note_en": "Sundays and public holidays only. Alight Bride's Pool terminus, walk to Wu Kau Tang.",
+     "note_zh": "只在星期日及假日行駛。於新娘潭總站下車，步行往烏蛟騰。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "KMB 75K",
+     "from_en": "Tai Mei Tuk bus terminus",
+     "from_zh": "大美督巴士總站",
+     "note_en": "To Tai Po Market MTR station.",
+     "note_zh": "往大埔墟港鐵站。"
+    },
+    {
+     "mode": "gmb",
+     "route": "20C",
+     "from_en": "Tai Mei Tuk",
+     "from_zh": "大美督",
+     "note_en": "To Tai Po Market MTR station.",
+     "note_zh": "往大埔墟港鐵站。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 275R",
+     "from_en": "Tai Mei Tuk",
+     "from_zh": "大美督",
+     "note_en": "Sundays and public holidays only.",
+     "note_zh": "只在星期日及假日行駛。"
+    }
+   ],
+   "safety_en": "AFCD rates it 5/5 (very difficult). Long, exposed ridge with no shade, and steep sections with loose gravel. Start early. High risk of heat stroke in hot weather.",
+   "safety_zh": "漁護署評為五星（非常難行）。山脊路程長，全無樹蔭，部分路段碎石陡滑。請及早出發，天熱慎防中暑。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/SUduYUhCbXFFaC9jT1dMRk91OTRKUT09",
+    "https://zh.wikipedia.org/zh-hk/%E8%88%B9%E7%81%A3%E6%B7%A1%E6%B0%B4%E6%B9%96%E9%83%8A%E9%81%8A%E5%BE%91",
+    "https://zh.wikipedia.org/zh-hk/%E6%A9%AB%E5%B6%BA",
+    "https://www.oasistrek.com/plover_cove_reservoir.php"
+   ]
+  },
+  {
+   "id": "highisland",
+   "name_en": "High Island Geo Trail – East Dam Section",
+   "name_zh": "萬宜地質步道 – 東壩段",
+   "start_en": "High Island Reservoir East Dam",
+   "start_zh": "萬宜水庫東壩",
+   "end_en": "High Island Reservoir East Dam",
+   "end_zh": "萬宜水庫東壩",
+   "loop": true,
+   "km": 2.8,
+   "hours": 2,
+   "difficulty": "easy",
+   "highlights_en": [
+    "S-shaped hexagonal rock columns (about 140 million years old)",
+    "Sea cave seen from the wooden boardwalk",
+    "Views of Po Pin Chau sea stack"
+   ],
+   "highlights_zh": [
+    "S形扭曲六角岩柱（約1億4千萬年前形成）",
+    "木橋近看海蝕洞",
+    "遠眺破邊洲海蝕柱"
+   ],
+   "high_point": null,
+   "water_en": "No shops or supply points at East Dam. Bring water.",
+   "water_zh": "東壩沒有商店或補給點，請自備食水。",
+   "toilets_en": "Public toilets at East Dam.",
+   "toilets_zh": "東壩設有公廁。",
+   "exits_en": [
+    "Walk back to the East Dam minibus terminus"
+   ],
+   "exits_zh": [
+    "折返東壩小巴總站"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "KMB 94",
+     "from_en": "Sai Kung town",
+     "from_zh": "西貢市中心",
+     "note_en": "To Pak Tam Chung (Sheung Yiu stop), then take GMB 9A.",
+     "note_zh": "往北潭涌（上窰站），再轉專線小巴9A。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 96R / 289R",
+     "from_en": "Diamond Hill MTR (96R) / Sha Tin Central (289R)",
+     "from_zh": "鑽石山港鐵站（96R）／沙田市中心（289R）",
+     "note_en": "Sat, Sun and public holidays only. To Pak Tam Chung.",
+     "note_zh": "只在星期六、日及假日行駛，往北潭涌。"
+    },
+    {
+     "mode": "gmb",
+     "route": "9A",
+     "from_en": "Pak Tam Chung",
+     "from_zh": "北潭涌",
+     "note_en": "Sat, Sun and public holidays only, about 09:30–18:40, every 15–20 min, about 24 min ride.",
+     "note_zh": "只在星期六、日及假日行駛，約09:30至18:40，每15至20分鐘一班，車程約24分鐘。"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "Sai Kung town",
+     "from_zh": "西貢市中心",
+     "note_en": "Taxis can drive to East Dam; private cars cannot pass the Pak Tam Chung barrier.",
+     "note_zh": "的士可直達東壩；私家車不能駛過北潭涌閘口。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "gmb",
+     "route": "9A",
+     "from_en": "East Dam",
+     "from_zh": "東壩",
+     "note_en": "To Pak Tam Chung. Sat, Sun and public holidays only, last about 19:00. Long queues on busy days.",
+     "note_zh": "往北潭涌，只在星期六、日及假日行駛，尾班約19:00。假日人多要排隊。"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "East Dam",
+     "from_zh": "東壩",
+     "note_en": "Wait at the East Dam pavilion taxi stand.",
+     "note_zh": "於東壩涼亭候車。"
+    }
+   ],
+   "safety_en": "No shade: bring sun protection and water. Stay on paths and behind barriers; cliffs are weathered. On weekdays there is no minibus: it is a 9 km road walk from Sheung Yiu. Optional Po Pin Chau Section (2 km, 3/5 demanding) needs a free Klook booking on set dates, 5 Sep–7 Oct 2026, 9am–5pm.",
+   "safety_zh": "全程無樹蔭，做好防曬並帶足食水。請沿步道行走，切勿跨越圍欄，崖邊岩石已風化。平日沒有小巴，由上窰步行要約9公里。可加走破邊洲段（2公里，三星費力），2026年9月5日至10月7日指定日子上午9時至下午5時須經Klook免費預約。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/ZFNQcUI3R0toMzhFWHAwbUdQNXBwZz09",
+    "https://www.hiking.gov.hk/trail/info/id/c2ZrZUpiUGRBck1TanVNQ1J6Qkg5Zz09",
+    "https://www.info.gov.hk/gia/general/202608/21/P2026082100320.htm",
+    "https://www.saikungplb.com/route9a.html",
+    "https://www.hkallshan.com/high-island-geo-trail/",
+    "https://petespurrier.com/2024/01/29/hong-kong-hiking-high-islands-east-dam/"
+   ]
+  },
+  {
+   "id": "pingchau",
+   "name_en": "Ping Chau Country Trail (Tung Ping Chau)",
+   "name_zh": "平洲環島郊遊徑（東平洲）",
+   "start_en": "Tung Ping Chau Pier (Wong Ye Kok)",
+   "start_zh": "東平洲碼頭（王爺角）",
+   "end_en": "Tung Ping Chau Pier (Wong Ye Kok)",
+   "end_zh": "東平洲碼頭（王爺角）",
+   "loop": true,
+   "km": 6,
+   "hours": 3,
+   "difficulty": "moderate",
+   "highlights_en": [
+    "Kang Lau Shek sea stacks (7–8 m)",
+    "Lung Lok Shui 'dragon back' rock band",
+    "Wave-cut platforms, Cham Keng Chau, and coral in the marine park"
+   ],
+   "highlights_zh": [
+    "更樓石海蝕柱（7至8米高）",
+    "龍落水沉積岩帶",
+    "海蝕平台、斬頸洲及海岸公園珊瑚"
+   ],
+   "high_point": {
+    "name_en": "Southern hilltop",
+    "name_zh": "南面山頂",
+    "m": 48
+   },
+   "water_en": "A few restaurants and shops near the pier and at Tai Tong. Bring cash.",
+   "water_zh": "碼頭附近及大塘有數間食肆及士多，請帶現金。",
+   "toilets_en": "Public toilets near the pier (basic).",
+   "toilets_zh": "碼頭附近有公廁（設施簡陋）。",
+   "exits_en": [
+    "Cut back across the island to the pier from the villages"
+   ],
+   "exits_zh": [
+    "可從村落橫過小島返回碼頭"
+   ],
+   "to_start": [
+    {
+     "mode": "ferry",
+     "route": "Ma Liu Shui – Tung Ping Chau",
+     "from_en": "Ma Liu Shui Ferry Pier",
+     "from_zh": "馬料水碼頭",
+     "note_en": "Tsui Wah Ferry. Sat 09:00 and 15:30; Sun and public holidays 09:00 only. About 1.5 h. Return ticket HK$100. Book online a week ahead.",
+     "note_zh": "翠華船務。星期六09:00及15:30；星期日及假日只有09:00。船程約1.5小時，來回船票$100，可提前一星期網上訂票。"
+    },
+    {
+     "mode": "mtr",
+     "route": "East Rail Line",
+     "from_en": "University station",
+     "from_zh": "大學站",
+     "note_en": "Walk to Ma Liu Shui Ferry Pier, or take a taxi.",
+     "note_zh": "步行往馬料水碼頭，或乘的士。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "ferry",
+     "route": "Tung Ping Chau – Ma Liu Shui",
+     "from_en": "Tung Ping Chau Pier",
+     "from_zh": "東平洲碼頭",
+     "note_en": "Only one sailing: 17:15, Sat, Sun and public holidays.",
+     "note_zh": "只有一班：星期六、日及假日17:15開出。"
+    }
+   ],
+   "safety_en": "Only one ferry back (17:15). Miss it and you stay the night. No ferries on weekdays. Wave-cut platforms are passable only at low tide; rocks are slippery. Marine park: do not take shells, coral or rocks.",
+   "safety_zh": "回程只有17:15一班船，錯過便要留宿。平日沒有船。海蝕平台只在潮退時才可通過，岩石濕滑。屬海岸公園範圍，切勿帶走貝殼、珊瑚或石頭。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/VE4wRlNxT1hZM1NqWkpKYVBmS1M2dz09",
+    "https://www.traway.com.hk/ferry/",
+    "https://en.wikipedia.org/wiki/Tung_Ping_Chau",
+    "https://www.hongkonghike.com/tung-ping-chau-how-to-hike-hong-kongs-unesco-island-paradise/",
+    "https://www.oasistrek.com/tung_ping_chau.php"
+   ]
+  },
+  {
+   "id": "sharpisland",
+   "name_en": "Sharp Island Country Trail",
+   "name_zh": "橋咀郊遊徑",
+   "start_en": "Kiu Tsui Pier",
+   "start_zh": "橋咀碼頭",
+   "end_en": "Hap Mun Bay (Half Moon Bay)",
+   "end_zh": "廈門灣（半月灣）",
+   "loop": false,
+   "km": 1.9,
+   "hours": 1,
+   "difficulty": "easy",
+   "highlights_en": [
+    "Tombolo to Kiu Tau (walkable at low tide)",
+    "Viewpoint over Kau Sai Chau and Yim Tin Tsai",
+    "Hap Mun Bay beach"
+   ],
+   "highlights_zh": [
+    "連島沙洲通往橋頭（潮退時可步行）",
+    "觀景點遠眺滘西洲及鹽田梓",
+    "廈門灣（半月灣）泳灘"
+   ],
+   "high_point": {
+    "name_en": "Hak Shan Teng",
+    "name_zh": "黑山頂",
+    "m": 97
+   },
+   "water_en": "Small kiosks at Kiu Tsui and Hap Mun Bay beaches. Nothing on the trail.",
+   "water_zh": "橋咀及半月灣泳灘設士多，山徑上沒有補給。",
+   "toilets_en": "Toilets and changing rooms at Kiu Tsui and Hap Mun Bay beaches.",
+   "toilets_zh": "橋咀及半月灣泳灘設廁所及更衣室。",
+   "exits_en": [
+    "Turn back to Kiu Tsui Pier"
+   ],
+   "exits_zh": [
+    "折返橋咀碼頭"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "KMB 92",
+     "from_en": "Diamond Hill MTR station",
+     "from_zh": "鑽石山港鐵站",
+     "note_en": "To Sai Kung town.",
+     "note_zh": "往西貢市中心。"
+    },
+    {
+     "mode": "gmb",
+     "route": "1A",
+     "from_en": "Choi Hung / Diamond Hill",
+     "from_zh": "彩虹／鑽石山",
+     "note_en": "To Sai Kung Pier.",
+     "note_zh": "往西貢碼頭。"
+    },
+    {
+     "mode": "kaito",
+     "route": "Sai Kung – Kiu Tsui",
+     "from_en": "Sai Kung Public Pier",
+     "from_zh": "西貢公眾碼頭",
+     "note_en": "Several operators (look for flags/signs). About 15 min. Weekdays about every 30 min; more often at weekends. Cash.",
+     "note_zh": "多間街渡公司（以旗號分辨），船程約15分鐘。平日約30分鐘一班，假日更密。多收現金。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "kaito",
+     "route": "Hap Mun Bay – Sai Kung",
+     "from_en": "Hap Mun Bay Pier",
+     "from_zh": "廈門灣碼頭",
+     "note_en": "Use the same operator as your return ticket. Last boat about 18:00–18:30.",
+     "note_zh": "須乘回來回票所屬公司的船。尾班船約18:00至18:30。"
+    }
+   ],
+   "safety_en": "The tombolo is only walkable when the tide is below about 1.4 m; check HKO tide times and watch the rising tide. Confirm the last boat with your operator.",
+   "safety_zh": "潮水低於約1.4米時才可步行連島沙洲，請查天文台潮汐並留意潮漲。請向街渡公司確認尾班船時間。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/ZnovL1lLVDZuRUxZR3JhWlNidkZzQT09",
+    "https://www.oasistrek.com/sharp_island.php",
+    "https://www.hkallshan.com/sharp-island/",
+    "https://en.wikipedia.org/wiki/Sharp_Island",
+    "https://hongkongdays.com/sharp-island-day-trip-guide/"
+   ]
+  },
+  {
+   "id": "patsinleng",
+   "name_en": "Pat Sin Leng Nature Trail",
+   "name_zh": "八仙嶺自然教育徑",
+   "start_en": "Tai Mei Tuk (Country Park Management Centre)",
+   "start_zh": "大美督（郊野公園管理站）",
+   "end_en": "Bride's Pool Road",
+   "end_zh": "新娘潭路",
+   "loop": false,
+   "km": 4,
+   "hours": 2,
+   "difficulty": "moderate",
+   "highlights_en": [
+    "Views over Plover Cove Reservoir",
+    "Spring Breeze Pavilion, memorial to the 1996 Pat Sin Leng hill fire",
+    "Views of Tolo Harbour and Ma On Shan"
+   ],
+   "highlights_zh": [
+    "俯瞰船灣淡水湖",
+    "春風亭（紀念1996年八仙嶺山火）",
+    "遠眺吐露港及馬鞍山"
+   ],
+   "high_point": {
+    "name_en": "Highest point on trail (AFCD GPX)",
+    "name_zh": "路線最高點（漁護署GPX）",
+    "m": 360
+   },
+   "water_en": "Shops at Tai Mei Tuk. None on the trail.",
+   "water_zh": "大美督有士多，沿途沒有補給。",
+   "toilets_en": "Tai Mei Tuk area. None on the trail.",
+   "toilets_zh": "大美督一帶設公廁，沿途沒有。",
+   "exits_en": [
+    "Turn back to Tai Mei Tuk"
+   ],
+   "exits_zh": [
+    "折返大美督"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "KMB 75K",
+     "from_en": "Tai Po Market MTR station",
+     "from_zh": "大埔墟港鐵站",
+     "note_en": "To Tai Mei Tuk terminus, then walk about 10 min uphill on Bride's Pool Road.",
+     "note_zh": "往大美督總站，再沿新娘潭路上行約10分鐘。"
+    },
+    {
+     "mode": "gmb",
+     "route": "20C",
+     "from_en": "Tai Po Market MTR station",
+     "from_zh": "大埔墟港鐵站",
+     "note_en": "To Tai Mei Tuk.",
+     "note_zh": "往大美督。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 275R",
+     "from_en": "Tai Po Market MTR station",
+     "from_zh": "大埔墟港鐵站",
+     "note_en": "Sundays and public holidays only.",
+     "note_zh": "只在星期日及假日行駛。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "gmb",
+     "route": "20R",
+     "from_en": "Bride's Pool",
+     "from_zh": "新娘潭",
+     "note_en": "To Tai Po Market MTR station.",
+     "note_zh": "往大埔墟港鐵站。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 275R",
+     "from_en": "Bride's Pool bus stop",
+     "from_zh": "新娘潭巴士站",
+     "note_en": "Sundays and public holidays only.",
+     "note_zh": "只在星期日及假日行駛。"
+    },
+    {
+     "mode": "bus",
+     "route": "KMB 75K / GMB 20C",
+     "from_en": "Tai Mei Tuk",
+     "from_zh": "大美督",
+     "note_en": "Or walk back along Bride's Pool Road to Tai Mei Tuk.",
+     "note_zh": "或沿新娘潭路步行返回大美督乘車。"
+    }
+   ],
+   "safety_en": "Part of the trail is closed after a landslide (AFCD notice); follow the signed detour. Long stone steps at the start. Hill fire risk: no fires.",
+   "safety_zh": "部分路段因山泥傾瀉暫時封閉（漁護署通告），請按指示使用替代路徑。起段石級頗長。嚴防山火，切勿生火。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/SmRaQXBzUy9DSHY1YlRSQjA3QVE5QT09",
+    "https://www.hiking.gov.hk/console/public/uploads/news/68df92ef779c7.pdf",
+    "https://www.oasistrek.com/pat_sin_leng.php"
+   ]
+  },
+  {
+   "id": "taimoshan",
+   "name_en": "Tai Mo Shan Family Walk",
+   "name_zh": "大帽山家樂徑",
+   "start_en": "Rotary Park, Tai Mo Shan Road",
+   "start_zh": "大帽山道扶輪公園",
+   "end_en": "Rotary Park, Tai Mo Shan Road",
+   "end_zh": "大帽山道扶輪公園",
+   "loop": true,
+   "km": 0.5,
+   "hours": 0.33,
+   "difficulty": "easy",
+   "highlights_en": [
+    "Short stone-paved forest loop",
+    "Viewpoint over Tsuen Wan and Tsing Yi",
+    "Schima blossom in spring; Sweet Gum turns red in winter"
+   ],
+   "highlights_zh": [
+    "石砌林間短環迴徑",
+    "觀景台遠眺荃灣及青衣",
+    "春天木荷開花，冬天楓香轉紅"
+   ],
+   "high_point": null,
+   "water_en": "No shops on the walk. Bring water.",
+   "water_zh": "沿途沒有商店，請自備食水。",
+   "toilets_en": "Toilets and visitor centre in Tai Mo Shan Country Park.",
+   "toilets_zh": "大帽山郊野公園設遊客中心及廁所。",
+   "exits_en": [
+    "Walk back down Tai Mo Shan Road"
+   ],
+   "exits_zh": [
+    "沿大帽山道回程"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "KMB 51",
+     "from_en": "Tsuen Wan",
+     "from_zh": "荃灣",
+     "note_en": "Alight Tai Mo Shan Country Park stop, then walk up Tai Mo Shan Road to Rotary Park.",
+     "note_zh": "於大帽山郊野公園站下車，沿大帽山道上行至扶輪公園。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "KMB 51",
+     "from_en": "Tai Mo Shan Country Park stop",
+     "from_zh": "大帽山郊野公園站",
+     "note_en": "Back to Tsuen Wan.",
+     "note_zh": "返回荃灣。"
+    }
+   ],
+   "safety_en": "Very short (about 20–30 min). Fog is common; stay on the path. Schima bark is poisonous: do not touch.",
+   "safety_zh": "路程很短（約20至30分鐘）。山上常有大霧，請沿路徑行走。木荷樹皮有毒，切勿觸摸。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/OUpMbkhjSTJxM05tM3VZcGFXZTZwdz09",
+    "https://www.gohk.gov.hk/tc/spots/spot_detail.php?spot=Tai+Mo+Shan+Country+Park"
+   ]
+  },
+  {
+   "id": "pengchau",
+   "name_en": "Peng Chau Family Trail",
+   "name_zh": "坪洲家樂徑",
+   "start_en": "Peng Chau Ferry Pier",
+   "start_zh": "坪洲碼頭",
+   "end_en": "Peng Chau Ferry Pier",
+   "end_zh": "坪洲碼頭",
+   "loop": true,
+   "km": 5,
+   "hours": 2.5,
+   "difficulty": "easy",
+   "highlights_en": [
+    "Finger Hill summit pavilion, highest point of Peng Chau",
+    "Tung Wan beach",
+    "Old village lanes and temples"
+   ],
+   "highlights_zh": [
+    "手指山頂涼亭（坪洲最高點）",
+    "東灣沙灘",
+    "舊村小巷及廟宇"
+   ],
+   "high_point": {
+    "name_en": "Finger Hill",
+    "name_zh": "手指山",
+    "m": 95
+   },
+   "water_en": "Restaurants and shops near the pier; kiosk at Tung Wan.",
+   "water_zh": "碼頭附近有食肆及士多；東灣有士多。",
+   "toilets_en": "Public toilets in the village, including near the trail start.",
+   "toilets_zh": "村內設公廁，包括郊遊徑起點附近。",
+   "exits_en": [
+    "Many side paths lead back to the village",
+    "From Tung Wan, walk back to the pier"
+   ],
+   "exits_zh": [
+    "多條支路可折返村內",
+    "由東灣可步行返回碼頭"
+   ],
+   "to_start": [
+    {
+     "mode": "ferry",
+     "route": "Central – Peng Chau",
+     "from_en": "Central Pier 6",
+     "from_zh": "中環6號碼頭",
+     "note_en": "HKKF, about 25–30 min. About every 30–50 min.",
+     "note_zh": "港九小輪，約25至30分鐘，約30至50分鐘一班。"
+    },
+    {
+     "mode": "kaito",
+     "route": "Discovery Bay – Peng Chau",
+     "from_en": "Discovery Bay (Nim Shue Wan)",
+     "from_zh": "愉景灣（稔樹灣）",
+     "note_en": "Tsui Wah Ferry; some sailings via Trappist Monastery.",
+     "note_zh": "翠華船務，部分班次途經聖母神樂院。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "ferry",
+     "route": "Peng Chau – Central",
+     "from_en": "Peng Chau Ferry Pier",
+     "from_zh": "坪洲碼頭",
+     "note_en": "HKKF to Central Pier 6. Last sailing about 23:30.",
+     "note_zh": "港九小輪往中環6號碼頭，尾班約23:30。"
+    }
+   ],
+   "safety_en": "Many branch paths have no signs; carry a map. Watch for stray dogs on the steps east of Finger Hill.",
+   "safety_zh": "很多支路沒有指示牌，請帶備地圖。手指山東面梯級一帶常有野狗，請留意。",
+   "sources": [
+    "https://www.oasistrek.com/peng_chau.php",
+    "https://follo3me.com/route/islands/peng-chau/",
+    "https://en.wikipedia.org/wiki/Finger_Hill",
+    "https://www.td.gov.hk/en/transport_in_hong_kong/public_transport/ferries/service_details/index.html",
+    "https://www.traway.com.hk/ferry/"
+   ]
+  },
+  {
+   "id": "lunghawan",
+   "name_en": "Lung Ha Wan Country Trail",
+   "name_zh": "龍蝦灣郊遊徑",
+   "start_en": "Tai Hang Tun, Clear Water Bay Road",
+   "start_zh": "清水灣道大坑墩",
+   "end_en": "Lung Ha Wan Road",
+   "end_zh": "龍蝦灣路",
+   "loop": false,
+   "km": 2.5,
+   "hours": 1.5,
+   "difficulty": "moderate",
+   "highlights_en": [
+    "Tai Leng Tung summit views over Port Shelter, Clear Water Bay and Po Toi O",
+    "Distant Ninepin Group",
+    "Lung Ha Wan rock carving, about 3,000 years old"
+   ],
+   "highlights_zh": [
+    "大嶺峒山頂俯瞰牛尾海、清水灣及布袋澳",
+    "遠眺果洲群島",
+    "近3,000年歷史的龍蝦灣石刻"
+   ],
+   "high_point": {
+    "name_en": "Tai Leng Tung",
+    "name_zh": "大嶺峒",
+    "m": 291
+   },
+   "water_en": "Kiosk and BBQ site at Tai Hang Tun (start). None on the trail.",
+   "water_zh": "起點大坑墩設小食亭及燒烤場，沿途沒有補給。",
+   "toilets_en": "Toilets at the country park picnic and BBQ areas.",
+   "toilets_zh": "郊野公園野餐及燒烤地點設洗手間。",
+   "exits_en": [
+    "Turn back to Tai Hang Tun"
+   ],
+   "exits_zh": [
+    "折返大坑墩"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "KMB 91",
+     "from_en": "Diamond Hill MTR station",
+     "from_zh": "鑽石山港鐵站",
+     "note_en": "Alight Tai Au Mun, then walk about 20 min along Clear Water Bay Road to Tai Hang Tun.",
+     "note_zh": "於大坳門站下車，沿清水灣道步行約20分鐘至大坑墩。"
+    },
+    {
+     "mode": "gmb",
+     "route": "16",
+     "from_en": "Po Lam MTR station",
+     "from_zh": "寶琳港鐵站",
+     "note_en": "Alight Tai Au Mun.",
+     "note_zh": "於大坳門下車。"
+    },
+    {
+     "mode": "gmb",
+     "route": "103 / 103M",
+     "from_en": "Kwun Tong Ferry Pier / Tseung Kwan O MTR",
+     "from_zh": "觀塘碼頭／將軍澳港鐵站",
+     "note_en": "Alight Tai Au Mun.",
+     "note_zh": "於大坳門下車。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "KMB 91 / GMB 16, 103, 103M",
+     "from_en": "Tai Au Mun",
+     "from_zh": "大坳門",
+     "note_en": "Walk about 30 min along Lung Ha Wan Road back to Tai Au Mun Road.",
+     "note_zh": "沿龍蝦灣路步行約30分鐘返回大坳門路乘車。"
+    }
+   ],
+   "safety_en": "Steep stone steps at the start; exposed hilltop, so avoid hot midday hours. Do not climb near the cliff at the rock carving.",
+   "safety_zh": "起段石級陡斜，山頂開揚無遮蔭，避免烈日當空時段。石刻位於崖邊，切勿攀爬。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/YXpGRThNNHNZeXB4dHppcmphemc3QT09",
+    "https://follo3me.com/route/sai-kung/tai-leng-tung/",
+    "https://www.oasistrek.com/lung_ha_wan.php",
+    "https://www.hk01.com/%E5%8D%B3%E6%99%82%E9%AB%94%E8%82%B2/443357/"
+   ]
+  }
+ ]
+}

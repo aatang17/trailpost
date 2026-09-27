@@ -1,0 +1,1024 @@
+{
+ "trail": {
+  "id": "maclehose",
+  "name_en": "MacLehose Trail",
+  "name_zh": "麥理浩徑",
+  "total_km": 100,
+  "post_prefix": "M",
+  "managed_by_en": "Agriculture, Fisheries and Conservation Department (AFCD)",
+  "managed_by_zh": "漁農自然護理署",
+  "opened": 1979,
+  "notes": "Runs east to west, Pak Tam Chung (M001) to Tuen Mun (M200), posts every 500 m. Km, hours and star difficulty are from AFCD Enjoy Hiking (1-5 stars). Post ranges were worked out by matching AFCD's official post coordinates to AFCD's official GPX track for each stage; a boundary post may be off by one. high_point.m is the official summit height; trail_max_m is the highest point on the AFCD GPX track. Supplies are sparse on stages 1, 4, 9 and 10. In an emergency call 999 and give the nearest distance post number.",
+  "notes_zh": "由東向西，北潭涌（M001）至屯門（M200），每500米一支標距柱。長度、時間及星級難度取自漁護署「郊野樂行」（1至5星）。標距柱範圍是把漁護署標距柱座標對照官方GPX路線推算，分段交界的標距柱或有一支之差。high_point.m 為官方山高，trail_max_m 為GPX路線最高點。第一、四、九及十段補給很少。遇事請致電999並報上最近的標距柱編號。",
+  "sources": [
+   "https://www.hiking.gov.hk/",
+   "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+   "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+   "https://www.hiking.gov.hk/content/fatal_and_accident_case",
+   "https://en.wikipedia.org/wiki/MacLehose_Trail"
+  ]
+ },
+ "stages": [
+  {
+   "n": 1,
+   "start_en": "Pak Tam Chung",
+   "start_zh": "北潭涌",
+   "end_en": "Long Ke",
+   "end_zh": "浪茄",
+   "km": 10.6,
+   "hours": 3.25,
+   "difficulty": "AFCD 3/5 stars (Demanding / 費力)",
+   "posts": [
+    "M001",
+    "M020"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "High Island Reservoir and West Dam",
+    "East Dam hexagonal rock columns and dolosse (Geopark)",
+    "Long Ke Wan beach and campsite"
+   ],
+   "highlights_zh": [
+    "萬宜水庫及西壩",
+    "東壩六角形岩柱及防波錨形石（地質公園）",
+    "浪茄灣沙灘及營地"
+   ],
+   "high_point": {
+    "name_en": "No named peak (reservoir road)",
+    "name_zh": "沒有主要山峰（水庫車路）",
+    "m": null,
+    "trail_max_m": 133
+   },
+   "water_en": "Pak Tam Chung kiosk and AFCD water stations at the start only; no supply point en route",
+   "water_zh": "只有起點北潭涌小食亭及漁護署加水站；沿途無補給點",
+   "toilets_en": "Pak Tam Chung (visitor centre, start); West Dam; East Dam; near Long Ke (end)",
+   "toilets_zh": "北潭涌（遊客中心，起點）；西壩；東壩；浪茄附近（終點）",
+   "exits_en": [
+    "West Dam: Sheung Yiu Country Trail back to Pak Tam Road (Sheung Yiu stop)",
+    "East Dam: GMB 9A to Pak Tam Chung (Sat/Sun/PH) or taxi"
+   ],
+   "exits_zh": [
+    "西壩：循上窰郊遊徑返回北潭路（上窰站）",
+    "東壩：專線小巴9A往北潭涌（星期六、日及假期）或的士"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "94",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "KMB, daily; alight Sheung Yiu / Pak Tam Chung",
+     "note_zh": "九巴，每日；上窰／北潭涌下車"
+    },
+    {
+     "mode": "bus",
+     "route": "96R",
+     "from_en": "Diamond Hill Station",
+     "from_zh": "鑽石山站",
+     "note_en": "KMB; Sat, Sun & public holidays only",
+     "note_zh": "九巴；只在星期六、日及公眾假期行駛"
+    },
+    {
+     "mode": "gmb",
+     "route": "7",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "To Hoi Ha, via Pak Tam Chung",
+     "note_zh": "往海下，途經北潭涌"
+    },
+    {
+     "mode": "gmb",
+     "route": "9",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "To Lady MacLehose Holiday Village, via Pak Tam Chung",
+     "note_zh": "往麥理浩夫人度假村，途經北潭涌"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "gmb",
+     "route": "9A",
+     "from_en": "High Island Reservoir East Dam (walk back from Long Ke)",
+     "from_zh": "萬宜水庫東壩（由浪茄步行返回）",
+     "note_en": "To Pak Tam Chung; Sat, Sun & PH only (about 09:30–18:40)",
+     "note_zh": "往北潭涌；只在星期六、日及公眾假期（約09:30–18:40）"
+    },
+    {
+     "mode": "bus",
+     "route": "NR29",
+     "from_en": "Sai Wan Pavilion",
+     "from_zh": "西灣亭",
+     "note_en": "Residents' service to Sai Kung Town Hall; limited trips",
+     "note_zh": "居民巴士往西貢大會堂；班次疏落"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "East Dam",
+     "from_zh": "東壩",
+     "note_en": "About 30 min to Sai Kung Town",
+     "note_zh": "往西貢市約30分鐘"
+    }
+   ],
+   "safety_en": "Long road walk with little shade – heat stroke risk; cars on Man Yee Road, parts have no footpath",
+   "safety_zh": "長段車路少遮蔭，慎防中暑；萬宜路有車輛往來，部分路段沒有行人路",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/VFFUbFFNOXNXTHNWU2FqT09UTjlOZz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section1)PakTamChungtoLongKe.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.oasistrek.com/mac_trail_one.php",
+    "https://www.16seats.net/chi/gmb/gn_9a.html",
+    "https://www.16seats.net/chi/gmb/gn_9.html",
+    "https://www.16seats.net/chi/gmb/gn_7.html"
+   ]
+  },
+  {
+   "n": 2,
+   "start_en": "Long Ke",
+   "start_zh": "浪茄",
+   "end_en": "Pak Tam Au",
+   "end_zh": "北潭凹",
+   "km": 13.5,
+   "hours": 5.25,
+   "difficulty": "AFCD 5/5 stars (Very Difficult / 非常難行)",
+   "posts": [
+    "M021",
+    "M049"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Sai Wan Shan (314 m) above Long Ke",
+    "Tai Long Wan beaches: Sai Wan and Ham Tin",
+    "Chek Keng village and pier"
+   ],
+   "highlights_zh": [
+    "浪茄上西灣山（314米）",
+    "大浪灣沙灘：西灣及咸田灣",
+    "赤徑村及碼頭"
+   ],
+   "high_point": {
+    "name_en": "Sai Wan Shan",
+    "name_zh": "西灣山",
+    "m": 314,
+    "trail_max_m": 316
+   },
+   "water_en": "Stores/restaurants at Sai Wan, Ham Tin (trail bypasses them) and Tai Long village; AFCD water station at Pak Tam Au (end)",
+   "water_zh": "西灣、咸田灣（麥徑繞過士多）及大浪村有士多食肆；終點北潭凹有漁護署加水站",
+   "toilets_en": "Near Long Ke (start); Sai Wan; Sai Wan Pavilion (off route); Pak Tam Au (end)",
+   "toilets_zh": "浪茄附近（起點）；西灣；西灣亭（路線外）；北潭凹（終點）",
+   "exits_en": [
+    "Chui Tung Au: path to Sai Wan Pavilion for NR29 residents' bus or taxi",
+    "Chek Keng pier: Tsui Wah kaito (TP2/TP3) to Wong Shek Pier, only a few sailings a day",
+    "Chek Keng: walk to Wong Shek Pier for KMB 94 / 96R"
+   ],
+   "exits_zh": [
+    "吹筒坳：往西灣亭乘NR29居民巴士或的士",
+    "赤徑碼頭：翠華街渡（TP2／TP3）往黃石碼頭，每日班次很少",
+    "赤徑：步行往黃石碼頭乘九巴94／96R"
+   ],
+   "to_start": [
+    {
+     "mode": "gmb",
+     "route": "9A",
+     "from_en": "Pak Tam Chung bus terminus",
+     "from_zh": "北潭涌巴士總站",
+     "note_en": "To East Dam, then walk ~30 min to Long Ke; Sat, Sun & PH only",
+     "note_zh": "往東壩，再步行約30分鐘到浪茄；只在星期六、日及公眾假期"
+    },
+    {
+     "mode": "bus",
+     "route": "NR29",
+     "from_en": "Sai Kung Town Hall",
+     "from_zh": "西貢大會堂",
+     "note_en": "Residents' service to Sai Wan Pavilion, then walk to Long Ke",
+     "note_zh": "居民巴士往西灣亭，再步行至浪茄"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "Sai Kung Town",
+     "from_zh": "西貢市",
+     "note_en": "To East Dam (~30 min), then walk to Long Ke",
+     "note_zh": "往東壩（約30分鐘），再步行至浪茄"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "94",
+     "from_en": "Pak Tam Au bus stop",
+     "from_zh": "北潭凹巴士站",
+     "note_en": "KMB to Sai Kung Pier",
+     "note_zh": "九巴往西貢碼頭"
+    },
+    {
+     "mode": "bus",
+     "route": "96R",
+     "from_en": "Pak Tam Au bus stop",
+     "from_zh": "北潭凹巴士站",
+     "note_en": "KMB to Diamond Hill Station; Sat, Sun & PH only",
+     "note_zh": "九巴往鑽石山站；只在星期六、日及公眾假期"
+    },
+    {
+     "mode": "gmb",
+     "route": "7",
+     "from_en": "Pak Tam Au bus stop",
+     "from_zh": "北潭凹巴士站",
+     "note_en": "To Sai Kung Pier",
+     "note_zh": "往西貢碼頭"
+    }
+   ],
+   "safety_en": "No road access to Long Ke; steep, shadeless climb over Sai Wan Shan; avoid side trips to Sharp Peak and Sheung Luk Stream (AFCD high-risk spots)",
+   "safety_zh": "浪茄沒有車路直達；西灣山上落陡峭少遮蔭；切勿順道上蚺蛇尖或往四疊潭（漁護署高危地點）",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/d0pFSWc1N1dWdkh3aStSajBvUHlmUT09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section2)LongKetoPakTamAu.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.hiking.gov.hk/content/fatal_and_accident_case",
+    "https://www.td.gov.hk/tc/transport_in_hong_kong/public_transport/ferries/kaito_services_map/service_details/index.html",
+    "https://www.oasistrek.com/mac_trail_two.php",
+    "https://www.hillmanblog.com/project/maclehose-trail-2/"
+   ]
+  },
+  {
+   "n": 3,
+   "start_en": "Pak Tam Au",
+   "start_zh": "北潭凹",
+   "end_en": "Kei Ling Ha",
+   "end_zh": "企嶺下",
+   "km": 10.2,
+   "hours": 4,
+   "difficulty": "AFCD 4/5 stars (Difficult / 難行)",
+   "posts": [
+    "M050",
+    "M068"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Stone staircase up Ngau Yee Shek Shan",
+    "Cheung Sheung plateau",
+    "Kai Kung Shan with views over Kei Ling Ha Hoi"
+   ],
+   "highlights_zh": [
+    "牛耳石山石階",
+    "嶂上高原",
+    "雞公山俯瞰企嶺下海"
+   ],
+   "high_point": {
+    "name_en": "Ngau Yee Shek Shan",
+    "name_zh": "牛耳石山",
+    "m": null,
+    "trail_max_m": 412
+   },
+   "water_en": "AFCD water station at Pak Tam Au (start); Cheung Sheung kiosk (mainly weekends); water station at Sai Sha Road BBQ site 5 (end)",
+   "water_zh": "起點北潭凹有漁護署加水站；嶂上士多（多在週末營業）；終點西沙路燒烤場地5號有加水站",
+   "toilets_en": "Pak Tam Au (start); Cheung Sheung; Shui Long Wo / Sai Sha Road (end)",
+   "toilets_zh": "北潭凹（起點）；嶂上；水浪窩／西沙路（終點）",
+   "exits_en": [
+    "Cheung Sheung: path down to Hoi Ha Road (GMB 7)",
+    "Cheung Sheung Country Trail down to Yung Shue O or Kei Ling Ha",
+    "Wa Mei Shan crossroads: down to Tsak Yue Wu or Yung Shue O"
+   ],
+   "exits_zh": [
+    "嶂上：右轉下海下路（小巴7號）",
+    "循嶂上郊遊徑下榕樹澳或企嶺下",
+    "畫眉山十字路口：左往鯽魚湖或右往榕樹澳"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "94",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "KMB; alight Pak Tam Au",
+     "note_zh": "九巴；北潭凹下車"
+    },
+    {
+     "mode": "bus",
+     "route": "96R",
+     "from_en": "Diamond Hill Station",
+     "from_zh": "鑽石山站",
+     "note_en": "KMB; Sat, Sun & PH only",
+     "note_zh": "九巴；只在星期六、日及公眾假期"
+    },
+    {
+     "mode": "gmb",
+     "route": "7",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "Alight Pak Tam Au",
+     "note_zh": "北潭凹下車"
+    },
+    {
+     "mode": "gmb",
+     "route": "9",
+     "from_en": "Sai Kung Pier",
+     "from_zh": "西貢碼頭",
+     "note_en": "Route runs via Pak Tam Au",
+     "note_zh": "途經北潭凹"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "99",
+     "from_en": "Shui Long Wo bus stop, Sai Sha Road",
+     "from_zh": "西沙路水浪窩巴士站",
+     "note_en": "KMB towards Sai Kung or Ma On Shan",
+     "note_zh": "九巴往西貢或馬鞍山方向"
+    },
+    {
+     "mode": "bus",
+     "route": "99R",
+     "from_en": "Shui Long Wo bus stop",
+     "from_zh": "水浪窩巴士站",
+     "note_en": "KMB; Sundays & PH only",
+     "note_zh": "九巴；只在星期日及公眾假期"
+    },
+    {
+     "mode": "bus",
+     "route": "299X",
+     "from_en": "Shui Long Wo bus stop",
+     "from_zh": "水浪窩巴士站",
+     "note_en": "KMB towards Sha Tin or Sai Kung",
+     "note_zh": "九巴往沙田或西貢方向"
+    }
+   ],
+   "safety_en": "About 1 km of steep stone steps from Pak Tam Au; four ~400 m hills with big climbs; carry enough food and water",
+   "safety_zh": "北潭凹起步約一公里陡峭石級；連續四個約400米山頭上落大；須帶足夠糧水",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/aG1rVm1JUWVFcUVyT2RXL3Z5RnpUdz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section3)PakTamAutoKeiLingHa.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.oasistrek.com/mac_trail_three.php",
+    "https://www.hillmanblog.com/project/maclehose-trail-3/",
+    "https://www.16seats.net/chi/gmb/gn_9.html"
+   ]
+  },
+  {
+   "n": 4,
+   "start_en": "Kei Ling Ha",
+   "start_zh": "企嶺下",
+   "end_en": "Tate's Cairn",
+   "end_zh": "大老山",
+   "km": 12.7,
+   "hours": 5.25,
+   "difficulty": "AFCD 5/5 stars (Very Difficult / 非常難行)",
+   "posts": [
+    "M069",
+    "M094"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Climb past Wong Chuk Yeung to the 555 m Ma On Shan pass",
+    "Ngong Ping plateau views over Sai Kung",
+    "MacLehose 'Great Wall' by Gilwell Campsite"
+   ],
+   "highlights_zh": [
+    "經黃竹洋登上555米馬鞍坳",
+    "昂平高原遠眺西貢",
+    "基維爾營地前的麥徑長城"
+   ],
+   "high_point": {
+    "name_en": "Ma On Shan pass",
+    "name_zh": "馬鞍坳",
+    "m": 555,
+    "trail_max_m": 558
+   },
+   "water_en": "AFCD water station at Sai Sha Road BBQ site (start); no supply point en route",
+   "water_zh": "起點西沙路燒烤場地有加水站；沿途無補給點",
+   "toilets_en": "Shui Long Wo / Sai Sha Road (start); Ngong Ping; none at the end",
+   "toilets_zh": "水浪窩／西沙路（起點）；昂平；終點沒有",
+   "exits_en": [
+    "Junction after Tai Kam Chung: turn right down to Tai Shui Tseng",
+    "Ngong Ping: Ma On Shan Country Trail down to Yiu On Estate, Ma On Shan"
+   ],
+   "exits_zh": [
+    "大金鐘後三岔口：右轉下大水井",
+    "昂平：左轉循馬鞍山郊遊徑下耀安邨（馬鞍山）"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "99",
+     "from_en": "Sai Kung or Ma On Shan",
+     "from_zh": "西貢或馬鞍山",
+     "note_en": "KMB; alight Shui Long Wo",
+     "note_zh": "九巴；水浪窩下車"
+    },
+    {
+     "mode": "bus",
+     "route": "99R",
+     "from_en": "Sai Sha Road",
+     "from_zh": "西沙路",
+     "note_en": "KMB; Sundays & PH only; alight Shui Long Wo",
+     "note_zh": "九巴；只在星期日及公眾假期；水浪窩下車"
+    },
+    {
+     "mode": "bus",
+     "route": "299X",
+     "from_en": "Sha Tin Town Centre or Sai Kung",
+     "from_zh": "沙田市中心或西貢",
+     "note_en": "KMB; alight Shui Long Wo",
+     "note_zh": "九巴；水浪窩下車"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "91 / 91M / 92",
+     "from_en": "Anderson Road bus stop, Clear Water Bay Road (walk ~45 min down Fei Ngo Shan Road)",
+     "from_zh": "清水灣道安達臣道巴士站（沿飛鵝山道步行約45分鐘）",
+     "note_en": "KMB towards Diamond Hill / Choi Hung",
+     "note_zh": "九巴往鑽石山／彩虹方向"
+    },
+    {
+     "mode": "bus",
+     "route": "96R",
+     "from_en": "Anderson Road bus stop",
+     "from_zh": "安達臣道巴士站",
+     "note_en": "KMB; Sat, Sun & PH only",
+     "note_zh": "九巴；只在星期六、日及公眾假期"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "Fei Ngo Shan Road near Gilwell Campsite",
+     "from_zh": "飛鵝山道近基維爾營地",
+     "note_en": "No taxi rank – availability not guaranteed",
+     "note_zh": "沒有的士站，未必截到車"
+    }
+   ],
+   "safety_en": "Hardest stage: long steep climb to 555 m and no supplies; no bus at the end; keep off Kowloon Peak 'Suicide Cliff' and Tiu Shau Ngam (AFCD high-risk spots)",
+   "safety_zh": "最難的一段：長斜直上555米且沒有補給；終點沒有巴士；切勿走往飛鵝山「自殺崖」及吊手岩（漁護署高危地點）",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/aWhDRVFZbmpET0pMazRxdWhhU0hIUT09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section4)KeiLingHatoTatesCairn.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.hiking.gov.hk/content/fatal_and_accident_case",
+    "https://www.oasistrek.com/mac_trail_four.php"
+   ]
+  },
+  {
+   "n": 5,
+   "start_en": "Tate's Cairn",
+   "start_zh": "大老山",
+   "end_en": "Tai Po Road",
+   "end_zh": "大埔公路",
+   "km": 10.6,
+   "hours": 3.75,
+   "difficulty": "AFCD 4/5 stars (Difficult / 難行)",
+   "posts": [
+    "M095",
+    "M115"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Lion Pavilion at Sha Tin Pass and views of Lion Rock",
+    "HK Reunification Pavilion over Kowloon and Victoria Harbour",
+    "Beacon Hill radar station and WWII trenches"
+   ],
+   "highlights_zh": [
+    "沙田坳獅子亭及獅子山景色",
+    "香港回歸紀念亭俯瞰九龍及維港",
+    "筆架山雷達站及二戰戰壕"
+   ],
+   "high_point": {
+    "name_en": "Tate's Cairn ridge (near start)",
+    "name_zh": "大老山山脊（近起點）",
+    "m": null,
+    "trail_max_m": 518
+   },
+   "water_en": "Kiosk at Sha Tin Pass (Lion Pavilion); nothing else on route",
+   "water_zh": "沙田坳獅子亭有士多；沿途其他地方無補給",
+   "toilets_en": "Near M098; Sha Tin Pass (Lion Pavilion); near M110; Tai Po Road (end)",
+   "toilets_zh": "M098附近；沙田坳（獅子亭）；M110附近；大埔公路（終點）",
+   "exits_en": [
+    "Fei Ngo Shan Road: via Jat's Incline down to Ngau Chi Wan / Choi Hung",
+    "Sha Tin Pass: left to Tsz Wan Shan (~20 min) or right to Pok Hong Estate, Sha Tin (~45 min)",
+    "HK Reunification Pavilion: left to Tin Ma Court (~20 min)"
+   ],
+   "exits_zh": [
+    "飛鵝山道：經扎山道下牛池灣／彩虹",
+    "沙田坳：左往慈雲山（約20分鐘）或右往沙田博康邨（約45分鐘）",
+    "香港回歸紀念亭：左往天馬苑（約20分鐘）"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "91 / 91M / 92",
+     "from_en": "Diamond Hill Station area",
+     "from_zh": "鑽石山站一帶",
+     "note_en": "KMB; alight Anderson Road stop, walk ~45 min up Fei Ngo Shan Road",
+     "note_zh": "九巴；安達臣道站下車，沿飛鵝山道步行約45分鐘"
+    },
+    {
+     "mode": "bus",
+     "route": "96R",
+     "from_en": "Diamond Hill Station",
+     "from_zh": "鑽石山站",
+     "note_en": "KMB; Sat, Sun & PH only; alight Anderson Road",
+     "note_zh": "九巴；只在星期六、日及公眾假期；安達臣道下車"
+    },
+    {
+     "mode": "taxi",
+     "route": "",
+     "from_en": "Kowloon",
+     "from_zh": "九龍",
+     "note_en": "To Fei Ngo Shan Road near Gilwell Campsite",
+     "note_zh": "到飛鵝山道近基維爾營地下車"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "72",
+     "from_en": "Shek Lei Pui Reservoir bus stop, Tai Po Road",
+     "from_zh": "大埔公路石梨貝水塘巴士站",
+     "note_en": "KMB; stops in both directions (Kowloon / Sha Tin)",
+     "note_zh": "九巴；兩個方向均有車站（九龍／沙田）"
+    },
+    {
+     "mode": "bus",
+     "route": "81",
+     "from_en": "Shek Lei Pui Reservoir bus stop",
+     "from_zh": "石梨貝水塘巴士站",
+     "note_en": "KMB; to Jordan or Sha Tin",
+     "note_zh": "九巴；往佐敦或沙田"
+    }
+   ],
+   "safety_en": "Many ups and downs; do not scramble to Lion Rock summit (AFCD high-risk spot); macaques near the Tai Po Road end",
+   "safety_zh": "上落頗多；切勿攀上獅子山山頂石崖（漁護署高危地點）；大埔公路終點一帶有猴子",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/MW45T1puY3I1OVJiaDRudGNuNEgxZz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section5)TatesCairntoTaiPoRoad.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.hiking.gov.hk/content/fatal_and_accident_case",
+    "https://www.oasistrek.com/mac_trail_five.php",
+    "https://www.hillmanblog.com/project/maclehose-trail-5/"
+   ]
+  },
+  {
+   "n": 6,
+   "start_en": "Tai Po Road",
+   "start_zh": "大埔公路",
+   "end_en": "Shing Mun",
+   "end_zh": "城門",
+   "km": 4.6,
+   "hours": 1.75,
+   "difficulty": "AFCD 2/5 stars (Moderate / 普通)",
+   "posts": [
+    "M116",
+    "M124"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Kowloon Reservoir dams (declared monuments)",
+    "Smugglers' Ridge and Shing Mun Redoubt WWII tunnels",
+    "Views over Tsuen Wan and Shing Mun Reservoir"
+   ],
+   "highlights_zh": [
+    "九龍水塘水壩（法定古蹟）",
+    "孖指徑及城門碉堡二戰地道",
+    "俯瞰荃灣及城門水塘"
+   ],
+   "high_point": {
+    "name_en": "Smugglers' Ridge",
+    "name_zh": "孖指徑",
+    "m": null,
+    "trail_max_m": 285
+   },
+   "water_en": "AFCD water station on Cheung Yuen Road, Kowloon Hills; Shing Mun kiosk and water station at Pineapple Dam (end)",
+   "water_zh": "九龍山長源路有漁護署加水站；終點菠蘿壩有城門小食亭及加水站",
+   "toilets_en": "Tai Po Road (start); Shing Mun BBQ site / Pineapple Dam (end)",
+   "toilets_zh": "大埔公路（起點）；城門燒烤場／菠蘿壩（終點）",
+   "exits_en": [
+    "Short stage; no useful mid-way exit – continue to Pineapple Dam or go back"
+   ],
+   "exits_zh": [
+    "路段短，中途無實用退出點，宜走到菠蘿壩或折返"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "72",
+     "from_en": "Sham Shui Po / Cheung Sha Wan or Sha Tin",
+     "from_zh": "深水埗／長沙灣或沙田",
+     "note_en": "KMB; alight Shek Lei Pui Reservoir stop, Tai Po Road",
+     "note_zh": "九巴；大埔公路石梨貝水塘站下車"
+    },
+    {
+     "mode": "bus",
+     "route": "81",
+     "from_en": "Jordan or Sha Tin",
+     "from_zh": "佐敦或沙田",
+     "note_en": "KMB; alight Shek Lei Pui Reservoir stop",
+     "note_zh": "九巴；石梨貝水塘站下車"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "gmb",
+     "route": "82",
+     "from_en": "Pineapple Dam minibus terminus, Shing Mun Reservoir",
+     "from_zh": "城門水塘菠蘿壩小巴總站",
+     "note_en": "To Tsuen Wan (Shiu Wo Street), about 06:15–21:00",
+     "note_zh": "往荃灣（兆和街），約06:15–21:00"
+    },
+    {
+     "mode": "bus",
+     "route": "32, 36, 40X, 46X, 47X, 48X, 73X, 278X and others",
+     "from_en": "Ho Fung College stop, Wo Yi Hop Road (walk ~20 min down Shing Mun Road)",
+     "from_zh": "和宜合道可風中學站（沿城門道步行約20分鐘）",
+     "note_en": "KMB; also GMB 94, 312, 403, 403A, 403X, 94S (Sun/PH)",
+     "note_zh": "九巴；另有專線小巴94、312、403、403A、403X、94S（星期日及假期）"
+    }
+   ],
+   "safety_en": "Many wild macaques – never feed them or eat in front of them; do not enter WWII tunnels (unstable)",
+   "safety_zh": "野生猴子多，切勿餵飼或在牠們面前進食；切勿進入二戰地道，結構可能不穩",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/bStIb016ZGszVk5WWElJN2FzdTdRdz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section6)TaiPoRoadtoShingMun.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.oasistrek.com/mac_trail_six.php",
+    "https://www.16seats.net/chi/gmb/gn_82.html"
+   ]
+  },
+  {
+   "n": 7,
+   "start_en": "Shing Mun",
+   "start_zh": "城門",
+   "end_en": "Lead Mine Pass",
+   "end_zh": "鉛礦坳",
+   "km": 6.2,
+   "hours": 3,
+   "difficulty": "AFCD 4/5 stars (Difficult / 難行)",
+   "posts": [
+    "M125",
+    "M137"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Shing Mun Reservoir main dam and paperbark trees",
+    "Needle Hill (532 m) – steep, 1,000+ steps",
+    "Grassy Hill (647 m) views of Tai Mo Shan"
+   ],
+   "highlights_zh": [
+    "城門水塘主壩及白千層",
+    "針山（532米）千級陡峭石級",
+    "草山（647米）遠眺大帽山"
+   ],
+   "high_point": {
+    "name_en": "Grassy Hill",
+    "name_zh": "草山",
+    "m": 647,
+    "trail_max_m": 628
+   },
+   "water_en": "Shing Mun kiosk and water station at Pineapple Dam (start); nothing until Lead Mine Pass",
+   "water_zh": "起點菠蘿壩有城門小食亭及加水站；直至鉛礦坳沿途無補給",
+   "toilets_en": "Pineapple Dam (start); near main dam; near M131 below Needle Hill; Lead Mine Pass (end)",
+   "toilets_zh": "菠蘿壩（起點）；主壩附近；針山下M131附近；鉛礦坳（終點）",
+   "exits_en": [
+    "After Needle Hill: path down via Tao Fung Shan to Sha Tin",
+    "Vehicle track after Needle Hill: back to Shing Mun Reservoir",
+    "Lead Mine Pass: down to Wun Yiu, Tai Po (GMB 23K)"
+   ],
+   "exits_zh": [
+    "過針山後：經道風山下沙田",
+    "針山後車路：返回城門水塘",
+    "鉛礦坳：下大埔碗窰（小巴23K）"
+   ],
+   "to_start": [
+    {
+     "mode": "gmb",
+     "route": "82",
+     "from_en": "Shiu Wo Street, Tsuen Wan",
+     "from_zh": "荃灣兆和街",
+     "note_en": "To Pineapple Dam terminus, Shing Mun Reservoir",
+     "note_zh": "往城門水塘菠蘿壩總站"
+    },
+    {
+     "mode": "bus",
+     "route": "32, 36, 40X, 46X, 47X, 48X, 73X, 278X and others",
+     "from_en": "Various (Kowloon / New Territories)",
+     "from_zh": "九龍及新界各區",
+     "note_en": "KMB to Ho Fung College stop, then walk ~20 min up Shing Mun Road; GMB 94, 312, 403 also stop there",
+     "note_zh": "九巴到可風中學站，再沿城門道步行約20分鐘；專線小巴94、312、403亦停此站"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "gmb",
+     "route": "23K / 23S",
+     "from_en": "San Uk Ka / Tai Tit Yan (walk ~1.5 h from Lead Mine Pass on Wilson Trail Stage 7 to Yuen Tun Ha)",
+     "from_zh": "新屋家／打鐵屻（由鉛礦坳循衛奕信徑第七段步行約1.5小時到元墩下）",
+     "note_en": "No road at Lead Mine Pass; minibuses to Tai Po Market Station",
+     "note_zh": "鉛礦坳沒有車路；小巴往大埔墟站"
+    },
+    {
+     "mode": "bus",
+     "route": "51",
+     "from_en": "Route Twisk (continue Stage 8, 9.7 km)",
+     "from_zh": "荃錦坳（續走第八段9.7公里）",
+     "note_en": "KMB towards Tsuen Wan or Kam Tin",
+     "note_zh": "九巴往荃灣或錦田方向"
+    }
+   ],
+   "safety_en": "Big climbs, little shade – heat stroke risk; Needle Hill steps very steep; no road access at Lead Mine Pass",
+   "safety_zh": "上落幅度大、少遮蔭，慎防中暑；針山石級極陡；鉛礦坳沒有車路",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/MzVpUXNrWFZsM3NvcEppamc4emhIZz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section7)ShingMuntoLeadMinePass.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.oasistrek.com/mac_trail_seven.php",
+    "https://www.16seats.net/chi/gmb/gn_82.html",
+    "https://www.16seats.net/chi/gmb/gn_23k.html",
+    "https://www.16seats.net/chi/gmb/gn_23s.html"
+   ]
+  },
+  {
+   "n": 8,
+   "start_en": "Lead Mine Pass",
+   "start_zh": "鉛礦坳",
+   "end_en": "Route Twisk",
+   "end_zh": "荃錦公路",
+   "km": 9.7,
+   "hours": 4,
+   "difficulty": "AFCD 4/5 stars (Difficult / 難行)",
+   "posts": [
+    "M138",
+    "M155"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Tai Mo Shan (957 m), Hong Kong's highest peak",
+    "Autumn golden grass and old tea terraces",
+    "Views to Tsing Ma Bridge and Shenzhen on clear days"
+   ],
+   "highlights_zh": [
+    "香港最高峰大帽山（957米）",
+    "秋季金黃芒草及舊茶田",
+    "天晴可望青馬大橋及深圳"
+   ],
+   "high_point": {
+    "name_en": "Tai Mo Shan (summit fenced off; trail passes below)",
+    "name_zh": "大帽山（山頂屬禁區，路線在其下經過）",
+    "m": 957,
+    "trail_max_m": 928
+   },
+   "water_en": "Water dispenser and drinks machine at Lead Mine Pass (start, may sell out); Lin Je kiosk (蓮姐士多) near Route Twisk (end)",
+   "water_zh": "起點鉛礦坳有水機及汽水機（可能售罄）；近終點荃錦坳有蓮姐士多",
+   "toilets_en": "Lead Mine Pass (start); near M152 on the descent; Route Twisk (end)",
+   "toilets_zh": "鉛礦坳（起點）；下山段M152附近；荃錦坳（終點）",
+   "exits_en": [
+    "No easy mid-stage exit; beyond the Tai Mo Shan road gate you can follow the road down to Route Twisk"
+   ],
+   "exits_zh": [
+    "中途沒有方便的退出點；過大帽山車閘後可沿車路下荃錦坳"
+   ],
+   "to_start": [
+    {
+     "mode": "gmb",
+     "route": "23K / 23S",
+     "from_en": "Tai Po Market Station",
+     "from_zh": "大埔墟站",
+     "note_en": "To San Uk Ka / Tai Tit Yan, walk to Yuen Tun Ha, then ~1.5 h on Wilson Trail Stage 7 to Lead Mine Pass",
+     "note_zh": "往新屋家／打鐵屻，步行至元墩下，再循衛奕信徑第七段約1.5小時到鉛礦坳"
+    },
+    {
+     "mode": "gmb",
+     "route": "82",
+     "from_en": "Shiu Wo Street, Tsuen Wan",
+     "from_zh": "荃灣兆和街",
+     "note_en": "Or walk in from Pineapple Dam via Stage 7 / reservoir road (no road to Lead Mine Pass)",
+     "note_zh": "或由菠蘿壩經第七段／水塘路步行前往（鉛礦坳沒有車路）"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "51",
+     "from_en": "Tai Mo Shan Country Park bus stop, Route Twisk",
+     "from_zh": "荃錦公路大帽山郊野公園巴士站",
+     "note_en": "KMB towards Tsuen Wan or Kam Tin",
+     "note_zh": "九巴往荃灣或錦田方向"
+    }
+   ],
+   "safety_en": "600 steps from Lead Mine Pass; summit often in fog, cold and windy in winter; do not enter the fenced summit radar area; cattle on the slopes",
+   "safety_zh": "鉛礦坳起步約600級樓梯；山頂常有大霧，冬天寒冷大風；切勿進入山頂雷達站禁區；山坡常有牛隻",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/cm1EdG9ycVhDTEFrT3NGYmFsYXdWdz09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section8)LeadMinePasstoRouteTwisk.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.oasistrek.com/mac_trail_eight.php",
+    "https://www.hillmanblog.com/project/maclehose-trail-8/",
+    "https://www.16seats.net/chi/gmb/gn_23k.html",
+    "https://www.16seats.net/chi/gmb/gn_23s.html"
+   ]
+  },
+  {
+   "n": 9,
+   "start_en": "Route Twisk",
+   "start_zh": "荃錦公路",
+   "end_en": "Tin Fu Tsai",
+   "end_zh": "田夫仔",
+   "km": 6.3,
+   "hours": 2,
+   "difficulty": "AFCD 2/5 stars (Moderate / 普通)",
+   "posts": [
+    "M156",
+    "M168"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Viewpoint over Tsuen Wan and Stonecutters Bridge",
+    "Ho Pui Reservoir",
+    "Shady forest track and old mine cave"
+   ],
+   "highlights_zh": [
+    "觀景點俯瞰荃灣及昂船洲大橋",
+    "河背水塘",
+    "林蔭大道及廢礦洞"
+   ],
+   "high_point": {
+    "name_en": "Hillside near old mine cave (M160)",
+    "name_zh": "礦洞附近山腰（M160）",
+    "m": null,
+    "trail_max_m": 544
+   },
+   "water_en": "Lin Je kiosk (蓮姐士多) at Route Twisk (start); no supply point en route",
+   "water_zh": "起點荃錦坳有蓮姐士多；沿途無補給點",
+   "toilets_en": "Route Twisk / Twisk Campsite (start); near M160; near M165–M166; Tin Fu Tsai campsite (end)",
+   "toilets_zh": "荃錦坳／荃錦營地（起點）；M160附近；M165–M166附近；田夫仔營地（終點）",
+   "exits_en": [
+    "Soon after the start: side path via Pak Shek Kiu to Sin Ha Tung near Chuen Lung"
+   ],
+   "exits_zh": [
+    "起步不久：左方支路經白石橋往川龍附近的仙霞洞"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "51",
+     "from_en": "Tsuen Wan or Kam Tin",
+     "from_zh": "荃灣或錦田",
+     "note_en": "KMB; alight Tai Mo Shan Country Park stop",
+     "note_zh": "九巴；大帽山郊野公園站下車"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "52X, 53, 234A, 234B",
+     "from_en": "Tsing Lung Tau / Sham Tseng (walk ~1.5 h from Tin Fu Tsai via Tsing Fai Tong)",
+     "from_zh": "青龍頭／深井（由田夫仔經清快塘步行約1.5小時）",
+     "note_en": "No road at Tin Fu Tsai; KMB",
+     "note_zh": "田夫仔沒有車路；九巴"
+    },
+    {
+     "mode": "gmb",
+     "route": "96",
+     "from_en": "Tsing Lung Tau",
+     "from_zh": "青龍頭",
+     "note_en": "To Tsuen Wan",
+     "note_zh": "往荃灣"
+    },
+    {
+     "mode": "gmb",
+     "route": "308M",
+     "from_en": "Sham Tseng Village",
+     "from_zh": "深井村",
+     "note_en": "To Tsing Yi Station",
+     "note_zh": "往青衣站"
+    }
+   ],
+   "safety_en": "Most of the route is shared with a mountain-bike trail – watch for bikes; no road access at Tin Fu Tsai",
+   "safety_zh": "大部分路段與越野單車徑重疊，須留意單車；田夫仔沒有車路",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/VGdKd0dZMzBTK3lKYjR3Z1dTR291UT09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section9)RouteTwisktoTinFuTsai.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.oasistrek.com/mac_trail_nine.php",
+    "https://www.hillmanblog.com/project/maclehose-trail-9/",
+    "https://www.16seats.net/chi/gmb/gn_96.html",
+    "https://www.16seats.net/chi/gmb/gn_308m.html"
+   ]
+  },
+  {
+   "n": 10,
+   "start_en": "Tin Fu Tsai",
+   "start_zh": "田夫仔",
+   "end_en": "Tuen Mun",
+   "end_zh": "屯門",
+   "km": 15.6,
+   "hours": 4.75,
+   "difficulty": "AFCD 4/5 stars (Difficult / 難行)",
+   "posts": [
+    "M169",
+    "M200"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Kat Hing Bridge (1868)",
+    "Tai Lam Chung Reservoir 'Thousand Islands' viewpoint",
+    "Sweet gum woods in Tai Lam Country Park"
+   ],
+   "highlights_zh": [
+    "吉慶橋（1868年）",
+    "大欖涌水塘「千島湖」景色",
+    "大欖郊野公園楓香林"
+   ],
+   "high_point": {
+    "name_en": "Near Tin Fu Tsai (start)",
+    "name_zh": "田夫仔附近（起點）",
+    "m": null,
+    "trail_max_m": 240
+   },
+   "water_en": "No kiosk or supply point on route – carry all water",
+   "water_zh": "沿途沒有士多或補給點，須帶備足夠食水",
+   "toilets_en": "Several picnic-site toilets: near M174, M177, M183, M185, M187, M193 and M196–M197 (Tuen Mun end)",
+   "toilets_zh": "沿途多個郊遊地點有廁所：M174、M177、M183、M185、M187、M193及M196–M197（屯門終點）附近",
+   "exits_en": [
+    "Tsing Fai Tong: down to Sham Tseng",
+    "So Kwun Wat Tsuen Road: down to So Kwun Wat village",
+    "Side path at M192: down to So Kwun Wat / Gold Coast",
+    "Steps at M196: down to Kam Fai Garden, Tuen Mun"
+   ],
+   "exits_zh": [
+    "清快塘：下深井",
+    "掃管笏村路：下掃管笏村",
+    "M192旁支路：下掃管笏／黃金海岸",
+    "M196梯級：下屯門錦暉花園"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "52X, 53, 234A, 234B",
+     "from_en": "Tsuen Wan / Mong Kok / Tuen Mun / Yuen Long",
+     "from_zh": "荃灣／旺角／屯門／元朗",
+     "note_en": "KMB to Sham Tseng Village stop, then walk ~1.5 h via Tsing Fai Tong to Tin Fu Tsai",
+     "note_zh": "九巴到深井村站，再經清快塘步行約1.5小時到田夫仔"
+    },
+    {
+     "mode": "gmb",
+     "route": "96",
+     "from_en": "Tsuen Wan (Hoi Pa Street)",
+     "from_zh": "荃灣（海壩街）",
+     "note_en": "To Tsing Lung Tau / Sham Tseng, then walk in",
+     "note_zh": "往青龍頭／深井，再步行上山"
+    },
+    {
+     "mode": "gmb",
+     "route": "308M",
+     "from_en": "Tsing Yi Station",
+     "from_zh": "青衣站",
+     "note_en": "To Sham Tseng Village, then walk in",
+     "note_zh": "往深井村，再步行上山"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "53, 67M, 67X, 261",
+     "from_en": "Hoh Fuk Tong College bus stop",
+     "from_zh": "何福堂書院巴士站",
+     "note_en": "KMB",
+     "note_zh": "九巴"
+    },
+    {
+     "mode": "mtr",
+     "route": "Light Rail",
+     "from_en": "Pui To stop",
+     "from_zh": "杯渡站",
+     "note_en": "Short walk from Hoh Fuk Tong",
+     "note_zh": "由何福堂步行不遠"
+    },
+    {
+     "mode": "mtr",
+     "route": "Tuen Ma Line",
+     "from_en": "Tuen Mun Station",
+     "from_zh": "屯門站",
+     "note_en": "Walk from Hoh Fuk Tong",
+     "note_zh": "由何福堂步行前往"
+    }
+   ],
+   "safety_en": "Longest stage with no supplies; village paths near the end are slippery after rain",
+   "safety_zh": "最長一段且沒有補給；尾段村徑雨後濕滑",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/N2ptQ3BGSUdScnRGTzllNXZ6Uk8vUT09",
+    "https://www.hiking.gov.hk/console/public/uploads/others/file/gpx/MacLehoseTrail(Section10)TinFuTsaitoTuenMun.gpx",
+    "https://www.afcd.gov.hk/tc_chi/country/cou_wha/files/distance_post_maclehose_trail_cc.pdf",
+    "https://www.oasistrek.com/mac_trail_ten.php",
+    "https://www.16seats.net/chi/gmb/gn_96.html",
+    "https://www.16seats.net/chi/gmb/gn_308m.html"
+   ]
+  }
+ ]
+}

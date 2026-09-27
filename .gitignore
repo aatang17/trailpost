@@ -1,0 +1,8 @@
+dist/
+photo3d/*.wasm
+photo3d/tiles.json
+photo3d/path.json
+__pycache__/
+node_modules/
+*.npy
+.DS_Store

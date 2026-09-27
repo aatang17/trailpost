@@ -1,0 +1,129 @@
+<title>Lantau Peak Photo 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+HK:wght@400;500;700&display=swap">
+<style>
+:root{--ink:#f3f1ea;--ink2:#c9cfc6;--glass:rgba(18,28,23,.8);--line:rgba(255,255,255,.18);--accent:#ffb36b;--sky:#b9cfdc;
+  --f-disp:"Barlow Condensed","Arial Narrow",sans-serif;--f-body:"Noto Sans HK",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:#1a2620;color:var(--ink);font-family:var(--f-body);overflow:hidden}
+#view{position:fixed;inset:0}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;pointer-events:none}
+.top>*{pointer-events:auto}
+.name{background:var(--glass);border-radius:12px;padding:8px 12px;max-width:560px}
+.name h1{margin:0;font-family:var(--f-disp);font-size:22px;letter-spacing:.2px;text-wrap:balance}
+.name p{margin:2px 0 0;font-size:12.5px;color:var(--ink2);line-height:1.4}
+.info{background:var(--glass);border-radius:10px;padding:5px 10px;font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+.info:empty{display:none}
+.bar{position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:640px;background:var(--glass);border-radius:14px;padding:10px 12px;display:grid;gap:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row input[type=range]{flex:1;min-width:120px;accent-color:var(--accent)}
+button{font:inherit;font-size:13.5px;color:var(--ink);background:rgba(255,255,255,.1);border:1px solid var(--line);border-radius:9px;padding:6px 11px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:#1b1206;border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.load{height:4px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.load i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.load[hidden]{display:none}
+.credit{font-size:11px;color:var(--ink2);line-height:1.35}
+.hint{font-size:12px;color:var(--ink2)}
+@media (max-width:560px){.name h1{font-size:19px}.info{font-size:11.5px;white-space:normal}.top{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){.load i{transition:none}}
+</style>
+<div id="view"></div>
+<div class="top">
+  <div class="name"><h1>Lantau Peak · photo 3D test</h1><p>The Lands Department's photo-based 3D map of the last 460 m of the climb, the summit and the start of the descent (Lantau Trail Stage 3). A snapshot for testing, not yet in Trailpost.</p></div>
+  <div class="info" id="info"></div>
+</div>
+<div class="bar">
+  <div class="load" id="load"><i id="loadbar"></i></div>
+  <div class="row"><button id="walk" type="button" aria-pressed="true">Walk</button><button id="orbit" type="button" aria-pressed="false">Look from above</button><button id="play" type="button">❚❚ Pause</button><input id="pos" type="range" min="0" max="1000" value="0" aria-label="Position along the trail"></div>
+  <div class="hint" id="hint">Drag to look around. Scroll or use the slider to move along the trail.</div>
+  <div class="credit">3D Visualisation Map © Lands Department, HKSAR Government. Source: CSDI Portal (portal.csdi.gov.hk). Snapshot of 338 map tiles taken 27 Sept 2026, reduced in size for the web.</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));renderer.outputEncoding=THREE.sRGBEncoding;$('#view').appendChild(renderer.domElement);
+const scene=new THREE.Scene();const skyTop=new THREE.Color(0x6f9cc4),skyLow=new THREE.Color(0xc9d8e0);
+scene.background=skyLow.clone();scene.fog=new THREE.FogExp2(0xc4d2da,0.00032);
+const camera=new THREE.PerspectiveCamera(60,1,0.3,20000);
+{ // sky dome with a simple gradient
+  const g=new THREE.SphereGeometry(15000,32,16);const m=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{a:{value:skyTop},b:{value:skyLow}},
+    vertexShader:'varying vec3 v;void main(){v=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+    fragmentShader:'uniform vec3 a,b;varying vec3 v;void main(){float t=clamp(v.y*2.2,0.0,1.0);gl_FragColor=vec4(mix(b,a,pow(t,0.7)),1.0);}'});
+  const s=new THREE.Mesh(g,m);s.renderOrder=-1;scene.add(s);window.SKY=s}
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),new THREE.MeshBasicMaterial({color:0x3f6b7a}));sea.rotation.x=-Math.PI/2;sea.position.y=-2;scene.add(sea);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enabled=false;controls.enableDamping=true;controls.maxPolarAngle=Math.PI*0.48;controls.minDistance=20;controls.maxDistance=6000;
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+
+/* ground heights along the trail, built from the finest tiles' vertices (1 m grid, top surface) */
+const HG={x0:0,z0:0,w:0,h:0,d:null,lv:null};
+function initGrid(path){let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;path.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,-p[1]);z1=Math.max(z1,-p[1])});
+  HG.x0=Math.floor(x0-40);HG.z0=Math.floor(z0-40);HG.w=Math.ceil(x1+40-HG.x0);HG.h=Math.ceil(z1+40-HG.z0);HG.d=new Float32Array(HG.w*HG.h).fill(-1e9);HG.lv=new Int8Array(HG.w*HG.h)}
+function addToGrid(pos,lv){for(let i=0;i<pos.length;i+=3){const c=Math.floor(pos[i]-HG.x0),r=Math.floor(pos[i+2]-HG.z0);if(c<0||r<0||c>=HG.w||r>=HG.h)continue;const k=r*HG.w+c;
+  if(lv>HG.lv[k]){HG.lv[k]=lv;HG.d[k]=pos[i+1]}else if(lv===HG.lv[k]&&pos[i+1]>HG.d[k])HG.d[k]=pos[i+1]}}
+function groundAt(x,z,fallback){let best=-1e9,cnt=0;const c0=Math.floor(x-HG.x0),r0=Math.floor(z-HG.z0);
+  for(let rad=0;rad<=3&&cnt<3;rad++)for(let r=r0-rad;r<=r0+rad;r++)for(let c=c0-rad;c<=c0+rad;c++){if(c<0||r<0||c>=HG.w||r>=HG.h)continue;const v=HG.d[r*HG.w+c];if(v>-1e8){cnt++;best=Math.max(best,v)}}
+  return cnt?best:fallback}
+
+/* trail path (east, up, north in metres from the summit) */
+let W=null;
+function mkPath(P){const pts=P.map(p=>[p[0],p[2],-p[1]]);const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2]));return {pts,cum,total:cum[cum.length-1]}}
+function along(f,d){d=Math.max(0,Math.min(f.total,d));let lo=1,hi=f.cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(f.cum[m]<d)lo=m+1;else hi=m}const i=lo,a=f.pts[i-1],b=f.pts[i],t=(d-f.cum[i-1])/((f.cum[i]-f.cum[i-1])||1);return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
+
+/* load tiles: coarse ones first, then finer ones toward the path */
+const group=new THREE.Group();scene.add(group);let loadedMB=0,totalMB=0;
+async function loadAll(){
+  const [meta,path]=await Promise.all([fetch('tiles.json').then(r=>r.json()),fetch('path.json').then(r=>r.json())]);
+  W={...mkPath(path.path),d:0,playing:true,speed:2.2,yaw:0,pitch:0,head:null,y:null,drag:false,idle:9,summitD:0};
+  let hm=-1e9;W.pts.forEach((p,i)=>{if(p[1]>hm){hm=p[1];W.summitD=W.cum[i]}});
+  initGrid(W.pts.map(p=>[p[0],-p[2]]));totalMB=meta.packs.reduce((a,b)=>a+b,0)/1e6;
+  for(let pi=0;pi<meta.packs.length;pi++){
+    const buf=await fetch('pack'+pi+'.wasm').then(r=>r.arrayBuffer());loadedMB+=buf.byteLength/1e6;$('#loadbar').style.width=(loadedMB/totalMB*100).toFixed(0)+'%';
+    const list=meta.tiles.filter(t=>t.p===pi);
+    await Promise.all(list.map(async t=>{
+      const q=new Uint16Array(buf,t.go,t.nv*3),uv=new Uint16Array(buf,t.go+t.nv*6,t.nv*2),ix=t.i32?new Uint32Array(buf,t.go+t.nv*10,t.ni):new Uint16Array(buf,t.go+t.nv*10,t.ni);
+      const pos=new Float32Array(t.nv*3);for(let i=0;i<t.nv;i++){pos[i*3]=t.min[0]+q[i*3]/65535*t.sc[0];pos[i*3+1]=t.min[1]+q[i*3+1]/65535*t.sc[1];pos[i*3+2]=t.min[2]+q[i*3+2]/65535*t.sc[2]}
+      const uvf=new Float32Array(t.nv*2);for(let i=0;i<t.nv;i++){uvf[i*2]=t.umin[0]+uv[i*2]/65535*t.us[0];uvf[i*2+1]=t.umin[1]+uv[i*2+1]/65535*t.us[1]}
+      if(t.lv>=16)addToGrid(pos,t.lv);
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uvf,2));g.setIndex(new THREE.BufferAttribute(ix.slice(),1));g.computeBoundingSphere();
+      const bmp=await createImageBitmap(new Blob([new Uint8Array(buf,t.to,t.tl)],{type:'image/webp'}));
+      const tex=new THREE.Texture(bmp);tex.flipY=false;tex.encoding=THREE.sRGBEncoding;tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());tex.needsUpdate=true;
+      const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));m.renderOrder=t.lv;group.add(m)}));
+  }
+  $('#load').hidden=true;
+}
+/* walk */
+function step(dt){
+  const w=W;if(!w)return;
+  if(w.playing&&!w.drag){w.d+=w.speed*dt;if(w.d>=w.total){w.d=w.total;w.playing=false;$('#play').textContent='↺ Start again'}}
+  const p=along(w,w.d),a=along(w,w.d+8),b=along(w,w.d-8);const hd=Math.atan2(a[0]-b[0],a[2]-b[2]);
+  if(w.head==null||w.snap)w.head=hd;else{let dh=hd-w.head;dh=Math.atan2(Math.sin(dh),Math.cos(dh));w.head+=dh*(1-Math.exp(-dt*2.5))}
+  const g=groundAt(p[0],p[2],p[1]);const eye=g+1.65;if(w.y==null||w.snap)w.y=eye;else w.y+=(eye-w.y)*(1-Math.exp(-dt*8));w.y=Math.max(w.y,g+1.1);w.snap=false;
+  if(!w.drag){w.idle+=dt;if(w.idle>2.5&&w.playing){const k=Math.exp(-dt*1.1);w.yaw*=k;w.pitch*=k}}
+  const q=along(w,w.d+25);const slope=Math.atan2(groundAt(q[0],q[2],q[1])-g,25)*0.45*Math.max(0,Math.cos(w.yaw))-0.08;
+  const yaw=w.head+w.yaw,pit=Math.max(-1.3,Math.min(1.3,slope+w.pitch));
+  camera.position.set(p[0],w.y,p[2]);camera.lookAt(p[0]+Math.sin(yaw)*Math.cos(pit),w.y+Math.sin(pit),p[2]+Math.cos(yaw)*Math.cos(pit));
+  const toS=Math.round(w.summitD-w.d);$('#info').textContent=`${Math.round(g)} m high · `+(toS>5?`summit in ${toS} m`:toS<-5?`${-toS} m past the summit`:'at the summit');
+  $('#pos').value=Math.round(w.d/w.total*1000);
+}
+let mode='walk';
+function setMode(m){mode=m;$('#walk').setAttribute('aria-pressed',m==='walk');$('#orbit').setAttribute('aria-pressed',m==='orbit');controls.enabled=m==='orbit';$('#play').hidden=m!=='walk';$('#pos').hidden=m!=='walk';
+  if(m==='orbit'){const p=camera.position.clone();controls.target.set(p.x,p.y-20,p.z);camera.position.set(p.x-Math.sin(W.head||0)*260,p.y+160,p.z-Math.cos(W.head||0)*260);controls.update();$('#info').textContent='';$('#hint').textContent='Drag to turn. Scroll or pinch to zoom. Right-drag or two fingers to move.'}
+  else{W.snap=true;$('#hint').textContent='Drag to look around. Scroll or use the slider to move along the trail.'}}
+$('#walk').onclick=()=>setMode('walk');$('#orbit').onclick=()=>setMode('orbit');
+$('#play').onclick=()=>{if(!W)return;if(W.d>=W.total-0.5){W.d=0;W.snap=true;W.playing=true}else W.playing=!W.playing;$('#play').textContent=W.playing?'❚❚ Pause':'▶ Walk'};
+$('#pos').oninput=e=>{if(!W)return;W.d=e.target.value/1000*W.total;W.snap=true};
+{const el=renderer.domElement;let id=null,lx=0,ly=0;
+  el.addEventListener('pointerdown',e=>{if(mode!=='walk'||!W)return;id=e.pointerId;lx=e.clientX;ly=e.clientY;W.drag=true;W.idle=0;try{el.setPointerCapture(id)}catch(_){}});
+  el.addEventListener('pointermove',e=>{if(e.pointerId!==id||!W)return;const k=camera.fov*Math.PI/180/el.clientHeight;W.yaw+=(e.clientX-lx)*k;W.pitch=Math.max(-1.2,Math.min(1.2,W.pitch+(e.clientY-ly)*k));lx=e.clientX;ly=e.clientY});
+  const up=e=>{if(e.pointerId===id){id=null;if(W){W.drag=false;W.idle=0}}};el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  el.addEventListener('wheel',e=>{if(mode!=='walk'||!W)return;e.preventDefault();W.d=Math.max(0,Math.min(W.total,W.d-e.deltaY*0.2))},{passive:false})}
+let last=0;function loop(t){requestAnimationFrame(loop);const dt=last?Math.min(0.1,(t-last)/1000):0;last=t;if(mode==='walk')step(dt);else controls.update();SKY.position.copy(camera.position);renderer.render(scene,camera)}
+requestAnimationFrame(loop);
+loadAll().catch(e=>{$('#info').textContent='The 3D map could not load: '+e.message});
+window.__W=()=>W;
+</script>

@@ -1,0 +1,828 @@
+{
+ "trail": {
+  "id": "hktrail",
+  "name_en": "Hong Kong Trail",
+  "name_zh": "港島徑",
+  "total_km": 50,
+  "post_prefix": "H",
+  "notes": "8 stages, The Peak to Big Wave Bay, through 5 country parks on Hong Kong Island. Distance posts H001–H100 every 500 m; H001 is on Lugard Road ~0.4 km from the start, H100 at Big Wave Bay. H068 and H084 stand at stage boundaries and appear in two stages. Post ranges checked against AFCD post grid references and AFCD GPX tracks. In an emergency call 999 and give the nearest post number. Times, lengths and difficulty are from AFCD Enjoy Hiking (hiking.gov.hk); non-summit high points are approximate, from AFCD GPX. Bus/minibus details checked against Citybus and GMB open data on 2026-09-26; always check before travel.",
+  "notes_zh": "全長50公里，分8段，由山頂至大浪灣，途經港島五個郊野公園。標距柱H001至H100每500米一支；H001位於盧吉道距起點約0.4公里，H100在大浪灣。H068及H084位於段與段交界。遇緊急情況請致電999並報告最近的標距柱編號。時間、長度及難度取自漁護署「郊野樂行」。交通資料於2026年9月26日核對，出發前請再查閱。"
+ },
+ "stages": [
+  {
+   "n": 1,
+   "start_en": "The Peak (Lugard Road)",
+   "start_zh": "山頂（盧吉道）",
+   "end_en": "Pok Fu Lam Reservoir Road",
+   "end_zh": "薄扶林水塘道",
+   "km": 7,
+   "hours": 2.25,
+   "difficulty": "Moderate (AFCD 2★ 普通)",
+   "posts": [
+    "H001",
+    "H014"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Lugard Road boardwalk with Victoria Harbour views",
+    "Lung Fu Shan viewpoint and High West Battery Observation Post",
+    "Pok Fu Lam Reservoir"
+   ],
+   "highlights_zh": [
+    "盧吉道百年棧道，俯瞰維多利亞港",
+    "龍虎山觀景台及西高山砲兵觀察所",
+    "薄扶林水塘"
+   ],
+   "high_point": {
+    "name_en": "Lugard Road (trail high point)",
+    "name_zh": "盧吉道（路段最高處）",
+    "m": 428
+   },
+   "water_en": "Restaurants and convenience stores at The Peak (start). AFCD water filling station at Pok Fu Lam Management Centre on Pok Fu Lam Reservoir Road (near end). A refill point at a pavilion below High West is also reported.",
+   "water_zh": "起點山頂有食肆及便利店。近終點薄扶林水塘道的郊野公園薄扶林管理站設漁護署加水站。另有資料指西高山下涼亭設加水點。",
+   "toilets_en": "At The Peak (start); AFCD flushing toilet at Lung Fu Shan; AFCD toilet on Pok Fu Lam Reservoir Road (end).",
+   "toilets_zh": "起點山頂；龍虎山漁護署沖水廁所；終點薄扶林水塘道漁護署廁所。",
+   "exits_en": [
+    "Lugard Rd / Harlech Rd junction: follow Harlech Road back to The Peak",
+    "Junction to Hatton Road: descend to Mid-Levels West",
+    "Fork signed 'Chi Fu': descend to Chi Fu / Pok Fu Lam Road"
+   ],
+   "exits_zh": [
+    "盧吉道與夏力道交界：沿夏力道折返山頂",
+    "往克頓道分岔口：下走至西半山",
+    "「置富」指示分岔口：下走至置富／薄扶林道"
+   ],
+   "to_start": [
+    {
+     "mode": "tram",
+     "route": "Peak Tram",
+     "from_en": "Garden Road Lower Terminus, Central",
+     "from_zh": "中環花園道纜車總站",
+     "note_en": "Alight at Peak Tower; walk along Peak Road to start of Lugard Road.",
+     "note_zh": "於凌霄閣下車，沿山頂道步行至盧吉道起點。"
+    },
+    {
+     "mode": "bus",
+     "route": "15",
+     "from_en": "Central",
+     "from_zh": "中環",
+     "note_en": "Citybus to The Peak terminus.",
+     "note_zh": "城巴往山頂總站。"
+    },
+    {
+     "mode": "bus",
+     "route": "X15",
+     "from_en": "Central (Star Ferry)",
+     "from_zh": "中環（天星碼頭）",
+     "note_en": "Citybus express to The Peak.",
+     "note_zh": "城巴特快往山頂。"
+    },
+    {
+     "mode": "gmb",
+     "route": "1",
+     "from_en": "Central (Hong Kong Station PTI)",
+     "from_zh": "中環（香港站公共運輸交匯處）",
+     "note_en": "To The Peak public transport terminus.",
+     "note_zh": "往山頂公共交通總站。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "4, 7, 40, 40M, 71, 91",
+     "from_en": "Pok Fu Lam Reservoir Road stop, Pok Fu Lam Road",
+     "from_zh": "薄扶林道「薄扶林水塘道」站",
+     "note_en": "Walk ~1 km down Pok Fu Lam Reservoir Road first. Citybus to Central / Admiralty / Wan Chai.",
+     "note_zh": "先沿薄扶林水塘道下行約1公里。城巴往中環、金鐘、灣仔等。"
+    },
+    {
+     "mode": "bus",
+     "route": "970, 970X",
+     "from_en": "Pok Fu Lam Reservoir Road stop, Pok Fu Lam Road",
+     "from_zh": "薄扶林道「薄扶林水塘道」站",
+     "note_en": "Citybus to Kowloon (So Uk / Cheung Sha Wan).",
+     "note_zh": "城巴往九龍（蘇屋／長沙灣）。"
+    },
+    {
+     "mode": "gmb",
+     "route": "22",
+     "from_en": "Pok Fu Lam Reservoir Road, Pok Fu Lam Road",
+     "from_zh": "薄扶林道近薄扶林水塘道",
+     "note_en": "To Central (Exchange Square).",
+     "note_zh": "往中環（交易廣場）。"
+    },
+    {
+     "mode": "gmb",
+     "route": "23",
+     "from_en": "Pok Fu Lam Reservoir Road, Pok Fu Lam Road",
+     "from_zh": "薄扶林道近薄扶林水塘道",
+     "note_en": "Circular; to Kennedy Town Station.",
+     "note_zh": "循環線，往堅尼地城站。"
+    }
+   ],
+   "safety_en": "Lugard Road runs above weathered cliffs: stay on the path and never climb over railings (AFCD). Busy with tourists near The Peak.",
+   "safety_zh": "盧吉道兩旁懸崖風化陡峭，須沿路徑行走，切勿跨越圍欄（漁護署）。山頂一帶遊客多。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/MkpYc3Jud1ZjS2RFbzE1Qkhza0htdz09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_one.php",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_toi.html",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.hkallshan.com/hong-kong-trail-section1-8/",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 2,
+   "start_en": "Pok Fu Lam Reservoir Road",
+   "start_zh": "薄扶林水塘道",
+   "end_en": "Peel Rise (Aberdeen)",
+   "end_zh": "貝璐道（香港仔）",
+   "km": 4.5,
+   "hours": 1.5,
+   "difficulty": "Moderate (AFCD 2★ 普通)",
+   "posts": [
+    "H015",
+    "H025"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Pok Fu Lam Reservoir, Hong Kong's first public reservoir (1863)",
+    "Pok Fu Lam Viewpoint",
+    "Views over Aberdeen typhoon shelter, East Lamma Channel and Lamma"
+   ],
+   "highlights_zh": [
+    "薄扶林水塘：香港首個公共水塘（1863年）",
+    "薄扶林觀景台",
+    "眺望香港仔避風塘、東博寮海峽及南丫島"
+   ],
+   "high_point": {
+    "name_en": "Trail high point",
+    "name_zh": "路段最高處",
+    "m": 280
+   },
+   "water_en": "No supply on the trail. Water filling station at Pok Fu Lam Management Centre near the start. Shops in Aberdeen town ~1.6 km beyond the end.",
+   "water_zh": "沿途無補給。起點附近薄扶林管理站有加水站。終點外約1.6公里的香港仔市中心有商店。",
+   "toilets_en": "AFCD toilet on Pok Fu Lam Reservoir Road (start). None confirmed along the trail.",
+   "toilets_zh": "起點薄扶林水塘道有漁護署廁所。沿途未確認有廁所。",
+   "exits_en": [
+    "Branch to Chi Fu Fa Yuen",
+    "Junction toward Wah Fu Estate",
+    "Side path near the catchwater down to Tin Wan Estate"
+   ],
+   "exits_zh": [
+    "支路往置富花園",
+    "往華富邨分岔口",
+    "引水道附近支路下至田灣邨"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "4, 7, 40, 40M, 71, 91",
+     "from_en": "Central / Admiralty / Wan Chai",
+     "from_zh": "中環／金鐘／灣仔",
+     "note_en": "Citybus to Pok Fu Lam Reservoir Road stop on Pok Fu Lam Road, then walk ~1 km up Pok Fu Lam Reservoir Road.",
+     "note_zh": "城巴至薄扶林道「薄扶林水塘道」站，再沿薄扶林水塘道上行約1公里。"
+    },
+    {
+     "mode": "bus",
+     "route": "970, 970X",
+     "from_en": "Kowloon (So Uk / Cheung Sha Wan)",
+     "from_zh": "九龍（蘇屋／長沙灣）",
+     "note_en": "Alight Pok Fu Lam Reservoir Road; walk ~1 km uphill.",
+     "note_zh": "於「薄扶林水塘道」站下車，上行約1公里。"
+    },
+    {
+     "mode": "gmb",
+     "route": "22",
+     "from_en": "Central (Exchange Square)",
+     "from_zh": "中環（交易廣場）",
+     "note_en": "Alight Pok Fu Lam Reservoir Road.",
+     "note_zh": "於薄扶林水塘道下車。"
+    },
+    {
+     "mode": "gmb",
+     "route": "23",
+     "from_en": "Kennedy Town Station",
+     "from_zh": "堅尼地城站",
+     "note_en": "Alight Pok Fu Lam Reservoir Road.",
+     "note_zh": "於薄扶林水塘道下車。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "Many (e.g. 7, 76)",
+     "from_en": "Aberdeen Bus Terminus / Aberdeen town",
+     "from_zh": "香港仔巴士總站／香港仔市中心",
+     "note_en": "Walk ~1.6 km down Peel Rise, Aberdeen Reservoir Road and Aberdeen Main Road. Citybus 7 to Central, 76 to Causeway Bay; many others.",
+     "note_zh": "沿貝璐道、香港仔水塘道及香港仔大道步行約1.6公里。城巴7號往中環、76號往銅鑼灣，另有多條路線。"
+    },
+    {
+     "mode": "gmb",
+     "route": "4A, 4C",
+     "from_en": "Aberdeen",
+     "from_zh": "香港仔",
+     "note_en": "To Causeway Bay.",
+     "note_zh": "往銅鑼灣。"
+    }
+   ],
+   "safety_en": "Steep stone steps down to the catchwater; the catchwater path is narrow, mostly single-file.",
+   "safety_zh": "有陡峭石級下降至引水道；引水道旁小徑狹窄，大部分只容一人通過。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/TnY1M1V3ajM0MEZnRE5TbzRSVUJ3QT09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_two.php",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 3,
+   "start_en": "Peel Rise (Aberdeen)",
+   "start_zh": "貝璐道（香港仔）",
+   "end_en": "Wan Chai Gap",
+   "end_zh": "灣仔峽",
+   "km": 6.5,
+   "hours": 2,
+   "difficulty": "Moderate (AFCD 2★ 普通)",
+   "posts": [
+    "H026",
+    "H037"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Shaded woodland path with ferns and native shrubs",
+    "Aberdeen Upper Reservoir dam, valve house and bridge (declared monuments)"
+   ],
+   "highlights_zh": [
+    "林蔭山徑，蕨類及原生植物",
+    "香港仔上水塘水壩、水掣房及石橋（法定古蹟）"
+   ],
+   "high_point": {
+    "name_en": "Trail high point",
+    "name_zh": "路段最高處",
+    "m": 216
+   },
+   "water_en": "Little on the trail. Green Power lists a store at Aberdeen PHAB BBQ Area (AFCD water station there is temporarily closed) and a store at the Wan Chai Gap Road playground near the end.",
+   "water_zh": "沿途補給少。綠色力量列出香港仔傷健樂園燒烤區土多（該處漁護署加水站暫停開放）及近終點灣仔峽道遊樂場土多。",
+   "toilets_en": "AFCD toilet on Aberdeen Reservoir Road is temporarily closed. None else confirmed.",
+   "toilets_zh": "香港仔水塘道漁護署廁所暫停開放。其他未確認。",
+   "exits_en": [
+    "Junction ~1.5 km in: descend Aberdeen Reservoir Road to Aberdeen"
+   ],
+   "exits_zh": [
+    "約1.5公里處分岔口：沿香港仔水塘道下山往香港仔"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "7, 76",
+     "from_en": "Central (Ferry Piers) / Causeway Bay",
+     "from_zh": "中環碼頭／銅鑼灣",
+     "note_en": "Alight Tsung Man Street stop (Aberdeen Reservoir Road), then walk ~1.2 km up Peel Rise.",
+     "note_zh": "於「崇文街」站（香港仔水塘道）下車，沿貝璐道上行約1.2公里。"
+    },
+    {
+     "mode": "gmb",
+     "route": "4A, 4B, 4C",
+     "from_en": "Causeway Bay / Wan Chai",
+     "from_zh": "銅鑼灣／灣仔",
+     "note_en": "To Aberdeen town; walk up Aberdeen Reservoir Road and Peel Rise.",
+     "note_zh": "往香港仔市中心，沿香港仔水塘道及貝璐道上行。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "15",
+     "from_en": "Wan Chai Gap Road, Stubbs Road",
+     "from_zh": "司徒拔道「灣仔峽道」站",
+     "note_en": "Walk ~700 m up Aberdeen Reservoir Road first. Citybus to Central (other side: to The Peak).",
+     "note_zh": "先沿香港仔水塘道上行約700米。城巴往中環（對面往山頂）。"
+    },
+    {
+     "mode": "bus",
+     "route": "15B",
+     "from_en": "Wan Chai Gap Road, Stubbs Road",
+     "from_zh": "司徒拔道「灣仔峽道」站",
+     "note_en": "To Wan Chai (HKCEC Extension); limited service days, check before travel.",
+     "note_zh": "往灣仔（會展新翼）；只限部分日子行駛，出發前請查閱。"
+    }
+   ],
+   "safety_en": "Starts with a steep ~600 m road climb. Several stream crossings; take care after heavy rain.",
+   "safety_zh": "起步需上約600米斜路。途中多次橫過澗道，大雨後須小心。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/cGRqOGNYRGlmUTFxbjB3TEVaakxHdz09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_three.php",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_toi.html",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 4,
+   "start_en": "Wan Chai Gap",
+   "start_zh": "灣仔峽",
+   "end_en": "Wong Nai Chung Gap",
+   "end_zh": "黃泥涌峽",
+   "km": 7.5,
+   "hours": 3,
+   "difficulty": "Strenuous (AFCD 3★ 費力)",
+   "posts": [
+    "H038",
+    "H050"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "No. 13 Pillbox of the 1930s Aberdeen defences",
+    "Middle Gap viewpoint over Ocean Park and Brick Hill",
+    "'Mask Rock' on Mount Nicholson"
+   ],
+   "highlights_zh": [
+    "香港仔水塘防禦陣地13號機槍堡",
+    "中峽觀景台遠眺海洋公園及南朗山",
+    "聶高信山「面具石」"
+   ],
+   "high_point": {
+    "name_en": "Trail high point",
+    "name_zh": "路段最高處",
+    "m": 308
+   },
+   "water_en": "No supply on the trail. At the end: petrol-station convenience store on Wong Nai Chung Gap Road; vending machines at Wong Nai Chung Reservoir Park.",
+   "water_zh": "沿途無補給。終點：黃泥涌峽道油站便利店、黃泥涌水塘公園自動販賣機。",
+   "toilets_en": "None confirmed on the trail. AFCD toilet at Tai Tam BBQ Site on Tai Tam Reservoir Road, just past the end.",
+   "toilets_zh": "沿途未確認有廁所。終點稍後大潭水塘道大潭燒烤場有漁護署廁所。",
+   "exits_en": [
+    "Near start: back to Wan Chai Gap",
+    "Branch to Aberdeen Upper / Lower Reservoirs and Aberdeen",
+    "Branch to Nam Fung Road",
+    "Middle Gap Road or Black's Link back to Wan Chai Gap"
+   ],
+   "exits_zh": [
+    "起點附近：折返灣仔峽",
+    "分支往香港仔上／下水塘及香港仔",
+    "分支往南風道",
+    "經中峽道或布力徑返灣仔峽"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "15",
+     "from_en": "Central",
+     "from_zh": "中環",
+     "note_en": "Alight Wan Chai Gap Road (Peak Road); walk ~650 m via Wan Chai Gap Park down Aberdeen Reservoir Road.",
+     "note_zh": "於山頂道「灣仔峽道」站下車，經灣仔峽公園沿香港仔水塘道步行約650米。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "6",
+     "from_en": "Tai Tam Reservoir Road stop, Wong Nai Chung Gap Road",
+     "from_zh": "黃泥涌峽道「大潭水塘道」站",
+     "note_en": "Walk ~120 m. To Central (Exchange Square).",
+     "note_zh": "步行約120米。往中環（交易廣場）。"
+    },
+    {
+     "mode": "bus",
+     "route": "41A, 63",
+     "from_en": "Tai Tam Reservoir Road stop, Wong Nai Chung Gap Road",
+     "from_zh": "黃泥涌峽道「大潭水塘道」站",
+     "note_en": "To North Point Ferry Pier.",
+     "note_zh": "往北角碼頭。"
+    },
+    {
+     "mode": "bus",
+     "route": "76",
+     "from_en": "Tai Tam Reservoir Road stop, Wong Nai Chung Gap Road",
+     "from_zh": "黃泥涌峽道「大潭水塘道」站",
+     "note_en": "To Causeway Bay.",
+     "note_zh": "往銅鑼灣。"
+    },
+    {
+     "mode": "bus",
+     "route": "1M",
+     "from_en": "Tai Tam Reservoir Road stop, Wong Nai Chung Gap Road",
+     "from_zh": "黃泥涌峽道「大潭水塘道」站",
+     "note_en": "To Exhibition Centre Station.",
+     "note_zh": "往會展站。"
+    },
+    {
+     "mode": "gmb",
+     "route": "5",
+     "from_en": "Wong Nai Chung Gap Road",
+     "from_zh": "黃泥涌峽道",
+     "note_en": "To Causeway Bay (Jaffe Road) or Aberdeen.",
+     "note_zh": "往銅鑼灣（謝斐道）或香港仔。"
+    }
+   ],
+   "safety_en": "About 700 m of sustained uphill: carry enough water and sun protection (AFCD). Longest stage time on the trail.",
+   "safety_zh": "有約700米持續上斜，注意防曬及補充水分（漁護署）。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/ZFJyWllCUGJpMUJublRIZUVPWWF0dz09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_four.php",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_toi.html",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 5,
+   "start_en": "Wong Nai Chung Gap",
+   "start_zh": "黃泥涌峽",
+   "end_en": "Mount Parker Road (Quarry Gap)",
+   "end_zh": "柏架山道（大風坳）",
+   "km": 4,
+   "hours": 2,
+   "difficulty": "Strenuous (AFCD 3★ 費力)",
+   "posts": [
+    "H051",
+    "H059"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Jardine's Lookout (433 m) harbour views",
+    "Mount Butler viewpoint over Tai Tam reservoirs",
+    "Osborn memorial (1941 battle)"
+   ],
+   "highlights_zh": [
+    "渣甸山（433米）俯瞰維港",
+    "畢拿山觀景台飽覽大潭水塘",
+    "奧斯本紀念碑（1941年戰役）"
+   ],
+   "high_point": {
+    "name_en": "Mount Butler",
+    "name_zh": "畢拿山",
+    "m": 436
+   },
+   "water_en": "Near start only: supermarket at Hong Kong Parkview; AFCD water station at Tai Tam BBQ Site on Tai Tam Reservoir Road. Nothing after the climb.",
+   "water_zh": "只限起點附近：陽明山莊超級市場；大潭水塘道大潭燒烤場漁護署加水站。上山後無補給。",
+   "toilets_en": "AFCD toilet on Tai Tam Reservoir Road (near start); AFCD toilet at Quarry Gap (end).",
+   "toilets_zh": "起點附近大潭水塘道漁護署廁所；終點大風坳漁護署廁所。",
+   "exits_en": [
+    "Saddle near H056: catchwater then steps down to Mount Butler Road (GMB 24M to Admiralty)"
+   ],
+   "exits_zh": [
+    "H056附近山坳：沿引水道再下石級至畢拉山道（小巴24M往金鐘）"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "6",
+     "from_en": "Central (Exchange Square)",
+     "from_zh": "中環（交易廣場）",
+     "note_en": "Alight Wong Nai Chung Reservoir Park.",
+     "note_zh": "於「黃泥涌水塘公園」站下車。"
+    },
+    {
+     "mode": "bus",
+     "route": "41A, 63",
+     "from_en": "North Point Ferry Pier",
+     "from_zh": "北角碼頭",
+     "note_en": "Alight Wong Nai Chung Reservoir Park.",
+     "note_zh": "於「黃泥涌水塘公園」站下車。"
+    },
+    {
+     "mode": "bus",
+     "route": "76",
+     "from_en": "Causeway Bay",
+     "from_zh": "銅鑼灣",
+     "note_en": "Alight Wong Nai Chung Reservoir Park.",
+     "note_zh": "於「黃泥涌水塘公園」站下車。"
+    },
+    {
+     "mode": "bus",
+     "route": "1M",
+     "from_en": "Exhibition Centre Station",
+     "from_zh": "會展站",
+     "note_en": "Alight Wong Nai Chung Reservoir Park.",
+     "note_zh": "於「黃泥涌水塘公園」站下車。"
+    },
+    {
+     "mode": "gmb",
+     "route": "5",
+     "from_en": "Causeway Bay (Jaffe Road)",
+     "from_zh": "銅鑼灣（謝斐道）",
+     "note_en": "Alight on Wong Nai Chung Gap Road.",
+     "note_zh": "於黃泥涌峽道下車。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "mtr",
+     "route": "Tai Koo (Exit B)",
+     "from_en": "Quarry Gap via Mount Parker Road",
+     "from_zh": "由大風坳經柏架山道",
+     "note_en": "Walk ~3 km down Mount Parker Road to King's Road, then ~350 m to Tai Koo MTR Exit B. Buses and GMBs also on King's Road.",
+     "note_zh": "沿柏架山道下行約3公里至英皇道，再步行約350米至太古站B出口。英皇道亦有巴士及小巴。"
+    }
+   ],
+   "safety_en": "Big climbs and descents; needs fitness. Little shade. Steep stairs (about 600 steps) down to Quarry Gap. No water on the ridge.",
+   "safety_zh": "上落差大，需一定體能。遮蔭少。落大風坳有約600級陡梯。山上無水源補給。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/YXhBNmNMRldCL0wwZHE5ZGR1aWRHQT09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_five.php",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_toi.html",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://en.wikipedia.org/wiki/Mount_Butler",
+    "https://en.wikipedia.org/wiki/Jardine%27s_Lookout",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 6,
+   "start_en": "Mount Parker Road (Quarry Gap)",
+   "start_zh": "柏架山道（大風坳）",
+   "end_en": "Tai Tam Road",
+   "end_zh": "大潭道",
+   "km": 4.5,
+   "hours": 1.25,
+   "difficulty": "Moderate (AFCD 2★ 普通)",
+   "posts": [
+    "H060",
+    "H068"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Shady 'air-con corridor' of tall trees",
+    "Tai Tam Upper Reservoir and century-old dams",
+    "1850s milestone of the old Stanley–Victoria road"
+   ],
+   "highlights_zh": [
+    "高大樹木形成的天然「冷氣走廊」",
+    "大潭上水塘及百年水壩",
+    "1850年代群帶路里程碑"
+   ],
+   "high_point": {
+    "name_en": "Quarry Gap (start)",
+    "name_zh": "大風坳（起點）",
+    "m": 337
+   },
+   "water_en": "No supply on the trail. AFCD water station at Tai Tam Tuk Reservoir is temporarily closed.",
+   "water_zh": "沿途無補給。大潭篤水塘漁護署加水站暫停開放。",
+   "toilets_en": "AFCD toilet at Quarry Gap (start). AFCD toilet on southern Tai Tam Reservoir Road is temporarily closed.",
+   "toilets_zh": "起點大風坳有漁護署廁所。大潭水塘道南段漁護署廁所暫停開放。",
+   "exits_en": [
+    "Branch to Tai Tam Gap",
+    "After Tai Tam Upper Reservoir dam: Tai Tam Reservoir Road north to Hong Kong Parkview / Wong Nai Chung Gap"
+   ],
+   "exits_zh": [
+    "分支往大潭峽",
+    "大潭上水塘水壩後：沿大潭水塘道北往陽明山莊／黃泥涌峽"
+   ],
+   "to_start": [
+    {
+     "mode": "mtr",
+     "route": "Tai Koo (Exit B)",
+     "from_en": "Tai Koo MTR",
+     "from_zh": "港鐵太古站",
+     "note_en": "Walk ~350 m to King's Road / Mount Parker Road, then ~3 km uphill on Mount Parker Road to Quarry Gap. Or continue from Stage 5.",
+     "note_zh": "步行約350米至英皇道與柏架山道交界，再沿柏架山道上行約3公里至大風坳。或由第五段續走。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "14",
+     "from_en": "Tai Tam Reservoir (North), Tai Tam Road",
+     "from_zh": "大潭道「大潭水塘（北）」站",
+     "note_en": "Walk ~1 km toward Tai Tam Harbour first (AFCD). To Grand Promenade (Sai Wan Ho) or Stanley.",
+     "note_zh": "先向大潭港方向步行約1公里（漁護署）。往嘉亨灣（西灣河）或赤柱。"
+    },
+    {
+     "mode": "gmb",
+     "route": "16A, 16M, 16X",
+     "from_en": "Tai Tam Road, Tai Tam Dam (North)",
+     "from_zh": "大潭道大潭水塘大壩北面",
+     "note_en": "To Chai Wan Station, or toward Stanley / Chung Hom Kok.",
+     "note_zh": "往柴灣站，或往赤柱／舂坎角。"
+    }
+   ],
+   "safety_en": "Tai Tam Road near the exit has no pavement in places; it is narrow and busy. Take care walking to the bus stop.",
+   "safety_zh": "出口大潭道部分路段無行人路，狹窄繁忙，前往車站時須小心。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/N3BGSE14SVlMSE9yVzQva1RNRTN5Zz09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_six.php",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_toi.html",
+    "https://www.afcd.gov.hk/english/country/cou_vis/cou_vis_rec/cou_vis_wfs.html",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 7,
+   "start_en": "Tai Tam Road",
+   "start_zh": "大潭道",
+   "end_en": "To Tei Wan (Shek O Road)",
+   "end_zh": "土地灣（石澳道）",
+   "km": 7.5,
+   "hours": 2.5,
+   "difficulty": "Moderate (AFCD 2★ 普通)",
+   "posts": [
+    "H068",
+    "H084"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Tai Tam Harbour views",
+    "Side trip near H075 to the Tai Tam obelisk on Obelisk Hill (~30 min)",
+    "Lan Nai Wan seaside village"
+   ],
+   "highlights_zh": [
+    "大潭港景色",
+    "H075附近可上石碑山看大潭無字碑（約半小時）",
+    "爛泥灣海邊村落"
+   ],
+   "high_point": {
+    "name_en": "Shek O Road at To Tei Wan (end)",
+    "name_zh": "土地灣石澳道（終點）",
+    "m": 136
+   },
+   "water_en": "No supply on the trail. Green Power lists a store at To Tei Wan (end).",
+   "water_zh": "沿途無補給。綠色力量列出終點有土地灣土多。",
+   "toilets_en": "Public toilets at the To Tei Wan trailhead by the bus stop (end).",
+   "toilets_zh": "終點土地灣巴士站旁有公廁。",
+   "exits_en": [
+    "Near Lan Nai Wan: side path up to Shek O Road (Citybus 9)",
+    "Near Tung A village: side path up to Shek O Road"
+   ],
+   "exits_zh": [
+    "近爛泥灣：支路上石澳道（城巴9號）",
+    "近東丫村：支路上石澳道"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "14",
+     "from_en": "Grand Promenade (Sai Wan Ho) / Stanley",
+     "from_zh": "嘉亨灣（西灣河）／赤柱",
+     "note_en": "Alight Tai Tam Reservoir (North); walk ~30 m toward Tai Tam Harbour, down the stairs, then ~1 km toward Shek O to the start (AFCD).",
+     "note_zh": "於「大潭水塘（北）」站下車，向大潭港方向步行約30米落樓梯，再往石澳方向步行約1公里至起點（漁護署）。"
+    },
+    {
+     "mode": "gmb",
+     "route": "16A, 16M, 16X",
+     "from_en": "Chai Wan Station",
+     "from_zh": "柴灣站",
+     "note_en": "Alight Tai Tam Road, Tai Tam Dam (North).",
+     "note_zh": "於大潭道大潭水塘大壩北面下車。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "bus",
+     "route": "9",
+     "from_en": "To Tei Wan, Shek O Road",
+     "from_zh": "石澳道「土地灣」站",
+     "note_en": "To Shau Kei Wan MTR (cross road); same-side stop goes to Shek O.",
+     "note_zh": "過對面往筲箕灣港鐵站；同側往石澳。"
+    },
+    {
+     "mode": "bus",
+     "route": "X9",
+     "from_en": "To Tei Wan, Shek O Road",
+     "from_zh": "石澳道「土地灣」站",
+     "note_en": "Express to Central (Star Ferry); weekends and public holidays.",
+     "note_zh": "特快往中環（天星碼頭）；週末及公眾假期。"
+    },
+    {
+     "mode": "rmb",
+     "route": "Shau Kei Wan – Shek O",
+     "from_en": "To Tei Wan, Shek O Road",
+     "from_zh": "石澳道土地灣",
+     "note_en": "Red minibus, hail-and-ride, to Shau Kei Wan MTR.",
+     "note_zh": "紅色小巴，揚手即停，往筲箕灣港鐵站。"
+    }
+   ],
+   "safety_en": "Short roadside walk from the bus stop to the start. Long catchwater; ends with a tiring ~400 m flight of concrete steps up to Shek O Road.",
+   "safety_zh": "由巴士站到起點需走一小段馬路。引水道路段長；終點需登約400米水泥梯級上石澳道，頗費力。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/czFnaDRTUUFySjBwT1VDeWxSSGM3QT09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_seven.php",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.hongkonghike.com/how-to-hike-dragons-back-hong-kong-most-famous-easy-hike/",
+    "https://www.16seats.net/eng/rmb/r_h09.html",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)",
+    "https://data.etagmb.gov.hk/ (GMB open data, checked 2026-09-26)"
+   ]
+  },
+  {
+   "n": 8,
+   "start_en": "To Tei Wan (Shek O Road)",
+   "start_zh": "土地灣（石澳道）",
+   "end_en": "Big Wave Bay",
+   "end_zh": "大浪灣",
+   "km": 8.5,
+   "hours": 2.75,
+   "difficulty": "Strenuous (AFCD 3★ 費力)",
+   "posts": [
+    "H084",
+    "H100"
+   ],
+   "posts_estimated": false,
+   "highlights_en": [
+    "Dragon's Back ridge",
+    "Shek O Peak views of Shek O, Stanley and Tai Tam Bay",
+    "Finish at Big Wave Bay beach (H100)"
+   ],
+   "highlights_zh": [
+    "龍脊山脊",
+    "打爛埕頂山遠眺石澳、赤柱及大潭灣",
+    "於大浪灣沙灘完成全程（H100）"
+   ],
+   "high_point": {
+    "name_en": "Shek O Peak",
+    "name_zh": "打爛埕頂山",
+    "m": 284
+   },
+   "water_en": "None on the trail; bring all water. Store at To Tei Wan (start). Cafés, restaurants and stores at Big Wave Bay (end).",
+   "water_zh": "沿途無補給，須自備足夠食水。起點土地灣有土多；終點大浪灣有餐廳、咖啡店及士多。",
+   "toilets_en": "Public toilets at To Tei Wan trailhead (start). Beach toilets, changing rooms and showers at Big Wave Bay (end). None on the ridge.",
+   "toilets_zh": "起點土地灣有公廁；終點大浪灣泳灘有廁所、更衣室及淋浴。山脊上無廁所。",
+   "exits_en": [
+    "After the ridge: left back along the early Dragon's Back path to To Tei Wan (mountain-bike trail, beware bikes)",
+    "On the concrete road: turn left down to Shek O Road",
+    "Junction to Tai Tam Gap",
+    "Ma Tong O: down past Cape Collinson cemeteries to Chai Wan (Wan Tsui Estate)"
+   ],
+   "exits_zh": [
+    "落龍脊後分支：左走龍脊初段返土地灣（越野單車徑，小心單車）",
+    "接水泥路後：左走落石澳道",
+    "往大潭峽分岔口",
+    "馬塘坳：經歌連臣角墳場下至柴灣環翠邨"
+   ],
+   "to_start": [
+    {
+     "mode": "bus",
+     "route": "9",
+     "from_en": "Shau Kei Wan Bus Terminus (MTR Shau Kei Wan, Exit A)",
+     "from_zh": "筲箕灣巴士總站（港鐵筲箕灣站A出口）",
+     "note_en": "Citybus toward Shek O; alight To Tei Wan. Trailhead is beside the stop.",
+     "note_zh": "城巴往石澳，於「土地灣」站下車，起點在車站旁。"
+    },
+    {
+     "mode": "rmb",
+     "route": "Shau Kei Wan – Shek O",
+     "from_en": "Near MTR Shau Kei Wan (Perfect Mount Gardens terminus)",
+     "from_zh": "筲箕灣港鐵站附近（峻峰花園小巴站）",
+     "note_en": "Red minibus; tell the driver 'To Tei Wan' (土地灣).",
+     "note_zh": "紅色小巴，上車告知司機在土地灣落車。"
+    }
+   ],
+   "from_end": [
+    {
+     "mode": "rmb",
+     "route": "Big Wave Bay – Shau Kei Wan",
+     "from_en": "Big Wave Bay",
+     "from_zh": "大浪灣",
+     "note_en": "Red minibus starts at Big Wave Bay; runs about 09:30–22:50 (Sun/PH from 08:30). Leaves when full; carry cash.",
+     "note_zh": "紅色小巴由大浪灣開出，約09:30至22:50（週日及假期08:30起），滿座即開，請備現金。"
+    },
+    {
+     "mode": "bus",
+     "route": "9",
+     "from_en": "Big Wave Bay Road / Shek O Road",
+     "from_zh": "大浪灣道／石澳道",
+     "note_en": "Only a few trips call at Big Wave Bay itself; otherwise walk ~1 km up Big Wave Bay Road to Shek O Road and take Citybus 9 to Shau Kei Wan MTR.",
+     "note_zh": "只有少數班次進入大浪灣站；一般需沿大浪灣道步行約1公里至石澳道，乘城巴9號往筲箕灣港鐵站。"
+    }
+   ],
+   "safety_en": "Exposed ridge with little shade: heat and sun risk in summer. Steep climb for the first ~1.5 km. Very crowded on weekends. Parts are shared with mountain bikes.",
+   "safety_zh": "山脊開揚少遮蔭，夏天慎防中暑及曬傷。首約1.5公里上斜。週末人多。部分路段與越野單車共用。",
+   "sources": [
+    "https://www.hiking.gov.hk/trail/info/id/QVVxLzJWeGxNUndtYUNXY2VpK3QxUT09",
+    "https://www.afcd.gov.hk/english/country/cou_wha/files/distance_posts_Hong_Kong.pdf",
+    "https://en.wikipedia.org/wiki/Hong_Kong_Trail",
+    "https://www.oasistrek.com/hk_trail_eight.php",
+    "https://hike.greenpower.org.hk/supply-facilities-on-hong-kong-trail",
+    "https://www.16seats.net/eng/rmb/r_h09.html",
+    "https://zh.wikipedia.org/zh-hk/%E5%9F%8E%E5%B7%B49%E8%99%9F%E7%B7%9A",
+    "https://www.hongkonghike.com/how-to-hike-dragons-back-hong-kong-most-famous-easy-hike/",
+    "https://hikeshongkong.com/blogs/upkow/dragons-back-hong-kong-trail-guide",
+    "https://www.beckyexploring.com/dragons-back-big-wave-bay-hike/",
+    "https://en.wikipedia.org/wiki/Shek_O_Peak",
+    "https://rt.data.gov.hk/v2/transport/citybus/ (Citybus open data, checked 2026-09-26)"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+const { chromium } = require('playwright');
+(async()=>{
+ const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+ const p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,hasTouch:true,isMobile:true});p.setDefaultTimeout(240000);
+ p.on('pageerror',e=>console.log('ERR',e.message));
+ await p.goto('http://127.0.0.1:8765/capm.html');await p.waitForTimeout(1500);
+ await p.click('#lantau3d');await p.waitForFunction(()=>window.__v3dFull,null,{timeout:240000});
+ await p.evaluate(()=>{const G=__G();if(G.cloudGrp)G.cloudGrp.visible=false});
+ await p.click('#v3dWalk');await p.evaluate(()=>{const w=__V.walk;w.playing=false;w.d=2870});await p.waitForTimeout(3000);
+ console.log('gyro button visible:',await p.evaluate(()=>!document.querySelector('#v3dWalkGyro').hidden));
+ await p.click('#v3dWalkGyro');
+ const fire=(a,be,g)=>p.evaluate(([a,be,g])=>window.dispatchEvent(new DeviceOrientationEvent('deviceorientation',{alpha:a,beta:be,gamma:g,absolute:false})),[a,be,g]);
+ const rd=()=>p.evaluate(()=>{const w=__V.walk;return [w.gyro,+(w.yaw*57.3).toFixed(1),+(w.pitch*57.3).toFixed(1)]});
+ await fire(0,90,0);await p.waitForTimeout(200);console.log('upright a0',await rd());
+ await fire(30,90,0);await p.waitForTimeout(200);console.log('turn left 30 (alpha+30)',await rd());
+ await fire(30,110,0);await p.waitForTimeout(200);console.log('tilt top back (beta 110 = look up?)',await rd());
+ await fire(30,70,0);await p.waitForTimeout(1500);console.log('beta 70',await rd());
+ await p.screenshot({path:'walk/gyro.png'});
+ await p.waitForTimeout(1000);console.log('still on after 2.7s',await rd());
+ await b.close();})();
