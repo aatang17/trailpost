@@ -363,8 +363,8 @@ function cloudLight(){
 }
 function makeLabel(text,kind){
   const f=kind==='post'?26:30,pad=10;const c=document.createElement('canvas');const g=c.getContext('2d');
-  g.font=`600 ${f}px "Noto Sans HK","Barlow Condensed",sans-serif`;const w=Math.ceil(g.measureText(text).width)+pad*2,h=f+pad*1.6+14;
-  c.width=w;c.height=h;g.font=`600 ${f}px "Noto Sans HK","Barlow Condensed",sans-serif`;
+  g.font=`600 ${f}px "Inter","Noto Sans HK",sans-serif`;const w=Math.ceil(g.measureText(text).width)+pad*2,h=f+pad*1.6+14;
+  c.width=w;c.height=h;g.font=`600 ${f}px "Inter","Noto Sans HK",sans-serif`;
   const bg=kind==='post'?'#15241d':kind==='peak'?'#ffffff':kind==='bridge'?'#0e3a5a':'rgba(255,255,255,.92)',fg=(kind==='post'||kind==='bridge')?'#ffffff':'#15241d';
   g.fillStyle=bg;const rr=8,bh=h-14;g.beginPath();g.moveTo(rr,0);g.lineTo(w-rr,0);g.quadraticCurveTo(w,0,w,rr);g.lineTo(w,bh-rr);g.quadraticCurveTo(w,bh,w-rr,bh);g.lineTo(w/2+8,bh);g.lineTo(w/2,h);g.lineTo(w/2-8,bh);g.lineTo(rr,bh);g.quadraticCurveTo(0,bh,0,bh-rr);g.lineTo(0,rr);g.quadraticCurveTo(0,0,rr,0);g.fill();
   if(kind==='peak'){g.strokeStyle='#b8660f';g.lineWidth=3;g.stroke()}
