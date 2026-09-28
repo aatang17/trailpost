@@ -46,7 +46,7 @@ async function decodeDem(blob){
   const bmp=await createImageBitmap(blob,{colorSpaceConversion:'none',premultiplyAlpha:'none'});
   const cv=document.createElement('canvas');cv.width=bmp.width;cv.height=bmp.height;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(bmp,0,0);
   const px=cx.getImageData(0,0,bmp.width,bmp.height).data;const out=new Float32Array(bmp.width*bmp.height);
-  for(let i=0;i<out.length;i++)out[i]=px[i*4]*256+px[i*4+1]-10;
+  for(let i=0;i<out.length;i++){const v=px[i*4]*256+px[i*4+1]-10;out[i]=v>-3&&v<0.5?0.5:v} // flat coastal land sits just above the sea surface
   return {w:bmp.width,h:bmp.height,d:out};
 }
 function sunPos(date,min){ // HK solar azimuth (deg from north, clockwise) and elevation (deg)
@@ -77,7 +77,7 @@ function teardown3D(){ // free the current area before loading another one
     const free=m=>{if(!m)return;[].concat(m).forEach(x=>{['map','aoMap','normalMap'].forEach(k=>{if(x[k]&&x[k].dispose)x[k].dispose()});x.dispose()})};
     if(G.scene)G.scene.traverse(o=>{if(o.geometry)o.geometry.dispose();free(o.material)});
     (G.chunks||[]).forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());free(c.hi)});(G.farChunks||[]).forEach(c=>Object.values(c.geos).forEach(g=>g.dispose()));
-    free(G.lowMat);free(G.mapMat);free(G.farMat);if(G.ao)G.ao.dispose();
+    free(G.lowMat);free(G.mapMat);free(G.farMat);if(G.ao)G.ao.dispose();if(G.shoreTex)G.shoreTex.dispose();if(G.seaColTex)G.seaColTex.dispose();
     G.renderer.dispose();try{G.renderer.forceContextLoss()}catch(e){}G.renderer.domElement.remove()}
   G={};D3=CH=EX=null;V.loaded=false;V.loading=false;$('#v3dStatus').textContent='';$('#v3dCloudInfo').textContent='';
 }
@@ -151,7 +151,7 @@ async function init3D(){
     // in the background: 5 m heights, then buildings and cable car
     const blob=u=>fetch(L3+u).then(r=>{if(!r.ok)throw new Error(u+' '+r.status);return r.blob()});
     const stop=()=>{if(!live())throw 'stale'};
-    Promise.all([blob('dem5.webp').then(decodeDem),blob('can5.webp').then(decodeGray).catch(()=>null)]).then(([d,c])=>{stop();G.H=d.d;if(c)G.CAN=c.d;G.full=true;
+    Promise.all([blob('dem5.webp').then(decodeDem),blob('can5.webp').then(decodeGray).catch(()=>null)]).then(([d,c])=>{stop();G.H=d.d;if(c)G.CAN=c.d;G.full=true;buildShore();
       G.chunks.forEach(ch=>{Object.values(ch.geos).forEach(g=>g.dispose());ch.geos={};ch.dirty=true});
       applyStage(false);placeOverlays();return fetch(L3+'extras.json').then(r=>r.json())}).then(ex=>{stop();EX=ex;buildExtras();G.shadowDirty=true;window.__v3dFull=Math.round(performance.now()-t0);
       return blob('ao.webp').then(blobTex)}).then(ao=>{stop();G.ao=ao;[G.lowMat,G.mapMat,...G.chunks.map(c=>c.hi)].forEach(m=>{if(m){m.aoMap=ao;m.aoMapIntensity=1;m.needsUpdate=true}});
@@ -203,6 +203,77 @@ function physicalSky(){
   try{const SS=THREE.Sky.SkyShader;if(SS&&!SS._p){SS.fragmentShader=SS.fragmentShader.replace(/const vec3 cameraPos = vec3\( 0\.0, 0\.0, 0\.0 \);/,'').replace(/cameraPos\b/g,'cameraPosition').replace('uniform vec3 up;','uniform vec3 up; uniform float skyGain;').replace('gl_FragColor = vec4( retColor, 1.0 );','gl_FragColor = vec4( retColor*skyGain, 1.0 );');SS._p=1}
     const s=new THREE.Sky();s.scale.setScalar(100000);s.frustumCulled=false;const u=s.material.uniforms;u.skyGain={value:0.45};u.turbidity.value=4.2;u.rayleigh.value=2.2;u.mieCoefficient.value=0.004;u.mieDirectionalG.value=0.8;return s}catch(e){return null}
 }
+/* ----- sea: see-through near the coast so the real colour in the aerial photo (sand, rock, reef) shows, with a
+   moving foam line where water meets land. Distance to land comes from the height grid (sea cells are −6 m). ----- */
+function seaMaterial(rip){
+  const m=new THREE.MeshPhongMaterial({color:0x2b5a6c,specular:0xb8c8d2,shininess:260,normalMap:rip,normalScale:new THREE.Vector2(0.3,0.3),
+    transparent:true});
+  const U=G.seaU={shoreTex:{value:null},shoreOn:{value:0},shoreOff:{value:new THREE.Vector2()},shoreSize:{value:new THREE.Vector2(1,1)},seaT:{value:0},foamL:{value:1},shoreFade:{value:70},seaCol:{value:null},seaColOn:{value:0},skyRef:{value:new THREE.Color(0.6,0.66,0.7)}};
+  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
+    sh.vertexShader='varying vec3 vSeaW;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n vSeaW=(modelMatrix*vec4(transformed,1.0)).xyz;');
+    sh.fragmentShader=`varying vec3 vSeaW;uniform sampler2D shoreTex,seaCol;uniform float shoreOn,seaColOn,seaT,foamL,shoreFade;uniform vec2 shoreOff,shoreSize;uniform vec3 skyRef;
+      float sHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+      float sNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(sHash(i),sHash(i+vec2(1,0)),f.x),mix(sHash(i+vec2(0,1)),sHash(i+vec2(1,1)),f.x),f.y);}
+      `+sh.fragmentShader /* gusty patches: the sun sparkle comes and goes */ .replace('vec3 outgoingLight = reflectedLight.directDiffuse','{float gp=sNoise(vSeaW.xz*0.004+vec2(seaT*0.006,seaT*0.004))*0.6+sNoise(vSeaW.xz*0.017-vec2(seaT*0.02,0.0))*0.4;reflectedLight.directSpecular*=0.15+1.1*smoothstep(0.35,0.75,gp);}\n vec3 outgoingLight = reflectedLight.directDiffuse').replace('#include <map_fragment>',`#include <map_fragment>
+      if(seaColOn>0.5){vec2 cuv=(vSeaW.xz+shoreOff)/shoreSize;float e=min(min(cuv.x,1.0-cuv.x),min(cuv.y,1.0-cuv.y));
+        if(e>0.0)diffuseColor.rgb=mix(diffuseColor.rgb,sRGBToLinear(texture2D(seaCol,cuv)).rgb,smoothstep(0.0,0.06,e));} // the sea's own colour, from the aerial photo
+      `).replace('#include <tonemapping_fragment>',`
+      {float cv=max(dot(normalize(cameraPosition-vSeaW),vec3(0.0,1.0,0.0)),0.0);float fr=0.02+0.98*pow(1.0-cv,5.0); // sky reflection (Schlick), stronger towards the horizon
+       gl_FragColor.rgb=mix(gl_FragColor.rgb,skyRef,fr*0.85);}
+      {vec2 suv=(vSeaW.xz+shoreOff)/shoreSize;float d=255.0;
+       if(shoreOn>0.5&&suv.x>0.0&&suv.x<1.0&&suv.y>0.0&&suv.y<1.0)d=texture2D(shoreTex,suv).r*255.0;
+       if(d<254.0){
+        float n=sNoise(vSeaW.xz*0.05+vec2(seaT*0.04,0.0)),n2=sNoise(vSeaW.xz*0.21-vec2(0.0,seaT*0.09));
+        float clear=1.0-smoothstep(3.0,shoreFade*(0.65+0.7*n),d);          // 1 at the coast, 0 offshore
+        float wave=0.5+0.5*sin(d*0.5+seaT*1.3+n*6.0);                        // bands that move in towards the shore
+        float foam=(1.0-smoothstep(1.0,4.0+6.0*n,d))*(0.5+0.5*wave)*smoothstep(0.2,0.55,n2+0.15);
+        float lines=(1.0-smoothstep(5.0,20.0+10.0*n,d))*smoothstep(0.86,0.98,wave)*smoothstep(0.35,0.8,n2)*0.7;
+        float f=clamp(foam+lines,0.0,1.0);
+        gl_FragColor.rgb=mix(gl_FragColor.rgb,vec3(0.90,0.93,0.94)*foamL,f*0.85);
+        gl_FragColor.a=max(1.0-clear*0.9,f*0.9);
+       }}
+      #include <tonemapping_fragment>`)};
+  return m;
+}
+function buildShore(){ // metres from each sea cell to the nearest land cell, capped at 255 (two-pass chamfer)
+  const C=D3.cols,R=D3.rows,cs=D3.cs,H=G.H,N=C*R,D=new Float32Array(N),a=cs,b=cs*Math.SQRT2;
+  for(let k=0;k<N;k++)D[k]=H[k]>-3?0:1e6;
+  for(let i=0;i<R;i++)for(let j=0;j<C;j++){const k=i*C+j;let v=D[k];if(!v)continue;
+    if(j>0)v=Math.min(v,D[k-1]+a);if(i>0){v=Math.min(v,D[k-C]+a);if(j>0)v=Math.min(v,D[k-C-1]+b);if(j<C-1)v=Math.min(v,D[k-C+1]+b)}D[k]=v}
+  for(let i=R-1;i>=0;i--)for(let j=C-1;j>=0;j--){const k=i*C+j;let v=D[k];if(!v)continue;
+    if(j<C-1)v=Math.min(v,D[k+1]+a);if(i<R-1){v=Math.min(v,D[k+C]+a);if(j<C-1)v=Math.min(v,D[k+C+1]+b);if(j>0)v=Math.min(v,D[k+C-1]+b)}D[k]=v}
+  const u8=new Uint8Array(N);for(let k=0;k<N;k++)u8[k]=D[k]>255?255:D[k];
+  if(G.shoreTex)G.shoreTex.dispose();
+  const t=new THREE.DataTexture(u8,C,R,THREE.LuminanceFormat,THREE.UnsignedByteType);t.unpackAlignment=1;t.magFilter=t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;G.shoreTex=t;
+  const U=G.seaU;U.shoreTex.value=t;U.shoreOff.value.set(G.cx,G.cz);U.shoreSize.value.set(C*cs,R*cs);U.shoreOn.value=1;
+  seaColour(D);
+}
+function seaColour(D){ // average the photo over open water (15 m+ from land) in 20 m blocks, fill under the land, smooth away boats
+  const OV=W3.areas[AREA]&&W3.areas[AREA].overview,g0=V.gen;if(!OV)return;
+  OV.then(b=>b&&createImageBitmap(b)).then(bmp=>{if(!bmp||g0!==V.gen)return;
+    const C=D3.cols,R=D3.rows,cv=document.createElement('canvas');cv.width=C;cv.height=R;const x=cv.getContext('2d',{willReadFrequently:true});
+    x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,C,R);const px=x.getImageData(0,0,C,R).data;
+    const B=4,w=Math.ceil(C/B),h=Math.ceil(R/B),acc=new Float32Array(w*h*4);
+    for(let i=0;i<R;i++)for(let j=0;j<C;j++){const k=i*C+j;if(D[k]<15)continue;const o=((i/B|0)*w+(j/B|0))*4;acc[o]+=px[k*4];acc[o+1]+=px[k*4+1];acc[o+2]+=px[k*4+2];acc[o+3]++}
+    let col=new Float32Array(w*h*3),ok=new Uint8Array(w*h),sum=[0,0,0],n=0;
+    for(let q=0;q<w*h;q++)if(acc[q*4+3]>=4){for(let c=0;c<3;c++){col[q*3+c]=acc[q*4+c]/acc[q*4+3];sum[c]+=col[q*3+c]}ok[q]=1;n++}
+    if(n<20)return; // almost no sea in this area
+    for(let pass=0;pass<60;pass++){let left=0;const nc=col.slice(),no=ok.slice();
+      for(let i=0;i<h;i++)for(let j=0;j<w;j++){const q=i*w+j;if(ok[q])continue;let s0=0,s1=0,s2=0,m=0;
+        for(const [di,dj] of [[-1,0],[1,0],[0,-1],[0,1]]){const a=i+di,b=j+dj;if(a<0||b<0||a>=h||b>=w)continue;const r=a*w+b;if(ok[r]){s0+=col[r*3];s1+=col[r*3+1];s2+=col[r*3+2];m++}}
+        if(m){nc[q*3]=s0/m;nc[q*3+1]=s1/m;nc[q*3+2]=s2/m;no[q]=1}else left++}
+      col=nc;ok=no;if(!left)break}
+    for(let q=0;q<w*h;q++)if(!ok[q])for(let c=0;c<3;c++)col[q*3+c]=sum[c]/n;
+    for(let pass=0;pass<3;pass++){const nc=col.slice();for(let i=0;i<h;i++)for(let j=0;j<w;j++){const q=i*w+j;for(let c=0;c<3;c++){let s=0,m=0;
+      for(let a=Math.max(0,i-1);a<=Math.min(h-1,i+1);a++)for(let b=Math.max(0,j-1);b<=Math.min(w-1,j+1);b++){s+=col[(a*w+b)*3+c];m++}nc[q*3+c]=s/m}}col=nc}
+    const u8=new Uint8Array(w*h*4);for(let q=0;q<w*h;q++){u8[q*4]=col[q*3];u8[q*4+1]=col[q*3+1];u8[q*4+2]=col[q*3+2];u8[q*4+3]=255}
+    if(G.seaColTex)G.seaColTex.dispose();
+    const t=new THREE.DataTexture(u8,w,h,THREE.RGBAFormat,THREE.UnsignedByteType);t.magFilter=t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;G.seaColTex=t;
+    const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
+    G.seaDay=new THREE.Color(lin(sum[0]/n),lin(sum[1]/n),lin(sum[2]/n)); // the sea beyond this area: the average photo colour
+    G.seaU.seaCol.value=t;G.seaU.seaColOn.value=1;applySun();
+  }).catch(e=>console.warn(e));
+}
 function build3D(){
   const wrap=$('#v3dCanvas');const C=D3.cols,R=D3.rows,cs=D3.cs;
   const renderer=new THREE.WebGLRenderer({antialias:!MOBILE,powerPreference:'high-performance'});
@@ -217,8 +288,8 @@ function build3D(){
   const sm=MOBILE?2048:4096;sun.shadow.mapSize.set(sm,sm);const sc=sun.shadow.camera;sc.left=-3200;sc.right=3200;sc.top=3200;sc.bottom=-3200;sc.near=100;sc.far=40000;
   sun.shadow.bias=-0.0004;sun.shadow.normalBias=1.5;scene.add(sun);scene.add(sun.target);
   const hemi=new THREE.HemisphereLight(0xe8f1ff,0x5b6552,0.8);scene.add(hemi);
-  const rip=rippleNormals();rip.repeat.set(2300,2300);
-  const sea=new THREE.Mesh(new THREE.PlaneGeometry(400000,400000),new THREE.MeshPhongMaterial({color:0x2b5a6c,specular:0x8fa9b8,shininess:80,normalMap:rip,normalScale:new THREE.Vector2(0.45,0.45)}));
+  const rip=rippleNormals();rip.repeat.set(6000,6000); // one ripple tile ≈ 67 m
+  const sea=new THREE.Mesh(new THREE.PlaneGeometry(400000,400000),seaMaterial(rip));
   sea.rotation.x=-Math.PI/2;sea.receiveShadow=true;scene.add(sea);
   const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=0.08;
   controls.maxPolarAngle=Math.PI*0.49;controls.minDistance=60;controls.maxDistance=45000;controls.screenSpacePanning=false;
@@ -424,7 +495,7 @@ function applySun(){
   else{u.sunDir.value.copy(dir);u.zenith.value.copy(zen);u.horizon.value.copy(hor);u.sunCol.value.copy(warm.clone().lerp(white,day));u.sunI.value=night?0:1}
   G.fogBase=night?new THREE.Color(0x1c2433):new THREE.Color(0xc4d2da).lerp(new THREE.Color(0xe6b996),dusk*(s.el<10?0.85:0.3));G.fogSun=warm.clone().lerp(white,day);
   G.scene.fog=new THREE.FogExp2(G.fogBase.clone(),0.000055);
-  G.sea.material.color.set(night?0x0f1f28:0x2b5a6c);
+  if(G.seaU)G.seaU.skyRef.value.copy(G.fogBase).multiplyScalar(night?0.5:0.8);if(night)G.sea.material.color.set(0x0f1f28);else if(G.seaDay)G.sea.material.color.copy(G.seaDay);else G.sea.material.color.set(0x2b5a6c);if(G.seaU)G.seaU.foamL.value=night?0.12:0.3+0.7*sunI;
   cloudLight();
   $('#v3dSunInfo').textContent=night?T('Sun below the horizon','太陽已落山'):T(`Sun ${Math.round(s.el)}° up, from the ${compass(s.az)}`,`太陽仰角${Math.round(s.el)}°，${compassZh(s.az)}方`);
 }
@@ -455,7 +526,7 @@ function loop3D(){
     if(V.fly)stepFly(t);else if(V.walk)stepWalk(t);else{G.controls.update();keepAboveGround()}
     if(t-lastLod>250){updateLOD();farLOD();lastLod=t}
     G.sky.position.copy(G.camera.position);
-    if(G.scene.fog&&G.fogBase&&G.sunDir){const fw=G._fw||(G._fw=new THREE.Vector3());G.camera.getWorldDirection(fw);const a=Math.pow(Math.max(0,fw.dot(G.sunDir)),6)*0.45;G.scene.fog.color.copy(G.fogBase).lerp(G.fogSun,a)}G.rip.offset.set((t*0.0000035)%1,(t*0.0000021)%1);
+    if(G.scene.fog&&G.fogBase&&G.sunDir){const fw=G._fw||(G._fw=new THREE.Vector3());G.camera.getWorldDirection(fw);const a=Math.pow(Math.max(0,fw.dot(G.sunDir)),6)*0.45;G.scene.fog.color.copy(G.fogBase).lerp(G.fogSun,a)}G.rip.offset.set((t*0.0000035)%1,(t*0.0000021)%1);if(G.seaU)G.seaU.seaT.value=(t/1000)%10000;
     if(G.cloudMats&&G.cloudWind){const sec=t/1000;G.cloudMats.forEach(m=>{m.uniforms.off.value.set(G.cloudWind.x*sec,G.cloudWind.y*sec);m.uniforms.cam.value.copy(G.camera.position)})}
     moveCabins(t);followShadow(t);scaleSprites();G.renderer.render(G.scene,G.camera)};
   V.raf=requestAnimationFrame(tick);
@@ -498,7 +569,7 @@ function farGeo(ch,s){
   const cols=[],rows=[];for(let j=ch.c0;j<ch.c1;j+=s)cols.push(j);cols.push(ch.c1);for(let i=ch.r0;i<ch.r1;i+=s)rows.push(i);rows.push(ch.r1);
   const nc=cols.length,nr=rows.length,n=nc*nr;const pos=new Float32Array(n*3),nor=new Float32Array(n*3),uv=new Float32Array(n*2);let k=0;
   const Hf=(i,j)=>F.H[Math.max(0,Math.min(F.rows-1,i))*W+Math.max(0,Math.min(W-1,j))];
-  for(const i of rows)for(const j of cols){const h=Hf(i,j);pos[k*3]=F.E0+j*F.fs-D3.x0hk-G.cx;pos[k*3+1]=Math.max(h,-60)*ex;pos[k*3+2]=D3.ytophk-(F.N1-i*F.fs)-G.cz;
+  for(const i of rows)for(const j of cols){const h=Hf(i,j);pos[k*3]=F.E0+j*F.fs-D3.x0hk-G.cx;pos[k*3+1]=(h<0.5?Math.max(Math.min(h,-20),-60):h)*ex;pos[k*3+2]=D3.ytophk-(F.N1-i*F.fs)-G.cz;
     const dx=(Hf(i,j+s)-Hf(i,j-s))/(2*s*F.fs)*ex,dz=(Hf(i+s,j)-Hf(i-s,j))/(2*s*F.fs)*ex,l=Math.sqrt(dx*dx+1+dz*dz);nor[k*3]=-dx/l;nor[k*3+1]=1/l;nor[k*3+2]=-dz/l;
     uv[k*2]=j/(W-1);uv[k*2+1]=1-i/(F.rows-1);k++}
   const idx=[];for(let a=0;a<nr-1;a++)for(let b=0;b<nc-1;b++){const p=a*nc+b,q=p+1,r=p+nc,t=r+1;idx.push(p,r,q,q,r,t)}
@@ -662,7 +733,8 @@ function walkDress(){ // textured path, real distance posts and near-field grass
   const grass=new THREE.InstancedMesh(gg,gm,max);grass.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(max*3),3);grass.frustumCulled=false;grass.receiveShadow=true;grass.count=0;grp.add(grass);G.grass=grass;w.gx=null;
   if(G.stageGrp)G.stageGrp.children.forEach(o=>{if(o.isMesh)o.visible=false;else if(o.userData.post){o.userData.lift=1.9;o.position.y=hAt(o.userData.x,o.userData.z)*ex+1.9}});
   walkPins();
-  if(!G.ovPix&&W3.overview)W3.overview.then(b=>b&&createImageBitmap(b)).then(bmp=>{if(!bmp)return;const c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);G.ovPix={w:bmp.width,h:bmp.height,d:x.getImageData(0,0,bmp.width,bmp.height).data};if(V.walk)V.walk.gx=null}).catch(()=>{});
+  const OV=W3.areas&&W3.areas[AREA]&&W3.areas[AREA].overview,g0=V.gen;
+  if(!G.ovPix&&OV)OV.then(b=>b&&createImageBitmap(b)).then(bmp=>{if(!bmp||g0!==V.gen)return;const c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);G.ovPix={w:bmp.width,h:bmp.height,d:x.getImageData(0,0,bmp.width,bmp.height).data};if(V.walk)V.walk.gx=null}).catch(()=>{});
 }
 function nearPath(w,x,z,r){const cx=Math.floor(x/4),cz=Math.floor(z/4);for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const l=w.grid.get((cx+a)+','+(cz+b));if(l)for(const q of l)if((q[0]-x)**2+(q[1]-z)**2<r*r)return true}return false}
 function walkGrass(){ // re-scatter grass on a fixed world grid around the walker (no swimming), coloured from the photo

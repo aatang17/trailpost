@@ -28,6 +28,7 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - **Heights:** `hAt(x,z)` gives ground height from the LiDAR DTM. `Hs()` / `sAt()` give ground plus tree canopy.
   - **Local coordinates:** `x = E − x0hk` and `z = ytophk − N`, in HK1980 grid metres (EPSG:2326). Three.js world = local minus `(G.cx, G.cz)`.
   - **Wider area:** `loadFar` covers Chek Lap Kok, the Hong Kong–Zhuhai–Macao Bridge (`buildBridge`), Zhuhai and Macau.
+  - **Sea:** `seaMaterial` / `buildShore` / `seaColour`. Distance to land comes from the height grid, where sea cells are −6 m. Within about 70 m of land the sea turns see-through, so the aerial photo underneath shows the real shallows, sand and surf. A moving foam line runs along the coast. The open-sea colour is the photo averaged in 20 m blocks, boats smoothed out. There is also a sky reflection that grows toward the horizon, and sun sparkle in gusty patches. Flat coastal land is lifted to 0.5 m and far-area water sits at −20 m, so nothing flickers against the sea surface.
   - **Clouds and sky:** a live cloud layer (`buildClouds`), a sun set by time of day (`applySun`), height fog (patched ShaderChunk) and Sky.js with a `skyGain` uniform.
   - **Fly mode:** `startFly` / `stepFly`.
   - **Walk mode:** `startWalk` / `stepWalk` / `walkDress` / `walkGrass`. It adds:
