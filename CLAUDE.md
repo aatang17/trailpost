@@ -22,7 +22,8 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - trail list, stage detail, the 999 / distance-post finder, the map and the conditions card;
   - CSS, plus the markup for the 3D dialog (`#v3d`).
   - Helpers: `T(en,zh)` picks the language, `ZH()` tells you whether Chinese is on, `$` is querySelector. Do not name anything `L`, because Leaflet uses that name.
-- **`app/v3d.js`** — the 3D Lantau viewer, plain three.js r128. Main parts:
+- **`app/v3d.js`** — the 3D viewer, plain three.js r128. It shows one area at a time. Main parts:
+  - **Areas:** the `AREAS` list at the top. Each area has a data folder, its stages, a title, and the nearest HKO camera. `bridge:true` only for Lantau. `open3D(stageOrArea)` switches areas: `teardown3D()` frees the old one, and `V.gen` stops late downloads from the old area landing in the new one.
   - **Terrain:** a 5 m grid split into chunks, with a finer mesh near the camera (strides 1/2/4/8). Sharp aerial-photo chunks (`h_r_c.webp`) load only when on screen.
   - **Heights:** `hAt(x,z)` gives ground height from the LiDAR DTM. `Hs()` / `sAt()` give ground plus tree canopy.
   - **Local coordinates:** `x = E − x0hk` and `z = ytophk − N`, in HK1980 grid metres (EPSG:2326). Three.js world = local minus `(G.cx, G.cz)`.
@@ -34,7 +35,7 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
     - trail markers: `walkMarks`, `walkCard`, `walkPins`;
     - phone-motion look-around: `gyroDir`, `toggleGyro`;
     - sound: `SND`, `sndStart`, `sndStep`.
-- **`app/l3/`** — 3D data:
+- **`app/l3/`** — 3D data. Lantau sits at the top level; every other area has its own folder, for example `app/l3/drag/` (Dragon's Back). Sounds (`snd_*.mp3`) stay at the top level and are shared.
   - `meta.json`: grid size, stages, distance posts and labels.
   - `dem5/10.webp`: ground heights, stored as R·256 + G − 10.
   - `can5/10.webp`: canopy height, grey value / 4 = metres.
@@ -49,7 +50,8 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - `far/`: AWS terrarium heights and LandsD satellite imagery;
   - `hzmb/`: the bridge;
   - `cloud/live.py`: live HKO and airport METAR/TAF feed; writes `out/conditions.json` and `out/cams.json`;
-  - `poi/build_walkpoi.py`: walk markers;
+  - `poi/build_walkpoi.py`: walk markers (Lantau);
+  - **`area/build_area.py`: makes a whole 3D area folder in one run.** Example: `python3 pipeline/area/build_area.py drag --stages hktrail-7,hktrail-8 --margin 1500` took 25 s with warm caches and wrote 26 files, 4.5 MB. Downloads are cached in `~/.cache/trailpost` (or `$TP_CACHE`). It needs the LandsD 5 m DTM `.asc` in that cache as `Whole_HK_DTM_5m.asc`. To add an area: run it, then add one line to `AREAS` in `v3d.js`;
   - `sound/`: how the sounds were made;
   - `photo3d/`: the LandsD 3D Tiles test pipeline;
   - `video/`: the frame capture used for the AI fly-through video;
@@ -81,7 +83,8 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
 - **External data.** Artifacts can only load files published with the page, which is why the 3D data is pre-baked into `app/l3/`. With normal hosting the app can stream LandsD 3D Tiles and imagery directly.
 
 ## Known limits
-- The 3D view covers only Lantau Stages 2–4. Everything else is 2D.
+- The 3D view covers Lantau Trail Stages 2–4 and Hong Kong Trail Stages 6–8 (Dragon's Back). Everything else is 2D.
+- In the areas made by `build_area.py`, tree heights are eased to zero within 4–20 m of a trail. Without that, the 5 m LiDAR cells make sheer "walls" of trees beside the path in walk mode.
 - Up close in walk mode, the ground is 1.25 m/pixel aerial photo plus drawn grass. The LandsD photo mesh (see `photo3d/`) is the fix, but it needs streaming.
 - Mesh decimation with `fast-simplification` scrambled the photo UVs on the LandsD tiles, so it is off (`RED={}`).
 - Phone motion was tested only with simulated `deviceorientation` events, not a real phone.
@@ -89,4 +92,4 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
 ## Likely next steps
 1. Host `dist/` on a static host (GitHub Pages or Cloudflare Pages) and set up a scheduled `conditions.json` refresh.
 2. Get a LandsD key and stream the photo 3D map along the whole trail in walk mode.
-3. Extend 3D and walk mode to more trails, starting with the MacLehose Trail near Tai Mo Shan and the Dragon's Back.
+3. Extend 3D and walk mode to more trails with `pipeline/area/build_area.py`. Dragon's Back is done. Next: MacLehose Trail near Tai Mo Shan. Later, switch from one folder per area to 1 km tiles that stream in, so all of Hong Kong is one seamless map.

@@ -1,23 +1,36 @@
-/* ---------- 3D terrain viewer (Lantau Peak area) ----------
+/* ---------- 3D terrain viewer (one area at a time: Lantau Peak, Dragon's Back, …) ----------
    Fast start: 10 m heights + one overview photo (~0.6 MB) give a first view; 5 m heights, buildings and sharp
    photos for what is on screen stream in afterwards. Shadows are redrawn only when something changes. */
-const V3D_STAGES=['lantau-2','lantau-3','lantau-4'];
-const V={loaded:false,loading:false,stage:'lantau-3',ex:1,sunMin:null,fly:null,walk:null,raf:0,open:false,look:'photo',route:true,clouds:true,trees:true};
+/* Each area is a folder made by pipeline/area/build_area.py (Lantau was made by the older scripts).
+   bridge: the Hong Kong–Zhuhai–Macao Bridge layer; cable: the Ngong Ping cable car; cam: HKO camera nearest the area. */
+const AREAS={
+  lantau:{dir:'l3/',stages:['lantau-2','lantau-3','lantau-4'],first:'lantau-3',title:['Lantau Peak in 3D','鳳凰山立體地形'],bridge:true,cam:'CS2',lon:113.93},
+  drag:{dir:'l3/drag/',stages:['hktrail-6','hktrail-7','hktrail-8'],first:'hktrail-8',title:["Dragon's Back in 3D",'龍脊立體地形'],cam:'VPA',lon:114.24}
+};
+const V3D_STAGES=Object.values(AREAS).flatMap(a=>a.stages);
+const areaOf=id=>Object.keys(AREAS).find(k=>AREAS[k].stages.includes(id));
+const trail3D=tid=>Object.keys(AREAS).find(k=>AREAS[k].stages.some(s=>s.startsWith(tid+'-'))); // first 3D area on a trail
+let AREA='lantau';
+const V={gen:0,loaded:false,loading:false,stage:'lantau-3',ex:1,sunMin:null,fly:null,walk:null,raf:0,open:false,look:'photo',route:true,clouds:true,trees:true};
 const MOBILE=Math.min(screen.width||innerWidth,screen.height||innerHeight)<700;
-const L3='l3/';
+let L3=AREAS.lantau.dir;const SND_DIR='l3/'; // sounds are shared by all areas
 function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('script '+src));document.head.appendChild(s)})}
-const W3={};// warm-up promises
-function warm3D(){
-  if(W3.started)return;W3.started=true;
+const W3={};// warm-up promises: the libraries once, the area data per area
+function warm3D(which){
+  const area=typeof which==='string'?(AREAS[which]?which:areaOf(which)||AREA):AREA;
+  if(!W3.started){W3.started=true;
   W3.three=(window.THREE?Promise.resolve():loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'))
     .then(()=>THREE.OrbitControls?0:loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'));
-  const j=u=>fetch(L3+u).then(r=>{if(!r.ok)throw new Error(u+' '+r.status);return r.json()});
-  W3.meta=j('meta.json');W3.chunks=j('chunks.json');
-  W3.dem10=fetch(L3+'dem10.webp').then(r=>{if(!r.ok)throw new Error('dem10 '+r.status);return r.blob()});
-  W3.overview=fetch(L3+'overview.webp').then(r=>r.ok?r.blob():null).catch(()=>null);
-  W3.can10=fetch(L3+'can10.webp').then(r=>r.ok?r.blob():null).catch(()=>null);
   W3.sky=W3.three.then(()=>THREE.Sky?0:loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Sky.js')).catch(()=>null);
-  [W3.three,W3.meta,W3.chunks,W3.dem10].forEach(p=>p.catch(()=>{}));
+  W3.three.catch(()=>{});W3.areas={}}
+  if(V.loaded||V.loading)if(area!==AREA)return; // do not fetch another area while one is on screen
+  if(W3.areas[area])return;const D=AREAS[area].dir,A=W3.areas[area]={};
+  const j=u=>fetch(D+u).then(r=>{if(!r.ok)throw new Error(u+' '+r.status);return r.json()});
+  A.meta=j('meta.json');A.chunks=j('chunks.json');
+  A.dem10=fetch(D+'dem10.webp').then(r=>{if(!r.ok)throw new Error('dem10 '+r.status);return r.blob()});
+  A.overview=fetch(D+'overview.webp').then(r=>r.ok?r.blob():null).catch(()=>null);
+  A.can10=fetch(D+'can10.webp').then(r=>r.ok?r.blob():null).catch(()=>null);
+  [A.meta,A.chunks,A.dem10].forEach(p=>p.catch(()=>{}));
 }
 async function decodeGray(blob){ // canopy height: grey value / 4 = metres
   const bmp=await createImageBitmap(blob,{colorSpaceConversion:'none',premultiplyAlpha:'none'});
@@ -37,7 +50,7 @@ async function decodeDem(blob){
   return {w:bmp.width,h:bmp.height,d:out};
 }
 function sunPos(date,min){ // HK solar azimuth (deg from north, clockwise) and elevation (deg)
-  const rad=Math.PI/180,lat=22.25,lon=113.93;
+  const rad=Math.PI/180,lat=22.25,lon=AREAS[AREA].lon||114.1;
   const start=new Date(date.getFullYear(),0,0);const doy=Math.floor((date-start)/864e5);
   const g=2*Math.PI/365*(doy-1+(min/60-12)/24);
   const eqt=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
@@ -49,18 +62,33 @@ function sunPos(date,min){ // HK solar azimuth (deg from north, clockwise) and e
   return {az,el:90-zen/rad};
 }
 function open3D(stageId){
-  if(stageId&&V3D_STAGES.includes(stageId))V.stage=stageId;
+  const area=areaOf(stageId)||(AREAS[stageId]?stageId:AREA);
+  if(area!==AREA){teardown3D();AREA=area;L3=AREAS[area].dir}
+  V.stage=AREAS[area].stages.includes(stageId)?stageId:AREAS[area].stages.includes(V.stage)?V.stage:AREAS[area].first;
   const el=$('#v3d');el.hidden=false;V.open=true;document.body.style.overflow='hidden';
   if(V.sunMin==null){const n=hkNow();const m=n.getHours()*60+n.getMinutes();V.sunMin=(m>7*60&&m<18*60)?m:16*60+30;}
   render3DChrome();
   if(!V.loaded&&!V.loading)init3D();else if(V.loaded){applyStage(true);resize3D();loop3D()}
 }
+function teardown3D(){ // free the current area before loading another one
+  V.gen++;if(V.walk)stopWalk(true);if(V.fly)stopFly();cancelAnimationFrame(V.raf);
+  if(G.ro)G.ro.disconnect();
+  if(G.renderer){
+    const free=m=>{if(!m)return;[].concat(m).forEach(x=>{['map','aoMap','normalMap'].forEach(k=>{if(x[k]&&x[k].dispose)x[k].dispose()});x.dispose()})};
+    if(G.scene)G.scene.traverse(o=>{if(o.geometry)o.geometry.dispose();free(o.material)});
+    (G.chunks||[]).forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());free(c.hi)});(G.farChunks||[]).forEach(c=>Object.values(c.geos).forEach(g=>g.dispose()));
+    free(G.lowMat);free(G.mapMat);free(G.farMat);if(G.ao)G.ao.dispose();
+    G.renderer.dispose();try{G.renderer.forceContextLoss()}catch(e){}G.renderer.domElement.remove()}
+  G={};D3=CH=EX=null;V.loaded=false;V.loading=false;$('#v3dStatus').textContent='';$('#v3dCloudInfo').textContent='';
+}
 function close3D(){$('#v3d').hidden=true;V.open=false;document.body.style.overflow='';stopWalk(true);stopFly();cancelAnimationFrame(V.raf)}
 function render3DChrome(){
-  $('#v3dTitle').textContent=T('Lantau Peak in 3D','鳳凰山立體地形');
+  const AR=AREAS[AREA];$('#v3dTitle').textContent=T(...AR.title);
   $('#v3dClose').setAttribute('aria-label',T('Close 3D view','關閉立體地圖'));
-  $('#v3dStages').innerHTML=V3D_STAGES.map(id=>{const r=byId[id];return `<button type="button" class="fchip" data-s="${id}" aria-pressed="${V.stage===id}">${T('Stage ','第')}${r.n}${T('','段')} · ${esc(F(r,'end'))}</button>`}).join('');
-  $('#v3dStages').querySelectorAll('button').forEach(b=>b.onclick=()=>{V.stage=b.dataset.s;stopWalk(true);stopFly();render3DChrome();applyStage(true)});
+  $('#v3dStages').innerHTML=AR.stages.filter(id=>byId[id]).map(id=>{const r=byId[id];return `<button type="button" class="fchip" data-s="${id}" aria-pressed="${V.stage===id}">${T('Stage ','第')}${r.n}${T('','段')} · ${esc(F(r,'end'))}</button>`}).join('')
+    +Object.keys(AREAS).filter(k=>k!==AREA).map(k=>`<button type="button" class="fchip v3dArea" data-a="${k}">→ ${esc(T(...AREAS[k].title))}</button>`).join('');
+  $('#v3dStages').querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>{V.stage=b.dataset.s;stopWalk(true);stopFly();render3DChrome();applyStage(true)});
+  $('#v3dStages').querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>open3D(b.dataset.a));
   $('#v3dFly').textContent=V.fly?T('Stop','停止'):T('Fly the stage','沿路段飛行');
   $('#v3dWalk').textContent=V.walk?T('Exit walk','結束步行'):T('Walk the trail','沿路徑步行');
   $('#v3dEx').textContent=V.ex===1?T('Heights: true','高度：真實'):T('Heights: ×1.6','高度：×1.6');
@@ -71,13 +99,14 @@ function render3DChrome(){
   $('#v3dClouds').textContent=V.clouds?T('Clouds: live','雲：即時'):T('Clouds: off','雲：隱藏');
   $('#v3dCam').textContent=T('Live camera','即時相片');
   $('#v3dTrees').textContent=V.trees?T('Trees: 3D','樹木：立體'):T('Trees: flat','樹木：平面');
-  $('#v3dBridge').textContent=T('View the bridge','看港珠澳大橋');
+  $('#v3dBridge').textContent=T('View the bridge','看港珠澳大橋');$('#v3dBridge').style.display=AR.bridge?'':'none';
   const cl=COND.cloud;let ci='';
   if(cl){const ls=(cl.layers||[]).filter(l=>l.base_m<3000);const when=cl.obsTime?new Date(cl.obsTime).toLocaleTimeString(ZH()?'zh-HK':'en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Hong_Kong'}):'';
     ci=(ls.length?T('Clouds shown as reported by the airport at ','雲層按機場於')+when+T(': ','報告：')+ls.map(l=>`${T(...(COVN[l.cover]||[l.cover,l.cover]))} ${T('at','於')} ${l.base_m} m`).join(T(', ','，'))+T('.','。'):T('The airport reports no low cloud at ','機場於')+when+T('.','報告沒有低雲。'))+T(' Cloud shapes are illustrative; heights and amount are real.',' 雲的形狀為示意，高度及雲量按實況。');}
   $('#v3dCloudInfo').textContent=ci;
   $('#v3dHint').textContent=V.walk?(MOBILE?T('Drag to look around · use the slider to jump ahead','拖動環顧四周 · 用滑桿跳到其他位置'):T('Drag to look around · scroll or ↑ ↓ to move · ← → to turn · space to pause','拖動環顧四周 · 滾輪或 ↑ ↓ 前後移動 · ← → 轉向 · 空白鍵暫停')):MOBILE?T('Drag to turn · pinch to zoom · two fingers to tilt','拖動旋轉 · 雙指縮放及傾斜'):T('Drag to turn · scroll to zoom · right-drag to move','拖動旋轉 · 滾輪縮放 · 右鍵拖動平移');
-  $('#v3dSrc').textContent=T('Ground and tree heights: CEDD 2020 LiDAR survey (5 m) and Lands Department terrain model. Aerial Photograph and GBA Satellite Image 2024 (Landsat) from Lands Department. Wider terrain: AWS Terrain Tiles. Buildings, cable car and bridge route: OpenStreetMap. Bridge tower heights from published figures; deck heights approximate. Trail: AFCD.','地面及樹木高度：土木工程拓展署2020年激光雷達測量（5米）及地政總署地形模型。航空照片及2024年大灣區衞星影像（Landsat）：地政總署。外圍地形：AWS地形圖塊。建築物、纜車及大橋路線：OpenStreetMap。橋塔高度按公開數字，橋面高度為約數。路線：漁護署。');
+  $('#v3dSrc').textContent=AR.bridge?T('Ground and tree heights: CEDD 2020 LiDAR survey (5 m) and Lands Department terrain model. Aerial Photograph and GBA Satellite Image 2024 (Landsat) from Lands Department. Wider terrain: AWS Terrain Tiles. Buildings, cable car and bridge route: OpenStreetMap. Bridge tower heights from published figures; deck heights approximate. Trail: AFCD.','地面及樹木高度：土木工程拓展署2020年激光雷達測量（5米）及地政總署地形模型。航空照片及2024年大灣區衞星影像（Landsat）：地政總署。外圍地形：AWS地形圖塊。建築物、纜車及大橋路線：OpenStreetMap。橋塔高度按公開數字，橋面高度為約數。路線：漁護署。')
+    :T('Ground and tree heights: CEDD 2020 LiDAR survey (5 m) and Lands Department terrain model. Aerial Photograph from Lands Department. Wider terrain: Lands Department terrain model and AWS Terrain Tiles. Buildings, place names and trail markers: OpenStreetMap contributors. Trail: AFCD.','地面及樹木高度：土木工程拓展署2020年激光雷達測量（5米）及地政總署地形模型。航空照片：地政總署。外圍地形：地政總署地形模型及AWS地形圖塊。建築物、地名及沿途標記：OpenStreetMap貢獻者。路線：漁護署。');
 }
 $('#v3dClose').onclick=close3D;
 document.addEventListener('keydown',e=>{if(!V.open)return;if(e.key==='Escape'){if(V.walk){stopWalk();render3DChrome()}else close3D();return}
@@ -95,38 +124,40 @@ $('#v3dEx').onclick=()=>{stopWalk();V.ex=V.ex===1?1.6:1;applyHeights();render3DC
 $('#v3dLook').onclick=()=>{V.look=V.look==='photo'?'map':'photo';applyLook();render3DChrome()};
 $('#v3dRoute').onclick=()=>{V.route=!V.route;if(V.walk){if(G.walkPath)G.walkPath.visible=V.route}else if(G.stageGrp)G.stageGrp.children.forEach(o=>{if(o.isMesh)o.visible=V.route});render3DChrome()};
 $('#v3dClouds').onclick=()=>{V.clouds=!V.clouds;if(G.cloudGrp)G.cloudGrp.visible=V.clouds;render3DChrome()};
-$('#v3dCam').onclick=()=>openCams('CS2');
+$('#v3dCam').onclick=()=>openCams(AREAS[AREA].cam);
 $('#v3dTrees').onclick=()=>{V.trees=!V.trees;applyHeights();render3DChrome()};
 $('#v3dBridge').onclick=()=>{stopWalk(true);stopFly();bridgeView()};
 $('#v3dSun').oninput=e=>{V.sunMin=+e.target.value;applySun();$('#v3dSunLbl').textContent=T('Sun','太陽')+' '+hm(V.sunMin)};
 
 let D3=null,CH=null,EX=null,G={};
 async function init3D(){
-  V.loading=true;const msg=$('#v3dMsg');msg.hidden=false;msg.textContent=T('Loading terrain…','正在載入地形…');
-  const t0=performance.now();
+  V.loading=true;const gen=V.gen,A0=AREA;const msg=$('#v3dMsg');msg.hidden=false;msg.textContent=T('Loading terrain…','正在載入地形…');
+  const t0=performance.now();const live=()=>gen===V.gen;
   try{
-    warm3D();
-    const [,meta,chunks,dblob]=await Promise.all([W3.three,W3.meta,W3.chunks,W3.dem10]);
+    V.loading=false;warm3D(A0);V.loading=true;const A=W3.areas[A0];
+    const [,meta,chunks,dblob]=await Promise.all([W3.three,A.meta,A.chunks,A.dem10]);if(!live())return;
     D3=meta;CH=chunks;const C=meta.cols,R=meta.rows;
     // 10 m heights upsampled to the 5 m grid for the first view
     const d10=await decodeDem(dblob);const H=new Float32Array(C*R);const w=d10.w,h=d10.h,s=d10.d;
     for(let i=0;i<R;i++){const fi=Math.min(h-1.001,i/2),i0=fi|0,ti=fi-i0;for(let j=0;j<C;j++){const fj=Math.min(w-1.001,j/2),j0=fj|0,tj=fj-j0;const a=i0*w+j0;
       H[i*C+j]=s[a]*(1-ti)*(1-tj)+s[a+1]*(1-ti)*tj+s[a+w]*ti*(1-tj)+s[a+w+1]*ti*tj}}
     G.H=H;G.CAN=new Float32Array(C*R);
-    const cb=await W3.can10;if(cb){try{G.CAN=up2(await decodeGray(cb),C,R)}catch(e){}}
-    await W3.sky;
+    const cb=await A.can10;if(cb){try{G.CAN=up2(await decodeGray(cb),C,R)}catch(e){}}
+    await W3.sky;if(!live())return;
     build3D();
-    const ov=await W3.overview;if(ov){const t=await blobTex(ov);G.lowMat.map=t;G.lowMat.color.set(0xffffff);G.lowMat.needsUpdate=true}
+    const ov=await A.overview;if(!live())return;if(ov){const t=await blobTex(ov);G.lowMat.map=t;G.lowMat.color.set(0xffffff);G.lowMat.needsUpdate=true}
     V.loaded=true;msg.hidden=true;render3DChrome();applyStage(true);buildClouds();loop3D();
     G.firstView=Math.round(performance.now()-t0);window.__v3dFirstView=G.firstView;
     // in the background: 5 m heights, then buildings and cable car
     const blob=u=>fetch(L3+u).then(r=>{if(!r.ok)throw new Error(u+' '+r.status);return r.blob()});
-    Promise.all([blob('dem5.webp').then(decodeDem),blob('can5.webp').then(decodeGray).catch(()=>null)]).then(([d,c])=>{G.H=d.d;if(c)G.CAN=c.d;G.full=true;
+    const stop=()=>{if(!live())throw 'stale'};
+    Promise.all([blob('dem5.webp').then(decodeDem),blob('can5.webp').then(decodeGray).catch(()=>null)]).then(([d,c])=>{stop();G.H=d.d;if(c)G.CAN=c.d;G.full=true;
       G.chunks.forEach(ch=>{Object.values(ch.geos).forEach(g=>g.dispose());ch.geos={};ch.dirty=true});
-      applyStage(false);placeOverlays();return fetch(L3+'extras.json').then(r=>r.json())}).then(ex=>{EX=ex;buildExtras();G.shadowDirty=true;window.__v3dFull=Math.round(performance.now()-t0);
-      return blob('ao.webp').then(blobTex)}).then(ao=>{G.ao=ao;[G.lowMat,G.mapMat,...G.chunks.map(c=>c.hi)].forEach(m=>{if(m){m.aoMap=ao;m.aoMapIntensity=1;m.needsUpdate=true}});
-      return loadFar()}).then(()=>fetch(L3+'bridge.json').then(r=>r.json())).then(b=>{G.BR=b;buildBridge();window.__v3dBridge=Math.round(performance.now()-t0)}).catch(e=>console.warn(e));
-  }catch(err){msg.hidden=false;msg.textContent=T('The 3D view could not load. ','未能載入立體地圖。')+(err&&err.message?err.message:'');console.error(err)}
+      applyStage(false);placeOverlays();return fetch(L3+'extras.json').then(r=>r.json())}).then(ex=>{stop();EX=ex;buildExtras();G.shadowDirty=true;window.__v3dFull=Math.round(performance.now()-t0);
+      return blob('ao.webp').then(blobTex)}).then(ao=>{stop();G.ao=ao;[G.lowMat,G.mapMat,...G.chunks.map(c=>c.hi)].forEach(m=>{if(m){m.aoMap=ao;m.aoMapIntensity=1;m.needsUpdate=true}});
+      return loadFar()}).then(()=>{stop();window.__v3dFar=Math.round(performance.now()-t0);if(!AREAS[A0].bridge)return;
+        return fetch(L3+'bridge.json').then(r=>r.json()).then(b=>{stop();G.BR=b;buildBridge();window.__v3dBridge=Math.round(performance.now()-t0)})}).catch(e=>{if(e!=='stale')console.warn(e)});
+  }catch(err){if(!live())return;msg.hidden=false;msg.textContent=T('The 3D view could not load. ','未能載入立體地圖。')+(err&&err.message?err.message:'');console.error(err)}
   V.loading=false;
 }
 function blobTex(blob){return createImageBitmap(blob,{imageOrientation:'flipY'}).then(b=>{const t=new THREE.CanvasTexture(b);t.flipY=false;t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(MOBILE?4:8,G.renderer.capabilities.getMaxAnisotropy());t.needsUpdate=true;return t})}
@@ -202,7 +233,7 @@ function build3D(){
     G.chunks.push(ch)});
   const grp=new THREE.Group();scene.add(grp);G.labelGrp=grp;relabel();
   applyLook();
-  new ResizeObserver(resize3D).observe(wrap);resize3D();walkPointer(renderer.domElement);
+  G.ro=new ResizeObserver(resize3D);G.ro.observe(wrap);resize3D();walkPointer(renderer.domElement);
 }
 function chunkGeo(ch,stride){
   const key=stride+'@'+V.ex;if(ch.geos[key])return ch.geos[key];
@@ -256,7 +287,7 @@ function updateLOD(force){
 }
 function pumpHi(){
   while(G.hiLoading<3&&G.hiQueue.length){const ch=G.hiQueue.shift();if(!ch.want||ch.hiState!==0)continue;ch.hiState=1;G.hiLoading++;
-    hiTexture(ch,`${L3}h_${ch.id}.webp`).then(t=>{G.hiLoading--;if(t){ch.hi=addDetail(new THREE.MeshLambertMaterial({map:t,aoMap:G.ao||null}));ch.hiState=2;if(ch.mesh)ch.mesh.material=pickMat(ch)}else ch.hiState=0;pumpHi()})}
+    const g0=V.gen;hiTexture(ch,`${L3}h_${ch.id}.webp`).then(t=>{if(g0!==V.gen){if(t)t.dispose();return}G.hiLoading--;if(t){ch.hi=addDetail(new THREE.MeshLambertMaterial({map:t,aoMap:G.ao||null}));ch.hiState=2;if(ch.mesh)ch.mesh.material=pickMat(ch)}else ch.hiState=0;pumpHi()})}
 }
 function buildExtras(){
   if(!EX)return;
@@ -275,12 +306,13 @@ function buildExtras(){
   });
   const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(P.subarray(0,o),3));bg.setAttribute('normal',new THREE.BufferAttribute(N.subarray(0,o),3));bg.setAttribute('color',new THREE.BufferAttribute(Cc.subarray(0,o),3));
   const bm=new THREE.Mesh(bg,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}));bm.castShadow=true;bm.receiveShadow=true;grp.add(bm);
+  G.cabins=null;if(!EX.cable||EX.cable.length<2)return;
   const cab=EX.cable.map(p=>new THREE.Vector3(p[0]-G.cx,(p[3]-p[2])*ex+p[2],p[1]-G.cz));
   const side=off=>cab.map((v,i)=>{const a=cab[Math.max(0,i-1)],b=cab[Math.min(cab.length-1,i+1)];const dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;return new THREE.Vector3(v.x-dz/l*off,v.y,v.z+dx/l*off)});
   const cm=new THREE.MeshLambertMaterial({color:0x2a2e33});G.cableCurves=[];
   [-4,4].forEach(off=>{const pts=side(off);const curve=new THREE.CatmullRomCurve3(pts);curve.arcLengthDivisions=400;G.cableCurves.push(curve);grp.add(new THREE.Mesh(new THREE.TubeGeometry(curve,pts.length*2,0.9,3,false),cm))});
   const tm=new THREE.MeshLambertMaterial({color:0x8a9096});
-  EX.towers.forEach(t=>{if(t[3]!=='pylon')return;const g=hAt(t[0],t[1])*ex;const m=new THREE.Mesh(new THREE.CylinderGeometry(1.4,3.2,t[2],4),tm);m.position.set(t[0]-G.cx,g+t[2]/2,t[1]-G.cz);m.castShadow=true;grp.add(m)});
+  (EX.towers||[]).forEach(t=>{if(t[3]!=='pylon')return;const g=hAt(t[0],t[1])*ex;const m=new THREE.Mesh(new THREE.CylinderGeometry(1.4,3.2,t[2],4),tm);m.position.set(t[0]-G.cx,g+t[2]/2,t[1]-G.cz);m.castShadow=true;grp.add(m)});
   const cabinGeo=new THREE.BoxGeometry(3,2.6,3);cabinGeo.translate(0,-3.2,0);
   const nCab=MOBILE?24:50;const inst=new THREE.InstancedMesh(cabinGeo,new THREE.MeshLambertMaterial({color:0xc8312b}),nCab);grp.add(inst);G.cabins=inst;G.nCab=nCab;
   G.cableLen=G.cableCurves[0].getLength();
@@ -362,7 +394,7 @@ function applyStage(frame){
   const st=D3.stages[V.stage];if(!st)return;
   grp.add(ribbon(st.pts,11,2.5,0xffffff,1,0.85));grp.add(ribbon(st.pts,5,3,0xff6a1a,2,0.999));
   const r=byId[V.stage];const a=r.post_list[0][0],b=r.post_list[r.post_list.length-1][0];const na=+a.slice(1),nb=+b.slice(1);
-  D3.posts.filter(p=>{const n=+p[0].slice(1);return p[0][0]==='L'&&n>=na&&n<=nb}).forEach(p=>{const s=makeLabel(p[0],'post');Object.assign(s.userData,{x:p[1],z:p[2],lift:14,post:1});grp.add(s)});
+  D3.posts.filter(p=>{const n=+p[0].slice(1);return p[0][0]===a[0]&&n>=na&&n<=nb}).forEach(p=>{const s=makeLabel(p[0],'post');Object.assign(s.userData,{x:p[1],z:p[2],lift:14,post:1});grp.add(s)});
   const s0=st.pts[0],s1=st.pts[st.pts.length-1];
   [[s0,T('Start','起點')+' · '+F(r,'start')],[s1,T('End','終點')+' · '+F(r,'end')]].forEach(([p,t])=>{const s=makeLabel(t,'place');Object.assign(s.userData,{x:p[0],z:p[1],lift:45});grp.add(s)});
   grp.children.forEach(o=>{if(o.isSprite)o.position.set(o.userData.x-G.cx,hAt(o.userData.x,o.userData.z)*V.ex+o.userData.lift,o.userData.z-G.cz)});
@@ -569,7 +601,7 @@ function startWalk(){
   if(!V.loaded||!D3)return;stopFly();const st=D3.stages[V.stage];if(!st)return;const r=byId[V.stage];
   const f=smoothPath(st.pts);
   const a=r.post_list[0][0],b=r.post_list[r.post_list.length-1][0];const na=+a.slice(1),nb=+b.slice(1);const seen={};
-  const posts=D3.posts.filter(p=>{const n=+p[0].slice(1);if(p[0][0]!=='L'||n<na||n>nb||seen[p[0]])return false;return seen[p[0]]=1}).map(p=>{
+  const posts=D3.posts.filter(p=>{const n=+p[0].slice(1);if(p[0][0]!==a[0]||n<na||n>nb||seen[p[0]])return false;return seen[p[0]]=1}).map(p=>{
     let bi=0,bd=1e18;for(let i=0;i<f.pts.length;i++){const q=f.pts[i];const dd=(q[0]-p[1])**2+(q[1]-p[2])**2;if(dd<bd){bd=dd;bi=i}}return {code:p[0],x:p[1],z:p[2],d:f.cum[bi]}}).sort((u,v)=>u.d-v.d);
   const prof=[];for(let i=0;i<=160;i++){const q=along(f,f.total*i/160);prof.push(hAt(q[0],q[1]))}
   const grid=new Map();f.pts.forEach(q=>{const k=Math.floor(q[0]/4)+','+Math.floor(q[1]/4);if(!grid.has(k))grid.set(k,[]);grid.get(k).push(q)});
@@ -785,7 +817,7 @@ function sndPref(){if(SND.on==null){try{SND.on=localStorage.getItem('tp_walk_sou
 function sndStart(){ // called from a click, so browsers allow audio
   if(!sndPref())return;try{if(!SND.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;SND.ctx=new AC();SND.master=SND.ctx.createGain();SND.master.gain.value=0.9;SND.master.connect(SND.ctx.destination)}
     if(SND.ctx.state==='suspended')SND.ctx.resume();}catch(e){return}
-  const c=SND.ctx;const load=n=>SND.buf[n]?Promise.resolve(SND.buf[n]):fetch(L3+'snd_'+n+'.mp3').then(r=>r.arrayBuffer()).then(a=>new Promise((ok,no)=>c.decodeAudioData(a,ok,no))).then(b=>SND.buf[n]=b);
+  const c=SND.ctx;const load=n=>SND.buf[n]?Promise.resolve(SND.buf[n]):fetch(SND_DIR+'snd_'+n+'.mp3').then(r=>r.arrayBuffer()).then(a=>new Promise((ok,no)=>c.decodeAudioData(a,ok,no))).then(b=>SND.buf[n]=b);
   ['wind','forest'].forEach(n=>{if(SND[n])return;SND[n]={gain:c.createGain()};SND[n].gain.gain.value=0;SND[n].gain.connect(SND.master);
     load(n).then(b=>{const s=c.createBufferSource();s.buffer=b;const off=Math.max(0,Math.min(0.08,b.duration-(SND.meta[n]+0.5)));s.loop=true;s.loopStart=off;s.loopEnd=off+SND.meta[n];s.connect(SND[n].gain);s.start(0,off+Math.random()*SND.meta[n]*0.9);SND[n].src=s}).catch(()=>{})});
   load('steps').catch(()=>{});

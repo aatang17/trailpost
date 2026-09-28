@@ -241,6 +241,7 @@ a{color:var(--focus)}
 @media (max-width:959px){.v3dAttr span{display:none}}
 .v3dCtl{padding:10px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));display:grid;gap:8px;border-top:1px solid var(--line);background:var(--card)}
 .v3dStages{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.v3dStages .v3dArea{border-style:dashed;color:var(--muted,#4a5a52)}
 .v3dRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .v3dRow.sun input{flex:1;min-width:140px;accent-color:var(--accent)}
 .v3dRow.sun label{font-family:var(--f-mono);font-size:13px;min-width:78px}
@@ -508,7 +509,7 @@ function renderList(){
     const rs=t.stages.map(id=>byId[id]);
     h+=`<div class="group"><div class="ghead"><div class="gtitle"><h3>${esc(F(t,'name'))}<small>${t.km} km · ${rs.length} ${T('stages','段')}</small></h3><span>${t.prefix}001–${t.prefix}${String(Math.max(...rs.flatMap(r=>(r.post_list||[]).map(p=>+p[0].slice(1))))).padStart(3,'0')}</span></div>
     <div class="strip" aria-label="${T('Stages by condition','各段情況')}">${rs.map(r=>{const l=evaluate(r,c).lvl;return `<button type="button" class="l${l}" data-id="${r.id}" style="flex:${r.km}" title="${esc(rLabel(r)+' · '+T(...LVs[l]))}">${r.n}</button>`}).join('')}</div></div>
-    ${t.id==='lantau'?`<div><button class="btn btn3d" type="button" id="lantau3d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19l6-10 4 6 3-4 7 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9l1.5 2.5" stroke="currentColor" stroke-width="1.8"/></svg>${T('Lantau Peak in 3D','鳳凰山立體地形')}</button></div>`:''}
+    ${trail3D(t.id)?`<div><button class="btn btn3d" type="button" data-area3d="${trail3D(t.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19l6-10 4 6 3-4 7 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9l1.5 2.5" stroke="currentColor" stroke-width="1.8"/></svg>${T(...AREAS[trail3D(t.id)].title)}</button></div>`:''}
     <div class="rows">${rs.map(r=>routeRow(r,c)).join('')}</div></div>`;
   });
   if(S.filter==='all'||S.filter==='day'){
@@ -519,7 +520,7 @@ function renderList(){
   $('#pane').innerHTML=h;bindCond();bindDesk();
   $('#pane').querySelectorAll('.fchip').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;store.set('filter',S.filter);render();drawMap()});
   $('#pane').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>openRoute(b.dataset.id));
-  const l3=$('#lantau3d');if(l3){l3.onclick=()=>open3D('lantau-3');['pointerenter','focus','touchstart'].forEach(ev=>l3.addEventListener(ev,warm3D,{once:true,passive:true}))}
+  $('#pane').querySelectorAll('[data-area3d]').forEach(b=>{const a=b.dataset.area3d;b.onclick=()=>open3D(a);['pointerenter','focus','touchstart'].forEach(ev=>b.addEventListener(ev,()=>warm3D(a),{once:true,passive:true}))});
 }
 function profileSVG(r){
   if(!r.profile) return `<p class="hint">${T('No height profile for this walk.','此路線沒有高度圖。')}</p>`;
@@ -568,7 +569,7 @@ function renderDetail(){
   $('#back').onclick=()=>{S.view='list';S.sel=null;render();drawMap();$('#pane').scrollTop=0};
   $('#showmap').onclick=()=>{setTab('map');focusRoute(r)};
   const b3=$('#show3d');if(b3)b3.onclick=()=>open3D(r.id);
-  if(V3D_STAGES.includes(r.id))setTimeout(warm3D,400);
+  if(V3D_STAGES.includes(r.id))setTimeout(()=>warm3D(r.id),400);
 }
 function postIcon(code){return `<svg class="postIcon" viewBox="0 0 52 70" aria-hidden="true"><path d="M8 18 L26 8 L44 18 L44 66 L8 66 Z" fill="var(--line)" stroke="var(--ink2)" stroke-width="1.5"/><rect x="11" y="24" width="30" height="16" rx="2" fill="var(--ink)"/><text x="26" y="36" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--paper)">${esc(code)}</text></svg>`}
 function renderSOS(){
@@ -704,7 +705,7 @@ $('#lbX').onclick=()=>{$('#lb').hidden=true};$('#lb').addEventListener('click',e
 /*V3D*/
 document.documentElement.lang=ZH()?'zh-HK':'en';
 if(location.hash==='#sos'){S.view='sos'}
-if(location.hash==='#lantau3d'){setTimeout(()=>open3D('lantau-3'),0)}
+{const h=location.hash.slice(1),m=h.match(/^3d-(.+)$/),k=h==='lantau3d'?'lantau':m?m[1]:null;if(k&&(AREAS[k]||V3D_STAGES.includes(k)))setTimeout(()=>open3D(k),0)} // #lantau3d, #3d-drag, #3d-hktrail-8
 render();initMap();
 })();
 </script>
