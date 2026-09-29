@@ -27,7 +27,8 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - **Terrain:** a 5 m grid split into chunks, with a finer mesh near the camera (strides 1/2/4/8). Sharp aerial-photo chunks (`h_r_c.webp`) load only when on screen.
   - **Heights:** `hAt(x,z)` gives ground height from the LiDAR DTM. `Hs()` / `sAt()` give ground plus tree canopy.
   - **Local coordinates:** `x = E − x0hk` and `z = ytophk − N`, in HK1980 grid metres (EPSG:2326). Three.js world = local minus `(G.cx, G.cz)`.
-  - **Wider area:** `loadFar` covers Chek Lap Kok, the Hong Kong–Zhuhai–Macao Bridge (`buildBridge`), Zhuhai and Macau.
+  - **Wider area:** `loadFar`. For Lantau it covers Macau and Zhuhai in the west to Chai Wan and Tai Mo Shan in the east: 79 × 39 km at 40 m. Bridges (`buildBridge`) come from `bridge.json` (Hong Kong–Zhuhai–Macao) plus `links.json` (Tsing Ma, Kap Shui Mun, Ma Wan Viaduct, Ting Kau), merged at load. Tower kinds: `portal`, `h`, `mast`, `dolphin`, `sail`. `mains` are the suspension cables, drawn as tubes. The "View Tsing Ma Bridge" button calls `linkView`.
+  - **Haze:** `heightFog` patches three.js's fog chunks. The camera position is worked out from `viewMatrix` (`vFogCam`), because three.js r128 leaves the `cameraPosition` uniform at 0,0,0 for Lambert materials. Before this fix, haze grew with distance from the middle of the map rather than from the camera.
   - **Sea:** `seaMaterial` / `buildShore` / `seaColour`. Distance to land comes from the height grid, where sea cells are −6 m. Within about 70 m of land the sea turns see-through, so the aerial photo underneath shows the real shallows, sand and surf. A moving foam line runs along the coast. The open-sea colour is the photo averaged in 20 m blocks, boats smoothed out. There is also a sky reflection that grows toward the horizon, and sun sparkle in gusty patches. Flat coastal land is lifted to 0.5 m and far-area water sits at −20 m, so nothing flickers against the sea surface.
   - **Clouds and sky:** a live cloud layer (`buildClouds`), a sun set by time of day (`applySun`), height fog (patched ShaderChunk) and Sky.js with a `skyGain` uniform.
   - **Fly mode:** `startFly` / `stepFly`.
@@ -49,7 +50,9 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - `geo/build.py`, `geo/finalize.py`: routes from AFCD GPX and OSM distance posts, then `data.js`;
   - `dsm/`: CEDD 2020 LiDAR DSM/DTM (LERC tiles from the Esri China HK ArcGIS service), canopy = DSM − DTM;
   - `far/`: AWS terrarium heights and LandsD satellite imagery;
-  - `hzmb/`: the bridge;
+  - `hzmb/`: the Hong Kong–Zhuhai–Macao Bridge;
+  - `far/build_far.py`: the wider area for any 3D area: `python3 pipeline/far/build_far.py app/l3 113.50 114.27 22.08 22.43`. With `FAR_BRIDGES=~/.cache/trailpost/far/lantau_link_osm.json` it removes bridge decks from the terrain, because the LandsD DTM records bridge decks as if they were ground;
+  - `bridges/lantau_link.py`: writes `app/l3/links.json`. Deck heights come from the DTM (road level, 59–75 m on Tsing Ma). Tower positions come from the published spans, anchored on the water crossings;
   - `cloud/live.py`: live HKO and airport METAR/TAF feed; writes `out/conditions.json` and `out/cams.json`;
   - `poi/build_walkpoi.py`: walk markers (Lantau);
   - **`area/build_area.py`: makes a whole 3D area folder in one run.** Example: `python3 pipeline/area/build_area.py drag --stages hktrail-7,hktrail-8 --margin 1500` took 25 s with warm caches and wrote 26 files, 4.5 MB. Downloads are cached in `~/.cache/trailpost` (or `$TP_CACHE`). It needs the LandsD 5 m DTM `.asc` in that cache as `Whole_HK_DTM_5m.asc`. To add an area: run it, then add one line to `AREAS` in `v3d.js`;
