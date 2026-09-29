@@ -70,11 +70,14 @@ def water_runs(c, ax, t0, t1):
     return [r for r in runs if r[1] - r[0] > 60]
 
 deck, piers, towers, cables, mains, labels = [], [], [], [], [], []
-def add_deck(c, ax, t0, t1, width, th, off=0.0, step=20.0, hfn=None):
+def add_deck(c, ax, t0, t1, width, th, off=0.0, step=20.0, hfn=None, style=None, did=None):
     nr = np.array([-ax[1], ax[0]]); pts = []
     for t in list(np.arange(t0, t1, step)) + [t1]:
         E, N = c + ax * t + nr * off; y = hfn(t); x, z = xz(E, N); pts.append([round(x, 1), round(z, 1), round(y, 1)])
-    deck.append({'pts': pts, 'w': width, 'br': 1, 'main': 1, 'th': th})
+    d = {'pts': pts, 'w': width, 'br': 1, 'main': 1, 'th': th}
+    if style: d['style'] = style
+    if did: d['id'] = did
+    deck.append(d)
 def deck_height_fn(c, ax, t0, t1, h):
     """road level along the bridge from the DTM (highest value across the deck), smoothed; gaps interpolated"""
     ts = np.arange(t0, t1 + 1, 10.0); nr = np.array([-ax[1], ax[0]]); ys = []
@@ -104,12 +107,13 @@ runs = water_runs(c, ax, t0, t1); main_run = max(runs, key=lambda r: r[1] - r[0]
 tTY = main_run[1]; tMW = tTY - 1377.0   # Tsing Yi tower at the Tsing Yi shore; Ma Wan tower 1,377 m west (on its islet off Ma Wan)
 print('Tsing Ma: deck', round(t0), round(t1), 'water', [(round(a), round(b)) for a, b in runs], 'towers at', round(tMW), round(tTY))
 hf = deck_height_fn(c, ax, t0, t1, h)
-add_deck(c, ax, t0, t1, 41.0, 7.3, hfn=hf)
+add_deck(c, ax, t0, t1, 41.0, 7.3, hfn=hf, style='truss', did='tm')
 add_piers(c, ax, t0, t1, hf, [(tMW, tTY + 355.5)], width=30.0)
 HW = 18.0; TOP = 206.0
 for t in (tMW, tTY):
     x, z = pt(c, ax, t); towers.append({'n': 'Tsing Ma', 'kind': 'h', 'x': round(x, 1), 'z': round(z, 1), 'top': TOP, 'deck': round(hf(t), 1), 'ax': axl(ax), 'hw': HW + 4,
-                                        'leg': [9.0, 6.0], 'beams': [round(hf(t) - 12, 1), 120.0, 160.0, TOP - 4]})
+        'leg': [13.0, 7.0], 'taper': [0.68, 0.85], 'beams': [round(hf(t) - 12, 1), 118.0, 158.0, TOP - 6], 'saddle': 1, 'lights': 1,
+        'islet': [150, 90] if t == tMW else None})  # the Ma Wan tower stands on a man-made island with a rock sea wall
 # main cables: Ma Wan anchorage -> towers (sag 1/11 of the span) -> Tsing Yi anchorage; hangers every 18 m where the deck hangs
 tA0, tA1 = tMW - 355.5, tTY + 355.5
 def cable_y(t):
@@ -124,6 +128,10 @@ for side in (-1, 1):
     for t in np.arange(tMW + 18, min(tA1, t1) - 10, 18.0):
         x, z = pt(c, ax, t, side * HW); cy, dy = cable_y(t), hf(t) + 1
         if cy - dy > 1.5: cables.append([round(x, 1), round(z, 1), round(cy, 1), round(x, 1), round(z, 1), round(dy, 1)])
+anchorages = []  # 250,000 t of concrete on Ma Wan, 200,000 t on Tsing Yi
+for tA, nm in ((tA0, 'Ma Wan'), (tA1, 'Tsing Yi')):
+    E, N = c + ax * tA; g = max(0.0, far_ground(E, N)); x, z = pt(c, ax, tA)
+    anchorages.append({'n': nm, 'x': round(x, 1), 'z': round(z, 1), 'g': round(g, 1), 'top': round(cable_y(tA) + 8, 1), 'ax': axl(ax), 'len': 70.0, 'w': 56.0})
 x, z = pt(c, ax, (tMW + tTY) / 2); lab('Tsing Ma Bridge · main span 1,377 m', '青馬大橋 · 主跨1,377米', x, z, 250, 'bridge')
 
 # ================= Kap Shui Mun =================
@@ -133,7 +141,7 @@ runs = water_runs(c2, ax2, s0, s1); run = max(runs, key=lambda r: r[1] - r[0]); 
 tk0, tk1 = mid - 215.0, mid + 215.0
 print('Kap Shui Mun: deck', round(s0), round(s1), 'water', [(round(a), round(b)) for a, b in runs], 'towers at', round(tk0), round(tk1))
 hf2 = deck_height_fn(c2, ax2, s0, s1, h2)
-add_deck(c2, ax2, s0, s1, 35.0, 7.5, hfn=hf2)
+add_deck(c2, ax2, s0, s1, 35.0, 7.5, hfn=hf2, style='truss', did='ksm')
 add_piers(c2, ax2, s0, s1, hf2, [(tk0, tk1)], every=80.0, width=26.0)
 for t in (tk0, tk1):
     x, z = pt(c2, ax2, t); d = hf2(t)
@@ -151,7 +159,7 @@ x, z = pt(c2, ax2, mid); lab('Kap Shui Mun Bridge · towers 150 m', '汲水門�
 ws = ways_named('Ma Wan Viaduct')
 if ws:
     c3, ax3, v0, v1 = axis_of(ws); h3 = dtm_sampler([tuple(c3 + ax3 * t) for t in np.arange(v0 - 50, v1 + 50, 10)])
-    hf3 = deck_height_fn(c3, ax3, v0, v1, h3); add_deck(c3, ax3, v0, v1, 35.0, 7.0, hfn=hf3); add_piers(c3, ax3, v0, v1, hf3, [], every=65.0, width=24.0)
+    hf3 = deck_height_fn(c3, ax3, v0, v1, h3); add_deck(c3, ax3, v0, v1, 35.0, 7.0, hfn=hf3, style='truss', did='mwv'); add_piers(c3, ax3, v0, v1, hf3, [], every=65.0, width=24.0)
 
 # ================= Ting Kau =================
 ws = ways_named('Ting Kau Bridge'); c4, ax4, u0, u1 = axis_of(ws)
@@ -164,7 +172,7 @@ runs = water_runs(c4, ax4, u0, u1)
 mid = (runs[0][0] + runs[-1][1]) / 2; tT = mid - 923 / 2; tM = tT + 448; tY = tM + 475
 print('Ting Kau: deck', round(u0), round(u1), 'water', [(round(a), round(b)) for a, b in runs], 'towers at', round(tT), round(tM), round(tY))
 hf4 = deck_height_fn(c4, ax4, u0, u1, h4)
-for off in (-12.0, 12.0): add_deck(c4, ax4, u0, u1, 18.8, 1.8, off=off, hfn=hf4)
+for off in (-12.0, 12.0): add_deck(c4, ax4, u0, u1, 18.8, 1.8, off=off, hfn=hf4, did='tk' + ('s' if off > 0 else 'n'))
 add_piers(c4, ax4, u0, u1, hf4, [(tT, tY)], every=60.0, width=40.0)
 for t, top, nm in ((tT, 173.3, 'Ting Kau'), (tM, 201.55, 'main'), (tY, 163.3, 'Tsing Yi')):
     x, z = pt(c4, ax4, t); d = hf4(t)
@@ -192,7 +200,13 @@ plab('Tai Mo Shan 957 m', '大帽山 957米', 114.1244, 22.4106, 40, 'peak')
 plab('Tsing Yi', '青衣', 114.100, 22.352, 60)
 plab('Ma Wan', '馬灣', 114.058, 22.352, 60)
 plab('Lamma Island', '南丫島', 114.120, 22.215, 60)
-out = {'deck': deck, 'piers': piers, 'towers': towers, 'cables': cables, 'mains': mains, 'labels': labels,
+# traffic routes: the Lantau Link as one road (Kap Shui Mun -> Ma Wan Viaduct -> Tsing Ma), Ting Kau as another
+byid = {d.get('id'): d for d in deck}
+link = [p for k in ('ksm', 'mwv', 'tm') if k in byid for p in byid[k]['pts']]
+routes = [{'n': 'Lantau Link', 'pts': link, 'lanes': 3, 'lw': 3.7, 'rail': 1}]
+if 'tkn' in byid and 'tks' in byid:
+    routes.append({'n': 'Ting Kau', 'pts': [[round((a[0] + b[0]) / 2, 1), round((a[1] + b[1]) / 2, 1), a[2]] for a, b in zip(byid['tkn']['pts'], byid['tks']['pts'])], 'lanes': 3, 'lw': 3.7, 'split': 12.0})
+out = {'anchorages': anchorages, 'routes': routes, 'deck': deck, 'piers': piers, 'towers': towers, 'cables': cables, 'mains': mains, 'labels': labels,
        'notes': 'Lantau Link and Ting Kau Bridge. Route: OpenStreetMap. Deck heights: LandsD 5 m DTM. Tower heights and spans: '
                 'Highways Department, Structurae, Wikipedia (Tsing Ma 206 m / 1,377 m, Kap Shui Mun 150 m / 430 m, Ting Kau 173.3, 201.55, 163.3 m). '
                 'Tower positions derived from span lengths; detail approximate.'}

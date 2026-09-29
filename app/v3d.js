@@ -4,7 +4,7 @@
 /* Each area is a folder made by pipeline/area/build_area.py (Lantau was made by the older scripts).
    bridge: the Hong Kong–Zhuhai–Macao Bridge layer; cable: the Ngong Ping cable car; cam: HKO camera nearest the area. */
 const AREAS={
-  lantau:{dir:'l3/',stages:['lantau-2','lantau-3','lantau-4'],first:'lantau-3',title:['Lantau Peak in 3D','鳳凰山立體地形'],bridge:true,cam:'CS2',lon:113.93},
+  lantau:{dir:'l3/',stages:['lantau-2','lantau-3','lantau-4'],first:'lantau-3',title:['Lantau Peak in 3D','鳳凰山立體地形'],bridge:true,cam:'CS2',lon:113.93,patches:['link']},
   drag:{dir:'l3/drag/',stages:['hktrail-6','hktrail-7','hktrail-8'],first:'hktrail-8',title:["Dragon's Back in 3D",'龍脊立體地形'],cam:'VPA',lon:114.24}
 };
 const V3D_STAGES=Object.values(AREAS).flatMap(a=>a.stages);
@@ -157,9 +157,9 @@ async function init3D(){
       G.chunks.forEach(ch=>{Object.values(ch.geos).forEach(g=>g.dispose());ch.geos={};ch.dirty=true});
       applyStage(false);placeOverlays();return fetch(L3+'extras.json').then(r=>r.json())}).then(ex=>{stop();EX=ex;buildExtras();G.shadowDirty=true;window.__v3dFull=Math.round(performance.now()-t0);
       return blob('ao.webp').then(blobTex)}).then(ao=>{stop();G.ao=ao;[G.lowMat,G.mapMat,...G.chunks.map(c=>c.hi)].forEach(m=>{if(m){m.aoMap=ao;m.aoMapIntensity=1;m.needsUpdate=true}});
-      return loadFar()}).then(()=>{stop();window.__v3dFar=Math.round(performance.now()-t0);if(!AREAS[A0].bridge)return;
+      return loadFar()}).then(()=>{stop();return loadPatches(AREAS[A0].patches||[])}).then(()=>{stop();window.__v3dFar=Math.round(performance.now()-t0);if(!AREAS[A0].bridge)return;
         return Promise.all([fetch(L3+'bridge.json').then(r=>r.json()),fetch(L3+'links.json').then(r=>r.ok?r.json():null).catch(()=>null)]).then(([b,l])=>{stop();
-          if(l)['deck','piers','towers','cables','mains','labels'].forEach(k=>{b[k]=(b[k]||[]).concat(l[k]||[])}); // Lantau Link and Ting Kau Bridge
+          if(l)['deck','piers','towers','cables','mains','labels','anchorages','routes'].forEach(k=>{b[k]=(b[k]||[]).concat(l[k]||[])}); // Lantau Link and Ting Kau Bridge
           G.BR=b;buildBridge();window.__v3dBridge=Math.round(performance.now()-t0)})}).catch(e=>{if(e!=='stale')console.warn(e)});
   }catch(err){if(!live())return;msg.hidden=false;msg.textContent=T('The 3D view could not load. ','未能載入立體地圖。')+(err&&err.message?err.message:'');console.error(err)}
   V.loading=false;
@@ -167,7 +167,7 @@ async function init3D(){
 function blobTex(blob){return createImageBitmap(blob,{imageOrientation:'flipY'}).then(b=>{const t=new THREE.CanvasTexture(b);t.flipY=false;t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(MOBILE?4:8,G.renderer.capabilities.getMaxAnisotropy());t.needsUpdate=true;return t})}
 function hAt(x,z){ // world metres from NW corner -> ground height (m, true scale)
   const C=D3.cols,R=D3.rows,cs=D3.cs;let c=x/cs-0.5,r=z/cs-0.5;
-  if(G.FAR&&(c<0||r<0||c>C-1||r>R-1))return hFar(x,z);
+  if(G.FAR&&(c<0||r<0||c>C-1||r>R-1)){if(G.patches)for(const p of G.patches){if(x>=p.x0&&x<=p.x1&&z>=p.z0&&z<=p.z1)return Math.max(0,patchH(p,x,z))}return hFar(x,z)}
   c=Math.max(0,Math.min(C-1.001,c));r=Math.max(0,Math.min(R-1.001,r));
   const i=r|0,j=c|0,fr=r-i,fc=c-j,H=G.H;
   return H[i*C+j]*(1-fr)*(1-fc)+H[i*C+j+1]*(1-fr)*fc+H[(i+1)*C+j]*fr*(1-fc)+H[(i+1)*C+j+1]*fr*fc;
@@ -365,15 +365,13 @@ function pumpHi(){
   while(G.hiLoading<3&&G.hiQueue.length){const ch=G.hiQueue.shift();if(!ch.want||ch.hiState!==0)continue;ch.hiState=1;G.hiLoading++;
     const g0=V.gen;hiTexture(ch,`${L3}h_${ch.id}.webp`).then(t=>{if(g0!==V.gen){if(t)t.dispose();return}G.hiLoading--;if(t){ch.hi=addDetail(new THREE.MeshLambertMaterial({map:t,aoMap:G.ao||null}));ch.hiState=2;if(ch.mesh)ch.mesh.material=pickMat(ch)}else ch.hiState=0;pumpHi()})}
 }
-function buildExtras(){
-  if(!EX)return;
-  if(G.extras){G.scene.remove(G.extras);G.extras.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
-  const grp=new THREE.Group();G.extras=grp;G.scene.add(grp);const ex=V.ex;
-  let nt=0;EX.buildings.forEach(b=>{const n=(b.length-3)/2;nt+=n*2+Math.max(0,n-2)});
+function buildingMesh(list){ // extruded footprints: [base, height, tall?, x, z, x, z, ...]
+  const ex=V.ex;
+  let nt=0;list.forEach(b=>{const n=(b.length-3)/2;nt+=n*2+Math.max(0,n-2)});
   const P=new Float32Array(nt*9),N=new Float32Array(nt*9),Cc=new Float32Array(nt*9);let o=0;
   const wall=[0.86,0.84,0.80],tower=[0.9,0.91,0.93],roof=[0.66,0.63,0.6];
   const v3=(x,y,z,n,c)=>{P[o]=x;P[o+1]=y;P[o+2]=z;N[o]=n[0];N[o+1]=n[1];N[o+2]=n[2];Cc[o]=c[0];Cc[o+1]=c[1];Cc[o+2]=c[2];o+=3};
-  EX.buildings.forEach(b=>{const base=b[0],h=b[1],isT=b[2];const pts=[];for(let k=3;k<b.length;k+=2)pts.push([b[k]-G.cx,b[k+1]-G.cz]);
+  list.forEach(b=>{const base=b[0],h=b[1],isT=b[2];const pts=[];for(let k=3;k<b.length;k+=2)pts.push([b[k]-G.cx,b[k+1]-G.cz]);
     if(pts.length<3)return;const y0=base*ex-1.5,y1=y0+1.5+h;const wc=isT?tower:wall;
     for(let k=0;k<pts.length;k++){const a=pts[k],c=pts[(k+1)%pts.length];const dx=c[0]-a[0],dz=c[1]-a[1];const l=Math.hypot(dx,dz)||1;const n=[dz/l,0,-dx/l];
       v3(a[0],y0,a[1],n,wc);v3(c[0],y0,c[1],n,wc);v3(c[0],y1,c[1],n,wc);v3(a[0],y0,a[1],n,wc);v3(c[0],y1,c[1],n,wc);v3(a[0],y1,a[1],n,wc)}
@@ -381,7 +379,13 @@ function buildExtras(){
     tris.slice(0,Math.max(0,pts.length-2)).forEach(t=>{const up=[0,1,0];v3(pts[t[0]][0],y1,pts[t[0]][1],up,roof);v3(pts[t[2]][0],y1,pts[t[2]][1],up,roof);v3(pts[t[1]][0],y1,pts[t[1]][1],up,roof)});
   });
   const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(P.subarray(0,o),3));bg.setAttribute('normal',new THREE.BufferAttribute(N.subarray(0,o),3));bg.setAttribute('color',new THREE.BufferAttribute(Cc.subarray(0,o),3));
-  const bm=new THREE.Mesh(bg,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}));bm.castShadow=true;bm.receiveShadow=true;grp.add(bm);
+  const bm=new THREE.Mesh(bg,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}));bm.castShadow=true;bm.receiveShadow=true;return bm;
+}
+function buildExtras(){
+  if(!EX)return;
+  if(G.extras){G.scene.remove(G.extras);G.extras.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
+  const grp=new THREE.Group();G.extras=grp;G.scene.add(grp);const ex=V.ex;
+  grp.add(buildingMesh(EX.buildings));
   G.cabins=null;if(!EX.cable||EX.cable.length<2)return;
   const cab=EX.cable.map(p=>new THREE.Vector3(p[0]-G.cx,(p[3]-p[2])*ex+p[2],p[1]-G.cz));
   const side=off=>cab.map((v,i)=>{const a=cab[Math.max(0,i-1)],b=cab[Math.min(cab.length-1,i+1)];const dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;return new THREE.Vector3(v.x-dz/l*off,v.y,v.z+dx/l*off)});
@@ -451,7 +455,8 @@ function makeLabel(text,kind){
 }
 function applyHeights(){
   G.chunks.forEach(ch=>{Object.values(ch.geos).forEach(g=>g.dispose());ch.geos={};ch.dirty=true});
-  buildExtras();updateLOD(true);placeOverlays();applyStage(false);buildClouds();if(G.farChunks){G.farChunks.forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());c.geos={};c.dirty=true});farLOD(true)}buildBridge();G.shadowDirty=true;
+  buildExtras();updateLOD(true);placeOverlays();applyStage(false);buildClouds();if(G.farChunks){G.farChunks.forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());c.geos={};c.dirty=true});farLOD(true)}
+  if(G.patches)G.patches.forEach(P=>{P.chunks.forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());c.geos={};c.dirty=true});P.grp.remove(P.bld);P.bld.geometry.dispose();P.bld=buildingMesh(P.buildings||[]);P.grp.add(P.bld)});patchLOD(true);buildBridge();G.shadowDirty=true;
 }
 function placeOverlays(){if(!G.labels)return;G.labels.forEach(s=>{const y=s.userData.fixedY!=null?s.userData.fixedY*V.ex:hAt(s.userData.x,s.userData.z)*V.ex+(s.userData.lift||20);s.position.set(s.userData.x-G.cx,y,s.userData.z-G.cz)})}
 function ribbon(pts,width,lift,color,order,opacity){
@@ -501,7 +506,7 @@ function applySun(){
   G.fogBase=night?new THREE.Color(0x1c2433):new THREE.Color(0xc4d2da).lerp(new THREE.Color(0xe6b996),dusk*(s.el<10?0.85:0.3));G.fogSun=warm.clone().lerp(white,day);
   G.scene.fog=new THREE.FogExp2(G.fogBase.clone(),0.000055);
   if(G.seaU)G.seaU.skyRef.value.copy(G.fogBase).multiplyScalar(night?0.5:0.8);if(night)G.sea.material.color.set(0x0f1f28);else if(G.seaDay)G.sea.material.color.copy(G.seaDay);else G.sea.material.color.set(0x2b5a6c);if(G.seaU)G.seaU.foamL.value=night?0.12:0.3+0.7*sunI;
-  cloudLight();
+  cloudLight();nightLights();
   $('#v3dSunInfo').textContent=night?T('Sun below the horizon','太陽已落山'):T(`Sun ${Math.round(s.el)}° up, from the ${compass(s.az)}`,`太陽仰角${Math.round(s.el)}°，${compassZh(s.az)}方`);
 }
 const compass=a=>['north','north-east','east','south-east','south','south-west','west','north-west'][Math.round(a/45)%8];
@@ -529,11 +534,11 @@ function loop3D(){
   const tick=t=>{if(!V.open)return;V.raf=requestAnimationFrame(tick);
     if(last)adapt(t-last);last=t;
     if(V.fly)stepFly(t);else if(V.walk)stepWalk(t);else{G.controls.update();keepAboveGround()}
-    if(t-lastLod>250){updateLOD();farLOD();lastLod=t}
+    if(t-lastLod>250){updateLOD();farLOD();patchLOD();lastLod=t}
     G.sky.position.copy(G.camera.position);
     if(G.scene.fog&&G.fogBase&&G.sunDir){const fw=G._fw||(G._fw=new THREE.Vector3());G.camera.getWorldDirection(fw);const a=Math.pow(Math.max(0,fw.dot(G.sunDir)),6)*0.45;G.scene.fog.color.copy(G.fogBase).lerp(G.fogSun,a)}G.rip.offset.set((t*0.0000035)%1,(t*0.0000021)%1);if(G.seaU)G.seaU.seaT.value=(t/1000)%10000;
     if(G.cloudMats&&G.cloudWind){const sec=t/1000;G.cloudMats.forEach(m=>{m.uniforms.off.value.set(G.cloudWind.x*sec,G.cloudWind.y*sec);m.uniforms.cam.value.copy(G.camera.position)})}
-    moveCabins(t);followShadow(t);scaleSprites();G.renderer.render(G.scene,G.camera)};
+    moveCabins(t);moveTraffic(t);followShadow(t);scaleSprites();G.renderer.render(G.scene,G.camera)};
   V.raf=requestAnimationFrame(tick);
 }
 function startFly(){
@@ -569,12 +574,59 @@ async function loadFar(){
     G.farChunks.push({c0,c1,r0,r1,x0,x1,z0,z1,hmax:mx,geos:{},stride:0,mesh:null})}
   farLOD(true);
 }
+/* ----- sharper patches inside the wide area (e.g. Ma Wan, Tsing Yi and Ting Kau around the Lantau Link): 10 m ground, 2.4 m photo, buildings ----- */
+async function loadPatches(ids){
+  if(!ids.length)return;G.patches=[];G.farHoles=G.farHoles||[];
+  for(const id of ids){try{
+    const [pm,hb]=await Promise.all([fetch(L3+'patch_'+id+'.json').then(r=>r.json()),fetch(L3+'patch_'+id+'_h.webp').then(r=>r.blob())]);
+    const bmp=await createImageBitmap(hb,{colorSpaceConversion:'none',premultiplyAlpha:'none'});const cv=document.createElement('canvas');cv.width=bmp.width;cv.height=bmp.height;
+    const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(bmp,0,0);const px=cx.getImageData(0,0,bmp.width,bmp.height).data;const H=new Float32Array(bmp.width*bmp.height);
+    for(let i=0;i<H.length;i++)H[i]=px[i*4]*256+px[i*4+1]-100;
+    const P={...pm,H,x0:pm.E0-D3.x0hk,z0:D3.ytophk-pm.N1,chunks:[],grp:new THREE.Group()};P.x1=P.x0+(pm.cols-1)*pm.cell;P.z1=P.z0+(pm.rows-1)*pm.cell;G.scene.add(P.grp);
+    const nt=pm.tiles,cw=(pm.cols-1)/nt,chh=(pm.rows-1)/nt;
+    for(let tr=0;tr<nt;tr++)for(let tc=0;tc<nt;tc++){const ch={i0:Math.round(tr*chh),i1:Math.round((tr+1)*chh),j0:Math.round(tc*cw),j1:Math.round((tc+1)*cw),geos:{},stride:0,mesh:null,
+      mat:new THREE.MeshLambertMaterial({color:0x7d8f6a})};ch.x0=P.x0+ch.j0*pm.cell;ch.x1=P.x0+ch.j1*pm.cell;ch.z0=P.z0+ch.i0*pm.cell;ch.z1=P.z0+ch.i1*pm.cell;P.chunks.push(ch);
+      fetch(L3+'patch_'+id+'_t'+tr+'_'+tc+'.webp').then(r=>r.blob()).then(blobTex).then(t=>{if(!G.patches)return;ch.mat.map=t;ch.mat.color.set(0xffffff);ch.mat.needsUpdate=true}).catch(()=>{})}
+    const bm=buildingMesh(pm.buildings||[]);P.grp.add(bm);P.bld=bm;
+    G.patches.push(P);G.farHoles.push([P.x0,P.z0,P.x1,P.z1]);
+  }catch(e){console.warn('patch',id,e)}}
+  if(G.farChunks){G.farChunks.forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());c.geos={};c.dirty=true});farLOD(true)}
+  patchLOD(true);G.shadowDirty=true;
+}
+function patchH(P,x,z){const c=(x-P.x0)/P.cell,r=(z-P.z0)/P.cell,W=P.cols;const j=Math.max(0,Math.min(W-2,c|0)),i=Math.max(0,Math.min(P.rows-2,r|0)),fc=Math.min(1,Math.max(0,c-j)),fr=Math.min(1,Math.max(0,r-i)),H=P.H;
+  return H[i*W+j]*(1-fr)*(1-fc)+H[i*W+j+1]*(1-fr)*fc+H[(i+1)*W+j]*fr*(1-fc)+H[(i+1)*W+j+1]*fr*fc}
+function patchGeo(P,ch,s){
+  const key=s+'@'+V.ex;if(ch.geos[key])return ch.geos[key];const W=P.cols,ex=V.ex,cell=P.cell;
+  const Hp=(i,j)=>P.H[Math.max(0,Math.min(P.rows-1,i))*W+Math.max(0,Math.min(W-1,j))];const yOf=h=>(h<0.3?-20:h)*ex; // sea sits below the sea surface
+  const cols=[],rows=[];for(let j=ch.j0;j<ch.j1;j+=s)cols.push(j);cols.push(ch.j1);for(let i=ch.i0;i<ch.i1;i+=s)rows.push(i);rows.push(ch.i1);
+  const nc=cols.length,nr=rows.length;const pos=[],nor=[],uv=[];
+  const put=(i,j,drop)=>{const h=Hp(i,j);pos.push(P.x0+j*cell-G.cx,yOf(h)-(drop||0),P.z0+i*cell-G.cz);
+    const dx=(Hp(i,j+s)-Hp(i,j-s))/(2*s*cell)*ex,dz=(Hp(i+s,j)-Hp(i-s,j))/(2*s*cell)*ex,l=Math.sqrt(dx*dx+1+dz*dz);nor.push(-dx/l,1/l,-dz/l);
+    uv.push((j-ch.j0)/(ch.j1-ch.j0),1-(i-ch.i0)/(ch.i1-ch.i0));return pos.length/3-1};
+  for(const i of rows)for(const j of cols)put(i,j);
+  const idx=[];for(let a=0;a<nr-1;a++)for(let b=0;b<nc-1;b++){const p=a*nc+b,q=p+1,r=p+nc,t=r+1;idx.push(p,r,q,q,r,t)}
+  const skirt=(list,st,step)=>{const base=pos.length/3;list.forEach(([i,j])=>put(i,j,25));for(let t=0;t<list.length-1;t++){const a=st+t*step,b=st+(t+1)*step,c=base+t,d=base+t+1;idx.push(a,c,b,b,c,d,a,b,c,b,d,c)}}; // hides cracks between chunks
+  skirt(cols.map(j=>[rows[0],j]),0,1);skirt(cols.map(j=>[rows[nr-1],j]),(nr-1)*nc,1);skirt(rows.map(i=>[i,cols[0]]),0,nc);skirt(rows.map(i=>[i,cols[nc-1]]),nc-1,nc);
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  g.setIndex(pos.length/3>65535?new THREE.Uint32BufferAttribute(idx,1):new THREE.Uint16BufferAttribute(idx,1));g.computeBoundingSphere();ch.geos[key]=g;return g;
+}
+function patchLOD(force){
+  if(!G.patches)return;const cam=G.camera.position;let builds=0;
+  for(const P of G.patches)for(const ch of P.chunks){const px=Math.max(ch.x0-G.cx,Math.min(cam.x,ch.x1-G.cx)),pz=Math.max(ch.z0-G.cz,Math.min(cam.z,ch.z1-G.cz));const d=Math.hypot(cam.x-px,cam.z-pz,Math.max(0,cam.y-100));
+    let st=d<2200?1:d<6000?2:d<14000?4:8;if(MOBILE)st=Math.max(2,st);
+    if(!ch.mesh){ch.mesh=new THREE.Mesh(patchGeo(P,ch,8),ch.mat);ch.mesh.receiveShadow=true;ch.mesh.castShadow=true;P.grp.add(ch.mesh);ch.stride=8}
+    if((st!==ch.stride||ch.dirty)&&(builds<1||force)){ch.mesh.geometry=patchGeo(P,ch,st);ch.stride=st;ch.dirty=false;builds++;
+      Object.keys(ch.geos).forEach(k=>{if(ch.geos[k]!==ch.mesh.geometry&&(+k.split('@')[0]===1||!k.endsWith('@'+V.ex))){ch.geos[k].dispose();delete ch.geos[k]}})}}
+}
 function farGeo(ch,s){
   const key=s+'@'+V.ex;if(ch.geos[key])return ch.geos[key];const F=G.FAR,W=F.cols,ex=V.ex;
   const cols=[],rows=[];for(let j=ch.c0;j<ch.c1;j+=s)cols.push(j);cols.push(ch.c1);for(let i=ch.r0;i<ch.r1;i+=s)rows.push(i);rows.push(ch.r1);
   const nc=cols.length,nr=rows.length,n=nc*nr;const pos=new Float32Array(n*3),nor=new Float32Array(n*3),uv=new Float32Array(n*2);let k=0;
   const Hf=(i,j)=>F.H[Math.max(0,Math.min(F.rows-1,i))*W+Math.max(0,Math.min(W-1,j))];
-  for(const i of rows)for(const j of cols){const h=Hf(i,j);pos[k*3]=F.E0+j*F.fs-D3.x0hk-G.cx;pos[k*3+1]=(h<0.5?Math.max(Math.min(h,-20),-60):h)*ex;pos[k*3+2]=D3.ytophk-(F.N1-i*F.fs)-G.cz;
+  const holes=(G.farHoles||[]).filter(r=>r[0]<ch.x1&&r[2]>ch.x0&&r[1]<ch.z1&&r[3]>ch.z0);
+  const clr=(G.farClear||[]).filter(c=>c[0]>ch.x0-c[2]&&c[0]<ch.x1+c[2]&&c[1]>ch.z0-c[2]&&c[1]<ch.z1+c[2]);
+  for(const i of rows)for(const j of cols){let h=Hf(i,j);if(clr.length){const lx=F.E0+j*F.fs-D3.x0hk,lz=D3.ytophk-(F.N1-i*F.fs);if(clr.some(c=>Math.hypot(lx-c[0],lz-c[1])<c[2]))h=-20}
+    if(holes.length){const lx=F.E0+j*F.fs-D3.x0hk,lz=D3.ytophk-(F.N1-i*F.fs);if(holes.some(r=>lx>r[0]+40&&lx<r[2]-40&&lz>r[1]+40&&lz<r[3]-40))h=-60}pos[k*3]=F.E0+j*F.fs-D3.x0hk-G.cx;pos[k*3+1]=(h<0.5?Math.max(Math.min(h,-20),-60):h)*ex;pos[k*3+2]=D3.ytophk-(F.N1-i*F.fs)-G.cz;
     const dx=(Hf(i,j+s)-Hf(i,j-s))/(2*s*F.fs)*ex,dz=(Hf(i+s,j)-Hf(i-s,j))/(2*s*F.fs)*ex,l=Math.sqrt(dx*dx+1+dz*dz);nor[k*3]=-dx/l;nor[k*3+1]=1/l;nor[k*3+2]=-dz/l;
     uv[k*2]=j/(W-1);uv[k*2+1]=1-i/(F.rows-1);k++}
   const idx=[];for(let a=0;a<nr-1;a++)for(let b=0;b<nc-1;b++){const p=a*nc+b,q=p+1,r=p+nc,t=r+1;idx.push(p,r,q,q,r,t)}
@@ -590,13 +642,100 @@ function farLOD(force){
       Object.keys(ch.geos).forEach(k=>{if(ch.geos[k]!==ch.mesh.geometry&&(+k.split('@')[0]===1||!k.endsWith('@'+V.ex))){ch.geos[k].dispose();delete ch.geos[k]}})}}
 }
 /* ----- Hong Kong–Zhuhai–Macao Bridge ----- */
+/* ----- bridge detail: textures drawn in the page (no extra files), truss decks, anchorages, traffic, night lights ----- */
+function bridgeTex(){
+  if(G.btex)return G.btex;const mk=(w,h,draw,rep)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);
+    t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,G.renderer.capabilities.getMaxAnisotropy());return t};
+  // road: 41 m across (v), 36 m along (u); left-hand traffic, 3 lanes each way, central barrier
+  const road=mk(512,256,(g,w,h)=>{g.fillStyle='#3b3e41';g.fillRect(0,0,w,h);for(let i=0;i<2500;i++){const v=40+Math.random()*30;g.fillStyle=`rgba(${v},${v},${v+3},0.35)`;g.fillRect(Math.random()*w,Math.random()*h,2,2)}
+    const y=m=>h/2+m/41*h;g.fillStyle='#b9b8b2';g.fillRect(0,y(-0.8),w,y(0.8)-y(-0.8));
+    const line=(m,dash)=>{g.fillStyle='#e9e9e4';if(!dash)g.fillRect(0,y(m)-1.2,w,2.4);else for(let x=0;x<w;x+=w/4)g.fillRect(x,y(m)-1.2,w/8,2.4)};
+    [1,-1].forEach(sd=>{line(sd*1.3,0);line(sd*(1.3+3.7),1);line(sd*(1.3+7.4),1);line(sd*(1.3+11.1),0);g.fillStyle='#8f8e89';g.fillRect(0,Math.min(y(sd*19.6),y(sd*20.5)),w,Math.abs(y(sd*20.5)-y(sd*19.6)))})});
+  // truss face: one 18 m panel (u) by the truss depth (v): Warren diagonals, verticals, chords, dark interior behind
+  const truss=mk(256,96,(g,w,h)=>{g.fillStyle='#2b3034';g.fillRect(0,0,w,h);g.fillStyle='#454c52';g.fillRect(0,h*0.52,w,h*0.07);
+    g.strokeStyle='#c7cbcd';g.lineCap='square';g.lineWidth=9;g.beginPath();g.moveTo(0,h-5);g.lineTo(w/2,5);g.lineTo(w,h-5);g.stroke();
+    g.lineWidth=7;g.beginPath();g.moveTo(3,0);g.lineTo(3,h);g.moveTo(w-3,0);g.lineTo(w-3,h);g.stroke();g.fillStyle='#d3d6d8';g.fillRect(0,0,w,10);g.fillRect(0,h-10,w,10)});
+  // tower concrete: warm light grey with faint horizontal lift joints
+  const conc=mk(64,64,(g,w,h)=>{g.fillStyle='#d9d5cc';g.fillRect(0,0,w,h);for(let i=0;i<300;i++){const v=200+Math.random()*30;g.fillStyle=`rgba(${v},${v-4},${v-12},0.25)`;g.fillRect(Math.random()*w,Math.random()*h,3,3)}g.fillStyle='rgba(120,116,108,0.14)';g.fillRect(0,h-2,w,2)});
+  const concMat=new THREE.MeshLambertMaterial({map:conc});
+  return G.btex={road,truss,conc,concMat,roadMat:new THREE.MeshLambertMaterial({map:road}),trussMat:new THREE.MeshLambertMaterial({map:truss}),
+    steelMat:new THREE.MeshPhongMaterial({color:0xdadee1,specular:0x5a5f63,shininess:40}),underMat:new THREE.MeshLambertMaterial({color:0x7d8388})};
+}
+function deckTruss(dk,grp){ // Tsing Ma style double deck: road on top, stainless fairings at the edges, lattice trusses 26 m apart, closed underside
+  const TX=bridgeTex(),ex=V.ex,X=x=>x-G.cx,Z=z=>z-G.cz,k=dk.w/41,th=dk.th||7.3;
+  const prof=[[dk.w/2,0],[dk.w/2+0.8,-1.3],[13*k,-2.6],[13*k,-th],[0,-th]]; // half profile, outer to centre (metres across, metres down)
+  const parts={road:[[],[],[]],steel:[[],[],[]],truss:[[],[],[]],under:[[],[],[]]};
+  const quad=(P,a,b,c,d,n,uv)=>{[a,b,c,a,c,d].forEach((p,i)=>{P[0].push(...p);P[1].push(...n);P[2].push(...uv[[0,1,2,0,2,3][i]])})};
+  let run=0;const pts=dk.pts;
+  for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];let dx=b[0]-a[0],dz=b[1]-a[1];const Ls=Math.hypot(dx,dz);if(Ls<0.5)continue;dx/=Ls;dz/=Ls;const nx=-dz,nz=dx;
+    const W=(p,o,dy)=>[X(p[0]+nx*o),p[2]*ex+dy,Z(p[1]+nz*o)];const u0=run,u1=run+Ls;run=u1;
+    // road on top
+    quad(parts.road,W(a,dk.w/2,0),W(b,dk.w/2,0),W(b,-dk.w/2,0),W(a,-dk.w/2,0),[0,1,0],[[u0/36,0.5+dk.w/82],[u1/36,0.5+dk.w/82],[u1/36,0.5-dk.w/82],[u0/36,0.5-dk.w/82]]);
+    [1,-1].forEach(sd=>{const f=(q,j)=>W(q,sd*prof[j][0],prof[j][1]);
+      const face=(P,j,uvScaleU,uvV)=>{const A=f(a,j),B_=f(b,j),C=f(b,j+1),D=f(a,j+1);const e=prof[j+1][0]-prof[j][0],g_=prof[j+1][1]-prof[j][1],l=Math.hypot(e,g_)||1;
+        // outward normal of this edge of the profile: perpendicular to it, pointing away from the middle of the deck
+        const ox=g_/l,oy=-e/l,s_=(ox*(prof[j][0]+prof[j+1][0])/2+oy*((prof[j][1]+prof[j+1][1])/2+th/2))<0?-1:1;const n=[nx*ox*s_*sd,oy*s_,nz*ox*s_*sd];
+        const uv=[[u0/uvScaleU,uvV[0]],[u1/uvScaleU,uvV[0]],[u1/uvScaleU,uvV[1]],[u0/uvScaleU,uvV[1]]];
+        if(sd>0)quad(P,A,B_,C,D,n,uv);else quad(P,A,D,C,B_,n,[uv[0],uv[3],uv[2],uv[1]])};
+      face(parts.steel,0,20,[0,1]);face(parts.steel,1,20,[0,1]);face(parts.truss,2,18,[1,0]);face(parts.under,3,20,[0,1])});
+  }
+  [['road',TX.roadMat],['steel',TX.steelMat],['truss',TX.trussMat],['under',TX.underMat]].forEach(([k,mat])=>{const P=parts[k];if(!P[0].length)return;const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(P[0],3));g.setAttribute('normal',new THREE.Float32BufferAttribute(P[1],3));g.setAttribute('uv',new THREE.Float32BufferAttribute(P[2],2));
+    const m=new THREE.Mesh(g,mat);m.material.side=THREE.DoubleSide;m.castShadow=true;m.receiveShadow=true;grp.add(m)});
+}
+function anchorage(a,B,grp){ // a huge concrete block, tallest on the side facing the tower where the cables go in
+  const tw=(B.towers||[]).filter(t=>t.n==='Tsing Ma');if(!tw.length)return;const near=tw.reduce((p,t)=>Math.hypot(t.x-a.x,t.z-a.z)<Math.hypot(p.x-a.x,p.z-a.z)?t:p);
+  const toward=Math.sign((near.x-a.x)*a.ax[0]+(near.z-a.z)*a.ax[1])||1,h=Math.max(20,a.top-a.g)+14,L=a.len;
+  const sh=new THREE.Shape();sh.moveTo(-L/2,0);sh.lineTo(L/2,0);sh.lineTo(L/2,h);sh.lineTo(L/6,h);sh.lineTo(-L/2,h*0.5);sh.lineTo(-L/2,0);
+  const g=new THREE.ExtrudeGeometry(sh,{depth:a.w,bevelEnabled:false});g.translate(0,0,-a.w/2);if(toward<0)g.scale(-1,1,1);
+  const m=new THREE.Mesh(g,bridgeTex().concMat);m.position.set(a.x-G.cx,(a.g-14)*V.ex,a.z-G.cz);m.rotation.y=-Math.atan2(a.ax[1],a.ax[0]);m.castShadow=true;m.receiveShadow=true;grp.add(m);
+}
+function buildTraffic(routes,grp){ // cars, taxis (red urban, green New Territories, blue Lantau), buses and lorries at 70-90 km/h; left-hand traffic
+  G.traffic=null;if(!routes.length)return;const R=[];let n=0;
+  routes.forEach(r=>{const P=r.pts,cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));const Ltot=cum[cum.length-1];if(Ltot<50)return;
+    const base=r.split?r.split-9.4+1.0:1.3;const cars=[];
+    [1,-1].forEach(dir=>{for(let lane=0;lane<r.lanes;lane++){const gap=MOBILE?260:150,spd=[19.5,22,24.5][lane]||22;for(let s=Math.random()*gap;s<Ltot;s+=gap*(0.6+Math.random()*0.8)){
+      const rnd=Math.random();const ty=lane===0&&rnd<0.35?(Math.random()<0.5?'bus':'lorry'):rnd<0.2?'taxi':rnd<0.3?'van':'car';cars.push({dir,lane,s,spd:ty==='lorry'?Math.min(spd,19.5):spd,ty});n++}}});
+    R.push({P,cum,L:Ltot,base,lw:r.lw||3.7,cars})});
+  if(!n)return;const geo=new THREE.BoxGeometry(1,1,1);geo.translate(0,0.5,0);
+  const inst=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:0xffffff}),n);inst.castShadow=false;inst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const SZ={car:[4.6,1.5,1.8],taxi:[4.6,1.6,1.75],van:[5.2,2.1,1.95],bus:[12,4.4,2.55],lorry:[15.5,4.0,2.5]};
+  const COL={car:[0xf2f2f0,0xbfc3c7,0x1f2226,0x6f757b,0x8a1d1d,0x274a78],taxi:[0xc0272d,0xc0272d,0x2d8a3e,0x2f6fb5],van:[0xf4f4f2],bus:[0xe0781f,0xd8d8d2,0xc0272d],lorry:[0x3f6fa3,0xd2d2cc,0xb7412e,0x49525a]};
+  const c=new THREE.Color();let k=0;R.forEach(r=>r.cars.forEach(v=>{v.i=k;v.sz=SZ[v.ty];const cs=COL[v.ty];inst.setColorAt(k,c.set(cs[(Math.random()*cs.length)|0]));k++}));
+  inst.instanceColor.needsUpdate=true;grp.add(inst);G.traffic={R,inst,last:0};moveTraffic(performance.now());
+}
+function moveTraffic(t){
+  const T=G.traffic;if(!T)return;const dt=Math.min(0.1,T.last?(t-T.last)/1000:0);T.last=t;const ex=V.ex;
+  const cam=G.camera.position,r0=T.R[0].P[0],near=Math.hypot(cam.x-(r0[0]-G.cx),cam.z-(r0[1]-G.cz))<14000;T.inst.visible=near;if(!near)return;
+  const m=G._tm||(G._tm=new THREE.Matrix4()),q=G._tq||(G._tq=new THREE.Quaternion()),sc=G._ts||(G._ts=new THREE.Vector3()),ps=G._tp||(G._tp=new THREE.Vector3()),yax=G._ty||(G._ty=new THREE.Vector3(0,1,0));
+  T.R.forEach(r=>{const P=r.P,cum=r.cum;r.cars.forEach(v=>{v.s=(v.s+v.dir*v.spd*dt+r.L)%r.L;let lo=1,hi=cum.length-1;while(lo<hi){const md=(lo+hi)>>1;if(cum[md]<v.s)lo=md+1;else hi=md}
+    const a=P[lo-1],b=P[lo],f=(v.s-cum[lo-1])/((cum[lo]-cum[lo-1])||1);let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
+    const off=v.dir*(r.base+(v.lane+0.5)*r.lw);const x=a[0]+(b[0]-a[0])*f+dz*off,z=a[1]+(b[1]-a[1])*f-dx*off,y=(a[2]+(b[2]-a[2])*f)*ex;
+    q.setFromAxisAngle(yax,-Math.atan2(dz,dx));ps.set(x-G.cx,y,z-G.cz);sc.set(v.sz[0],v.sz[1],v.sz[2]);m.compose(ps,q,sc);T.inst.setMatrixAt(v.i,m)})});
+  T.inst.instanceMatrix.needsUpdate=true;
+}
+function bridgeLights(B,grp){ // Tsing Ma's cable lights, road lamps and red aircraft lights; shown after sunset
+  const glow=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.25,'rgba(255,255,255,0.8)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+  const X=x=>x-G.cx,Z=z=>z-G.cz,ex=V.ex;const sets=[];
+  const add=(pts,color,size)=>{if(!pts.length)return;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
+    const m=new THREE.PointsMaterial({map:glow,color,size:size*(G.pr||1),sizeAttenuation:false,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false,opacity:0});const p=new THREE.Points(g,m);p.visible=false;grp.add(p);sets.push(p)};
+  const cab=[];(B.mains||[]).forEach(mc=>{for(let i=0;i<mc.pts.length-1;i++){const a=mc.pts[i],b=mc.pts[i+1];for(let f=0;f<1;f+=0.5)cab.push(X(a[0]+(b[0]-a[0])*f),(a[2]+(b[2]-a[2])*f)*ex+1.2,Z(a[1]+(b[1]-a[1])*f))}});add(cab,0xfff4dc,5);
+  const lamps=[];(B.deck||[]).filter(d=>d.style==='truss'||(d.id||'').startsWith('tk')).forEach(d=>{let acc=0;for(let i=0;i<d.pts.length-1;i++){const a=d.pts[i],b=d.pts[i+1];let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
+    for(;acc<l;acc+=36){[1,-1].forEach(sd=>{const o=sd*(d.w/2-1);lamps.push(X(a[0]+dx*acc+dz*o),(a[2]+(b[2]-a[2])*acc/l)*ex+11,Z(a[1]+dz*acc-dx*o))})}acc-=l}});add(lamps,0xffc983,5);
+  const av=[];(G.avLights||[]).forEach(p=>av.push(p[0],p[1]*ex,p[2]));add(av,0xff2a1a,8);
+  G.bLights=sets;nightLights();
+}
+function nightLights(){ // fade the bridge lights in as the sun goes down
+  if(!G.bLights)return;const s=sunPos(hkNow(),V.sunMin);const k=Math.max(0,Math.min(1,(3-s.el)/9));G.bLights.forEach(p=>{p.material.opacity=k;p.visible=k>0.02});
+  if(G.cableMat)G.cableMat.color.setHex(0xdfe3e6).multiplyScalar(1-0.8*k); // unlit lines would otherwise glow white in the dark
+}
 function buildBridge(){
-  const B=G.BR;if(!B)return;if(G.bridgeGrp){G.scene.remove(G.bridgeGrp);G.bridgeGrp.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
+  const B=G.BR;if(!B)return;G.avLights=[];const hadClear=!!G.farClear;G.farClear=[];if(G.bridgeGrp){G.scene.remove(G.bridgeGrp);G.bridgeGrp.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
   const grp=new THREE.Group();G.bridgeGrp=grp;G.scene.add(grp);const ex=V.ex;const X=x=>x-G.cx,Z=z=>z-G.cz;
   // deck: box girder = asphalt top + light sides + underside
   const P=[],N=[],Cl=[];const top=[0.36,0.37,0.39],side=[0.86,0.87,0.88],under=[0.62,0.63,0.64],kerb=[0.93,0.93,0.92];
   const quad=(a,b,c,d,n,col)=>{[a,b,c,a,c,d].forEach(p=>{P.push(p[0],p[1],p[2]);N.push(n[0],n[1],n[2]);Cl.push(col[0],col[1],col[2])})};
-  B.deck.forEach(dk=>{const pts=dk.pts,hw=dk.w/2,th=dk.th||(dk.br?3.5:0.6);
+  B.deck.forEach(dk=>{if(dk.style==='truss'){deckTruss(dk,grp);return}const pts=dk.pts,hw=dk.w/2,th=dk.th||(dk.br?3.5:0.6);
     for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];let dx=b[0]-a[0],dz=b[1]-a[1];const L=Math.hypot(dx,dz);if(L<0.5)continue;dx/=L;dz/=L;const nx=-dz*hw,nz=dx*hw;
       const ya=a[2]*ex,yb=b[2]*ex;
       const aL=[X(a[0]+nx),ya,Z(a[1]+nz)],aR=[X(a[0]-nx),ya,Z(a[1]-nz)],bL=[X(b[0]+nx),yb,Z(b[1]+nz)],bR=[X(b[0]-nx),yb,Z(b[1]-nz)];
@@ -622,12 +761,17 @@ function buildBridge(){
       box(6,14,(t.hw+4)*2+6,conc,cx,top-18,cz,ry);
       const knot=new THREE.Mesh(new THREE.TorusGeometry(9,2.2,6,4),steel);knot.position.set(cx,top-18,cz);knot.rotation.y=ry+Math.PI/2;knot.rotation.z=Math.PI/4;grp.add(knot);
     }else if(t.kind==='h'){ // Tsing Ma / Kap Shui Mun: two concrete legs joined by portal beams
-      const lg=t.leg||[8,6];[-1,1].forEach(sd=>{const ox=nr.x*t.hw*sd,oz=nr.y*t.hw*sd;const g=new THREE.BoxGeometry(lg[0],top,lg[1]);
-        const pa=g.attributes.position;for(let i=0;i<pa.count;i++)if(pa.getY(i)>0){pa.setX(i,pa.getX(i)*0.7);pa.setZ(i,pa.getZ(i)*0.8)}g.computeVertexNormals(); // taper upwards
-        const m=new THREE.Mesh(g,conc);m.position.set(cx+ox,top/2,cz+oz);m.rotation.y=ry;m.castShadow=true;grp.add(m)});
-      (t.beams||[]).forEach(by=>box(lg[0]*0.8,7,t.hw*2,conc,cx,by*ex,cz,ry));
+      const lg=t.leg||[8,6],tp=t.taper||[0.7,0.8],cm=bridgeTex().concMat;[-1,1].forEach(sd=>{const ox=nr.x*t.hw*sd,oz=nr.y*t.hw*sd;const g=new THREE.BoxGeometry(lg[0],top,lg[1]);
+        const pa=g.attributes.position;for(let i=0;i<pa.count;i++)if(pa.getY(i)>0){pa.setX(i,pa.getX(i)*tp[0]);pa.setZ(i,pa.getZ(i)*tp[1])}g.computeVertexNormals(); // taper upwards
+        const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setY(i,uv.getY(i)*top/12); // slip-form lift lines every few metres
+        const m=new THREE.Mesh(g,cm);m.position.set(cx+ox,top/2,cz+oz);m.rotation.y=ry;m.castShadow=true;m.receiveShadow=true;grp.add(m);
+        if(t.saddle)box(lg[0]*tp[0]*0.9,7,lg[1]*tp[1]*1.25,steel,cx+ox,top+3,cz+oz,ry); // cable saddle housing
+        (G.avLights=G.avLights||[]).push([cx+ox,top+(t.saddle?8:2),cz+oz])});
+      (t.beams||[]).forEach((by,i,a)=>box(lg[0]*0.75,i===a.length-1?10:7,t.hw*2,cm,cx,by*ex,cz,ry));
+      if(t.islet){(G.farClear=G.farClear||[]).push([t.x,t.z,Math.max(t.islet[0],t.islet[1])*0.8]);const g=new THREE.CylinderGeometry(1,1.18,1,40);const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x6f6b63}));m.scale.set(t.islet[0]/2,6,t.islet[1]/2);m.position.set(cx,0.5,cz);m.rotation.y=ry;m.receiveShadow=true;grp.add(m);
+        const top_=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,40),new THREE.MeshLambertMaterial({color:0x8c8980}));top_.scale.set(t.islet[0]/2-8,1,t.islet[1]/2-8);top_.position.set(cx,3.6,cz);top_.rotation.y=ry;top_.receiveShadow=true;grp.add(top_)}
     }else if(t.kind==='mast'){ // Ting Kau: a single slim leg between the two decks
-      const g=new THREE.CylinderGeometry(2.6,5.5,top,6);const m=new THREE.Mesh(g,conc);m.position.set(cx,top/2,cz);m.rotation.y=ry;m.castShadow=true;grp.add(m);
+      const g=new THREE.CylinderGeometry(2.6,5.5,top,6);const m=new THREE.Mesh(g,conc);m.position.set(cx,top/2,cz);m.rotation.y=ry;m.castShadow=true;grp.add(m);(G.avLights=G.avLights||[]).push([cx,top+2,cz]);
     }else{ // Jianghai "dolphin" and Jiuzhou "sail": single central tower in the median
       box(10,deck,14,conc,cx,deck/2,cz,ry);
       const sh=new THREE.Shape();const H=top-deck;
@@ -641,7 +785,11 @@ function buildBridge(){
     const tg=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(v),v.length*2,(mc.r||0.7)*1.6,5,false);const tm=new THREE.Mesh(tg,new THREE.MeshLambertMaterial({color:0xa9b0b5}));tm.castShadow=true;grp.add(tm)});
   // stay cables
   const cp=[];B.cables.forEach(c=>{cp.push(X(c[0]),c[2]*ex,Z(c[1]),X(c[3]),c[5]*ex,Z(c[4]))});
-  const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));grp.add(new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0xdfe3e6})));
+  const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));cg.userData.mat=new THREE.LineBasicMaterial({color:0xdfe3e6});grp.add(new THREE.LineSegments(cg,cg.userData.mat));
+  (B.anchorages||[]).forEach(a=>anchorage(a,B,grp));
+  buildTraffic(B.routes||[],grp);bridgeLights(B,grp);
+  if(G.farClear.length&&!hadClear&&G.farChunks){G.farChunks.forEach(c=>{Object.values(c.geos).forEach(g=>g.dispose());c.geos={};c.dirty=true});farLOD(true)} // redraw the wide terrain without the tower islets
+  G.cableMat=cg.userData.mat;
   relabel();G.shadowDirty=true;
 }
 function flyTo(to,tTo){ // smooth camera move over 3.5 s
