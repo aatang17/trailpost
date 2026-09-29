@@ -35,11 +35,12 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - **Clouds and sky:** a live cloud layer (`buildClouds`), a sun set by time of day (`applySun`), height fog (patched ShaderChunk) and Sky.js with a `skyGain` uniform.
   - **Fly mode:** `startFly` / `stepFly`.
   - **Walk mode:** `startWalk` / `stepWalk` / `walkDress` / `walkGrass`. It adds:
+    - brighter ground: exposure eases from 0.72 (air) to 1.22 (`V.walkExp`) in `loop3D`, and the ground photo gets a gamma lift (`pow(c, 1 − 0.25·uDetail)`). Without it, dark forest photos plus the ACES tone curve made Ma On Shan walk views near-black. Grass colours in `walkGrass` get the same lift;
     - slope-based pace (Tobler's formula, scaled so the stage takes the official AFCD time): `walkPace`, `paceAt`, `timeLeft`;
     - trail markers: `walkMarks`, `walkCard`, `walkPins`;
     - phone-motion look-around: `gyroDir`, `toggleGyro`;
     - sound: `SND`, `sndStart`, `sndStep`.
-- **`app/l3/`** — 3D data. Lantau sits at the top level; every other area has its own folder, for example `app/l3/drag/` (Dragon's Back). Sounds (`snd_*.mp3`) stay at the top level and are shared.
+- **`app/l3/`** — 3D data. Lantau sits at the top level; every other area has its own folder, for example `app/l3/drag/` (Dragon's Back) and `app/l3/mos/` (Ma On Shan). Sounds (`snd_*.mp3`) stay at the top level and are shared.
   - `meta.json`: grid size, stages, distance posts and labels.
   - `dem5/10.webp`: ground heights, stored as R·256 + G − 10.
   - `can5/10.webp`: canopy height, grey value / 4 = metres.
@@ -58,7 +59,7 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - `bridges/lantau_link.py`: writes `app/l3/links.json`. Deck heights come from the DTM (road level, 59–75 m on Tsing Ma). Tower positions come from the published spans, anchored on the water crossings;
   - `cloud/live.py`: live HKO and airport METAR/TAF feed; writes `out/conditions.json` and `out/cams.json`;
   - `poi/build_walkpoi.py`: walk markers (Lantau);
-  - **`area/build_area.py`: makes a whole 3D area folder in one run.** Example: `python3 pipeline/area/build_area.py drag --stages hktrail-7,hktrail-8 --margin 1500` took 25 s with warm caches and wrote 26 files, 4.5 MB. Downloads are cached in `~/.cache/trailpost` (or `$TP_CACHE`). It needs the LandsD 5 m DTM `.asc` in that cache as `Whole_HK_DTM_5m.asc`. To add an area: run it, then add one line to `AREAS` in `v3d.js`;
+  - **`area/build_area.py`: makes a whole 3D area folder in one run.** Example: `python3 pipeline/area/build_area.py drag --stages hktrail-7,hktrail-8 --margin 1500` took 25 s with warm caches and wrote 26 files, 4.5 MB. Downloads are cached in `~/.cache/trailpost` (or `$TP_CACHE`). It needs the LandsD 5 m DTM `.asc` in that cache as `Whole_HK_DTM_5m.asc`. Label options: `--peak-min 530` drops named peaks lower than 530 m (default 120), `--peak-keep "Kai Kung Shan,Temple Hill"` keeps named ones anyway; peaks with no English name are skipped. Ma On Shan: `python3 pipeline/area/build_area.py mos --stages maclehose-4 --margin 2000 --peak-min 530 --peak-keep "Kai Kung Shan,Temple Hill"` (44 files, 13 MB, 10.1 × 9.1 km). To add an area: run it, then add one line to `AREAS` in `v3d.js`;
   - `sound/`: how the sounds were made;
   - `photo3d/`: the LandsD 3D Tiles test pipeline;
   - `video/`: the frame capture used for the AI fly-through video;
@@ -90,7 +91,7 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
 - **External data.** Artifacts can only load files published with the page, which is why the 3D data is pre-baked into `app/l3/`. With normal hosting the app can stream LandsD 3D Tiles and imagery directly.
 
 ## Known limits
-- The 3D view covers Lantau Trail Stages 2–4 and Hong Kong Trail Stages 6–8 (Dragon's Back). Everything else is 2D.
+- The 3D view covers Lantau Trail Stages 2–4, Hong Kong Trail Stages 6–8 (Dragon's Back) and MacLehose Trail Stage 4 (Ma On Shan). Everything else is 2D.
 - In the areas made by `build_area.py`, tree heights are eased to zero within 4–20 m of a trail. Without that, the 5 m LiDAR cells make sheer "walls" of trees beside the path in walk mode.
 - Up close in walk mode, the ground is 1.25 m/pixel aerial photo plus drawn grass. The LandsD photo mesh (see `photo3d/`) is the fix, but it needs streaming.
 - Mesh decimation with `fast-simplification` scrambled the photo UVs on the LandsD tiles, so it is off (`RED={}`).
@@ -99,4 +100,4 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
 ## Likely next steps
 1. Host `dist/` on a static host (GitHub Pages or Cloudflare Pages) and set up a scheduled `conditions.json` refresh.
 2. Get a LandsD key and stream the photo 3D map along the whole trail in walk mode.
-3. Extend 3D and walk mode to more trails with `pipeline/area/build_area.py`. Dragon's Back is done. Next: MacLehose Trail near Tai Mo Shan. Later, switch from one folder per area to 1 km tiles that stream in, so all of Hong Kong is one seamless map.
+3. Extend 3D and walk mode to more trails with `pipeline/area/build_area.py`. Dragon's Back and MacLehose Stage 4 (Ma On Shan) are done. Next: MacLehose Stages 3 and 5, then Tai Mo Shan (Stage 8). Later, switch from one folder per area to 1 km tiles that stream in, so all of Hong Kong is one seamless map.

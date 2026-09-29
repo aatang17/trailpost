@@ -28,6 +28,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 ap = argparse.ArgumentParser()
 ap.add_argument('area'); ap.add_argument('--stages', required=True); ap.add_argument('--margin', type=float, default=1500)
 ap.add_argument('--far', type=float, default=14000, help='radius of the wider view in metres')
+ap.add_argument('--peak-min', type=float, default=120, help='label peaks at least this high (m)')
+ap.add_argument('--peak-keep', default='', help='comma-separated peak names to label whatever their height')
 ap.add_argument('--dtm-asc', default=os.environ.get('HK_DTM_ASC', os.path.expanduser('~/.cache/trailpost/Whole_HK_DTM_5m.asc')))
 A = ap.parse_args()
 CACHE = os.environ.get('TP_CACHE', os.path.expanduser('~/.cache/trailpost')); os.makedirs(CACHE, exist_ok=True)
@@ -274,7 +276,9 @@ for e in osm:
         nm = t['name']; en = t.get('name:en') or ' '.join(x for x in re.split(r'([一-鿿]+)', nm) if x and not re.match(r'[一-鿿]', x)).strip() or nm
         zh = t.get('name:zh') or (re.findall(r'[一-鿿]+', nm)[:1] or [en])[0]
         p = w(e['lat'], e['lon']); ele = t.get('ele'); h = round(float(ele)) if ele and re.match(r'^[\d.]+$', ele) else round(p[2])
-        if h >= 120: meta['labels'].append({'en': en, 'zh': zh, 'p': p, 'kind': 'peak', 'h': h, 'dem': round(p[2])})
+        keep = [k.strip() for k in A.peak_keep.split(',') if k.strip()]
+        if en == zh and en not in keep: continue  # no English name in OSM: leave it out rather than show Chinese twice
+        if h >= A.peak_min or en in keep: meta['labels'].append({'en': en, 'zh': zh, 'p': p, 'kind': 'peak', 'h': h, 'dem': round(p[2])})
 for k in want:
     r = byid[k]; sg = segs_of(r)
     for p, en, zh in ((sg[0][0], r.get('start_en'), r.get('start_zh')), (sg[-1][-1], r.get('end_en'), r.get('end_zh'))):

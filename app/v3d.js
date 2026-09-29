@@ -5,7 +5,8 @@
    bridge: the Hong Kong–Zhuhai–Macao Bridge layer; cable: the Ngong Ping cable car; cam: HKO camera nearest the area. */
 const AREAS={
   lantau:{dir:'l3/',stages:['lantau-2','lantau-3','lantau-4'],first:'lantau-3',title:['Lantau Peak in 3D','鳳凰山立體地形'],bridge:true,cam:'CS2',lon:113.93,patches:['link']},
-  drag:{dir:'l3/drag/',stages:['hktrail-6','hktrail-7','hktrail-8'],first:'hktrail-8',title:["Dragon's Back in 3D",'龍脊立體地形'],cam:'VPA',lon:114.24}
+  drag:{dir:'l3/drag/',stages:['hktrail-6','hktrail-7','hktrail-8'],first:'hktrail-8',title:["Dragon's Back in 3D",'龍脊立體地形'],cam:'VPA',lon:114.24},
+  mos:{dir:'l3/mos/',stages:['maclehose-4'],first:'maclehose-4',title:['Ma On Shan in 3D','馬鞍山立體地形'],cam:'TM2',lon:114.24}
 };
 const V3D_STAGES=Object.values(AREAS).flatMap(a=>a.stages);
 const areaOf=id=>Object.keys(AREAS).find(k=>AREAS[k].stages.includes(id));
@@ -534,6 +535,7 @@ function loop3D(){
   const tick=t=>{if(!V.open)return;V.raf=requestAnimationFrame(tick);
     if(last)adapt(t-last);last=t;
     if(V.fly)stepFly(t);else if(V.walk)stepWalk(t);else{G.controls.update();keepAboveGround()}
+    {const want=V.walk?(V.walkExp||1.22):0.72,r=G.renderer;if(Math.abs(r.toneMappingExposure-want)>0.005)r.toneMappingExposure+=(want-r.toneMappingExposure)*0.06} // eyes adjust on the ground
     if(t-lastLod>250){updateLOD();farLOD();patchLOD();lastLod=t}
     G.sky.position.copy(G.camera.position);
     if(G.scene.fog&&G.fogBase&&G.sunDir){const fw=G._fw||(G._fw=new THREE.Vector3());G.camera.getWorldDirection(fw);const a=Math.pow(Math.max(0,fw.dot(G.sunDir)),6)*0.45;G.scene.fog.color.copy(G.fogBase).lerp(G.fogSun,a)}G.rip.offset.set((t*0.0000035)%1,(t*0.0000021)%1);if(G.seaU)G.seaU.seaT.value=(t/1000)%10000;
@@ -822,11 +824,11 @@ function detailTexture(){ // fine ground grain so close-up ground does not look 
     v=0.5+(v-0.5)*1.9;v=v*0.75+Math.random()*0.25;const o=(y*N+x)*4;img.data[o]=img.data[o+1]=img.data[o+2]=Math.max(0,Math.min(255,Math.round(v*255)));img.data[o+3]=255}
   g.putImageData(img,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4;return t;
 }
-function addDetail(m){
+function addDetail(m){ // walk mode: fine ground texture near the camera, and darker photo colours lifted (dense forest in aerial photos is ~3% of white and would read as black in shade)
   if(!m||m.userData.det)return m;m.userData.det=1;
   m.onBeforeCompile=sh=>{sh.uniforms.detailMap={value:G.detTex};sh.uniforms.uDetail=G.detU;
     sh.fragmentShader='uniform sampler2D detailMap;uniform float uDetail;\n'+sh.fragmentShader.replace('#include <map_fragment>',
-      '#include <map_fragment>\n#ifdef USE_FOG\nif(uDetail>0.0){float dd=length(vFogW-vFogCam);float df=uDetail*(1.0-smoothstep(10.0,160.0,dd));'+
+      '#include <map_fragment>\n#ifdef USE_FOG\nif(uDetail>0.0){diffuseColor.rgb=pow(max(diffuseColor.rgb,vec3(0.0)),vec3(1.0-0.25*uDetail));float dd=length(vFogW-vFogCam);float df=uDetail*(1.0-smoothstep(10.0,160.0,dd));'+
       'if(df>0.0){float n=texture2D(detailMap,vFogW.xz*0.37).r*0.5+texture2D(detailMap,vFogW.xz*0.07).r*0.5;diffuseColor.rgb*=mix(1.0,0.5+n,df);}}\n#endif')};
   m.needsUpdate=true;return m;
 }
@@ -928,7 +930,7 @@ function walkGrass(){ // re-scatter grass on a fixed world grid around the walke
     const rr=P.d[o],gg=P.d[o+1],bb=P.d[o+2];const mx=Math.max(rr,gg,bb),mn=Math.min(rr,gg,bb);if(mx-mn<14&&mx>120)continue; // bare rock, paving, roofs
     const fade=1-Math.max(0,(d-Rmax*0.72)/(Rmax*0.28));const hgt=(0.3+r3*0.42+Math.min(can,1.5)*0.3)*fade,wid=(0.85+r1_*0.55)*(0.8+0.2*fade)*(salt===2?1.25:1);
     ps.set(x-G.cx,sAt(x,z)*ex-0.05,z-G.cz);qq.setFromAxisAngle(ax,r2*6.283);sc.set(wid,hgt,wid);m.compose(ps,qq,sc);gr.setMatrixAt(k,m);
-    const v=0.8+r1_*0.35,lin=t=>Math.pow(t/255,2.2)*1.45*v;col[k*3]=lin(rr);col[k*3+1]=lin(gg)*1.06;col[k*3+2]=lin(bb)*0.88;k++}}
+    const v=0.8+r1_*0.35,lin=t=>Math.pow(t/255,1.65)*1.3*v;/* same lift as the ground in walk mode: 2.2 x 0.75 */col[k*3]=lin(rr);col[k*3+1]=lin(gg)*1.06;col[k*3+2]=lin(bb)*0.88;k++}}
   gr.count=k;gr.instanceMatrix.needsUpdate=true;gr.instanceColor.needsUpdate=true;
 }
 function walkPlay(){const w=V.walk;if(!w)return;if(w.d>=w.total-0.5){w.d=0;w.snap=true;w.playing=true}else w.playing=!w.playing;walkUI()}
