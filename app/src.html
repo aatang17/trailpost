@@ -1,9 +1,18 @@
 <title>Trailpost HK</title>
 <meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1411" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trailpost">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preload" href="vendor/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Inter is saved with the app so text looks the same offline. Chinese uses the phone's own font (PingFang HK on iPhone). */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 700;font-display:swap;src:url(vendor/inter-latin.woff2) format("woff2")}
 /*LEAFLET_CSS*/
 /* Design rules (from the GSA ui-ux-design skill): corners 4px or less, no shadows, no gradients in the UI,
    status badges are outline-only, one font family, whitespace before borders. Tokens live here only. */
@@ -14,7 +23,7 @@
   --go:#15803d;--go-bg:#f1f8f3;--warn:#b45309;--warn-bg:#fdf6ec;--bad:#b91c1c;--bad-bg:#fdf2f2;
   --gmb:#15803d;--rmb:#b91c1c;
   --shadow:none;--r:4px;
-  --f-body:"Inter","Noto Sans HK",-apple-system,"Helvetica Neue",Arial,"PingFang HK","Microsoft JhengHei",sans-serif;
+  --f-body:"Inter","PingFang HK","Noto Sans HK","Microsoft JhengHei",-apple-system,"Helvetica Neue",Arial,sans-serif;
   --f-disp:var(--f-body);
   --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
@@ -40,7 +49,7 @@ a{color:var(--accent)}
 .main>*,.app>*{min-width:0}
 
 /* header */
-.top{padding:12px 16px 0;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:500}
+.top{padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:500}
 .brandrow{display:flex;align-items:center;gap:12px;justify-content:space-between}
 .brand{display:flex;align-items:baseline;gap:12px;min-width:0}
 .brand b{font-weight:700;font-size:20px;letter-spacing:-.02em;line-height:1;white-space:nowrap}
@@ -314,11 +323,11 @@ a{color:var(--accent)}
     <div class="v3dWalkCard" id="v3dWalkCard" hidden aria-live="polite"></div>
     <div class="v3dAttr"><img src="l3/landsd_logo.svg" alt="Lands Department"><span>Aerial Photograph from Lands Department · Terrain from Lands Department · © OpenStreetMap contributors</span></div></div>
   <div class="v3dCtl"><div class="v3dStages" id="v3dStages"></div>
-    <div class="v3dRow"><button class="btn primary" id="v3dWalk" type="button"></button><button class="btn" id="v3dFly" type="button"></button><button class="btn" id="v3dLook" type="button"></button><button class="btn" id="v3dEx" type="button"></button><button class="btn" id="v3dRoute" type="button"></button><button class="btn" id="v3dTrees" type="button"></button><button class="btn" id="v3dClouds" type="button"></button><button class="btn" id="v3dBridge" type="button"></button><button class="btn" id="v3dCam" type="button"></button></div><div class="hint" id="v3dCloudInfo"></div>
+    <div class="v3dRow"><button class="btn primary" id="v3dWalk" type="button"></button><button class="btn" id="v3dFly" type="button"></button><button class="btn" id="v3dLook" type="button"></button><button class="btn" id="v3dEx" type="button"></button><button class="btn" id="v3dRoute" type="button"></button><button class="btn" id="v3dTrees" type="button"></button><button class="btn" id="v3dClouds" type="button"></button><button class="btn" id="v3dBridge" type="button"></button><button class="btn" id="v3dLink" type="button"></button><button class="btn" id="v3dCam" type="button"></button></div><div class="hint" id="v3dCloudInfo"></div>
     <div class="v3dRow sun"><label for="v3dSun" id="v3dSunLbl"></label><input type="range" id="v3dSun" min="360" max="1170" step="5"><span class="hint" id="v3dSunInfo"></span></div>
     <div class="hint" id="v3dHint"></div><div class="meta" id="v3dSrc"></div></div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="vendor/leaflet.js"></script>
 <script>
 /*DATA*/
 </script>
@@ -506,6 +515,7 @@ function condCard(c){
     if(S.whatif.length) h+=`<div class="condrow">${S.whatif.map(w=>`<span class="wchip ${WNAME[w][2]}"><i></i>${esc(wLabel(w))}${T(' (preview)','（模擬）')}</span>`).join('')}</div>`;
     h+=`<div class="meta">${T('Warnings are issued at short notice. Check again on the morning.','警告可隨時發出，出發當日早上請再查看。')}</div>`;
   }
+  if(!navigator.onLine) h+=`<div class="stale">${T('You are offline. This is the weather saved on your phone.','你現在離線，以下是手機內已儲存的天氣資料。')}</div>`;
   if(ageH>3) h+=`<div class="stale">${T(`Weather data is ${Math.round(ageH)} h old. Check the Observatory before you go.`,`天氣資料已是${Math.round(ageH)}小時前，出發前請查閱天文台。`)}</div>`;
   const opts=Object.keys(WNAME).filter(k=>!c.warnings.includes(k)).map(k=>`<option value="${k}">${esc(wLabel(k))}</option>`).join('');
   h+=`<details class="whatif"${S.whatif.length?' open':''}><summary>${T('Preview a warning','模擬警告')}</summary><div><label for="wi" class="sr">${T('Warning','警告')}</label><select id="wi"><option value="">${T('Choose a warning…','選擇警告…')}</option>${opts}</select>${S.whatif.length?`<button class="linkbtn" id="wiclear" type="button">${T('Clear preview','清除模擬')}</button>`:''}</div></details>`;
@@ -744,5 +754,8 @@ document.documentElement.lang=ZH()?'zh-HK':'en';
 if(location.hash==='#sos'){S.view='sos'}
 {const h=location.hash.slice(1),m=h.match(/^3d-(.+)$/),k=h==='lantau3d'?'lantau':m?m[1]:null;if(k&&(AREAS[k]||V3D_STAGES.includes(k)))setTimeout(()=>open3D(k),0)} // #lantau3d, #3d-drag, #3d-hktrail-8
 render();initMap();
+addEventListener('online',()=>render());addEventListener('offline',()=>render());
+// offline support: sw.js (written by build.py) saves the app on the phone. Needs https or localhost.
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>

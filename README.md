@@ -7,4 +7,6 @@ python3 build.py
 python3 -m http.server -d dist 8000
 ```
 
+It works offline once loaded, and can be added to an iPhone home screen from Safari (Share → Add to Home Screen). Both need the app to be served over https, or from localhost.
+
 See `CLAUDE.md` for how the code is organised, where the data comes from, and the credits that must stay in the app.

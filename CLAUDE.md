@@ -10,12 +10,25 @@ python3 build.py                        # writes dist/index.html + dist/l3/
 python3 -m http.server -d dist 8000     # open http://localhost:8000
 ```
 - `build.py` inlines three things into `app/src.html`: Leaflet CSS, `data/geo/data.js` and `app/v3d.js`. The result is one HTML file.
-- `app/l3/` holds the 3D assets. They are served next to the page.
+- `build.py` also copies `app/l3/` (3D assets), `app/vendor/` (libraries and font) and `app/icons/` next to the page, and writes `manifest.webmanifest` and `sw.js`.
 - There is no bundler and no npm step for the app itself.
-- Libraries come from CDNs:
-  - Leaflet 1.9.4 (cdnjs);
-  - three.js r128 (cdnjs);
-  - OrbitControls and Sky.js from jsdelivr `three@0.128.0/examples/js/`.
+- Libraries and the font are saved in `app/vendor/` so the app works offline (sources and licences in `app/vendor/README.md`):
+  - Leaflet 1.9.4;
+  - three.js r128, plus OrbitControls and Sky.js from its examples;
+  - Inter (Latin only). Chinese uses the phone's own font (PingFang HK on iPhone).
+  Do not add CDN links back: anything loaded from another site will not work offline.
+
+## Offline and home-screen install
+- **`app/sw.js`** is the service worker template. `build.py` fills in two version hashes and the file list and writes `dist/sw.js`.
+  - On first visit it saves the page, libraries, font, icons and manifest (about 1.8 MB).
+  - The page: fresh copy if the network answers within 3 s, else the saved copy.
+  - 3D files (`l3/`) are saved the first time each one loads, in their own cache (`tp-data-…`). That cache only changes when the 3D files change, so app updates do not re-download them. An area works offline only after it has been opened once online.
+  - `conditions.json` (live weather, when added) is network first, saved copy when offline.
+  - Other sites (Observatory photos and links) are not cached.
+- Service workers only run on **https** or **localhost**. On a phone, the app has to be hosted (for example GitHub Pages) for offline to work. Opening the Mac's address over the Wi-Fi (`http://192.168…`) shows the app but does not save it.
+- **Home-screen install:** `manifest.webmanifest` (written by `build.py`), the `apple-mobile-web-app-*` meta tags in `app/src.html`, and the icons in `app/icons/` (`icon-1024.png` is kept for a future App Store build). In Safari: Share → Add to Home Screen.
+- When the phone has no connection, the conditions card says so ("You are offline…").
+- To check offline on a Mac: load the app once, stop the server, reload. It should still open, including any 3D area already opened.
 
 ## What is where
 - **`app/src.html`** — the whole app except the 3D engine:
@@ -27,7 +40,9 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
   - **Terrain:** a 5 m grid split into chunks, with a finer mesh near the camera (strides 1/2/4/8). Sharp aerial-photo chunks (`h_r_c.webp`) load only when on screen.
   - **Heights:** `hAt(x,z)` gives ground height from the LiDAR DTM. `Hs()` / `sAt()` give ground plus tree canopy.
   - **Local coordinates:** `x = E − x0hk` and `z = ytophk − N`, in HK1980 grid metres (EPSG:2326). Three.js world = local minus `(G.cx, G.cz)`.
-  - **Wider area:** `loadFar` covers Chek Lap Kok, the Hong Kong–Zhuhai–Macao Bridge (`buildBridge`), Zhuhai and Macau.
+  - **Wider area:** `loadFar` covers Chek Lap Kok, the Hong Kong–Zhuhai–Macao Bridge (`buildBridge`), Zhuhai and Macau, and north to Tsing Ma.
+  - **Lantau Link (Lantau only):** the "View Tsing Ma Bridge" button (`linkView`, `flyTo`). The ground there is a separate detailed patch (`loadPatches`, from `patch_link*`). The bridges are drawn from `links.json` (`deckTruss`, `anchorage`, `bridgeTex`). It also has road traffic (`buildTraffic`, `moveTraffic`) and bridge lights that fade in at dusk (`nightLights`).
+  - **Sea:** `seaMaterial` / `seaColour`. `buildShore` works out each sea cell's distance to land, for the shoreline.
   - **Clouds and sky:** a live cloud layer (`buildClouds`), a sun set by time of day (`applySun`), height fog (patched ShaderChunk) and Sky.js with a `skyGain` uniform.
   - **Fly mode:** `startFly` / `stepFly`.
   - **Walk mode:** `startWalk` / `stepWalk` / `walkDress` / `walkGrass`. It adds:
@@ -35,13 +50,14 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
     - trail markers: `walkMarks`, `walkCard`, `walkPins`;
     - phone-motion look-around: `gyroDir`, `toggleGyro`;
     - sound: `SND`, `sndStart`, `sndStep`.
-- **`app/l3/`** — 3D data. Lantau sits at the top level; every other area has its own folder, for example `app/l3/drag/` (Dragon's Back). Sounds (`snd_*.mp3`) stay at the top level and are shared.
+- **`app/l3/`** — 3D data. Lantau sits at the top level; every other area has its own folder: `app/l3/drag/` (Dragon's Back) and `app/l3/mos/` (Ma On Shan). Sounds (`snd_*.mp3`) stay at the top level and are shared.
   - `meta.json`: grid size, stages, distance posts and labels.
   - `dem5/10.webp`: ground heights, stored as R·256 + G − 10.
   - `can5/10.webp`: canopy height, grey value / 4 = metres.
   - `h_*.webp`: aerial photo chunks.
   - `far*`: the wider area, heights stored as R·256 + G − 100.
   - `bridge.json`, `extras.json` (buildings, cable car), `walkpoi.json`, and the `snd_*.mp3` sounds.
+  - Lantau only: `links.json` (Tsing Ma, Kap Shui Mun and Ting Kau bridges) and `patch_link*` (the detailed ground patch around them).
 - **`data/geo/data.js`** — `window.HK_ROUTES` (trails, stages, posts, transport, safety), `HK_BASE` (map outline) and `HK_COND` (a baked copy of the weather conditions).
 - **`data/research/*.json`** — researched stage data: transport, water, exits, safety and sources.
 - **`pipeline/`** — the one-off scripts that made the data. Most still hold the original claude.ai working-folder paths (`/tmp/claude-0/.../scratchpad/`), so fix those paths before re-running. Main ones:
@@ -83,13 +99,14 @@ python3 -m http.server -d dist 8000     # open http://localhost:8000
 - **External data.** Artifacts can only load files published with the page, which is why the 3D data is pre-baked into `app/l3/`. With normal hosting the app can stream LandsD 3D Tiles and imagery directly.
 
 ## Known limits
-- The 3D view covers Lantau Trail Stages 2–4 and Hong Kong Trail Stages 6–8 (Dragon's Back). Everything else is 2D.
+- The 3D view covers Lantau Trail Stages 2–4 and Hong Kong Trail Stages 6–8 (Dragon's Back) and MacLehose Trail Stage 4 (Ma On Shan). Everything else is 2D.
+- The Lantau Link files (`links.json`, `patch_link*`), the bigger Lantau `far*` files and the `mos/` folder were made in claude.ai (artifact version of 30 Sept 2026). The scripts that made the Link files are not in `pipeline/`.
 - In the areas made by `build_area.py`, tree heights are eased to zero within 4–20 m of a trail. Without that, the 5 m LiDAR cells make sheer "walls" of trees beside the path in walk mode.
 - Up close in walk mode, the ground is 1.25 m/pixel aerial photo plus drawn grass. The LandsD photo mesh (see `photo3d/`) is the fix, but it needs streaming.
 - Mesh decimation with `fast-simplification` scrambled the photo UVs on the LandsD tiles, so it is off (`RED={}`).
 - Phone motion was tested only with simulated `deviceorientation` events, not a real phone.
 
 ## Likely next steps
-1. Host `dist/` on a static host (GitHub Pages or Cloudflare Pages) and set up a scheduled `conditions.json` refresh.
+1. Host `dist/` on a static host (GitHub Pages or Cloudflare Pages), which also makes offline and home-screen install work on phones, and set up a scheduled `conditions.json` refresh.
 2. Get a LandsD key and stream the photo 3D map along the whole trail in walk mode.
-3. Extend 3D and walk mode to more trails with `pipeline/area/build_area.py`. Dragon's Back is done. Next: MacLehose Trail near Tai Mo Shan. Later, switch from one folder per area to 1 km tiles that stream in, so all of Hong Kong is one seamless map.
+3. Extend 3D and walk mode to more trails with `pipeline/area/build_area.py`. Dragon's Back and Ma On Shan are done. Next: MacLehose Trail near Tai Mo Shan. Later, switch from one folder per area to 1 km tiles that stream in, so all of Hong Kong is one seamless map.
